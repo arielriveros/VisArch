@@ -13,7 +13,9 @@ export default function Renderer(): JSX.Element{
     
         let scene = new THREE.Scene();
         let camera = new THREE.PerspectiveCamera( 75, window.innerWidth/window.innerHeight, 0.1, 3000 );
+        camera.position.y = 100;
         camera.position.z = 100;
+        camera.lookAt(0,0,0);
         let renderer = new THREE.WebGLRenderer();
         let ambientLight = new THREE.AmbientLight( 0xFFFFFF ); // soft white light
         scene.add( ambientLight );
@@ -21,9 +23,9 @@ export default function Renderer(): JSX.Element{
         // Add the renderer to the DOM
         mountRef.current.appendChild(renderer.domElement);
         renderer.setSize( mountRef.current.clientWidth, mountRef.current.clientHeight );
-        renderer.setClearColor( 0xFFFFFF, 1 );
+        renderer.setClearColor( 0xAAAAAA, 1 );
         
-        // import .obj file from public folder
+        // import .obj file from public folder 
         const objLoader = new OBJLoader();
         const mtlLoader = new MTLLoader();
 

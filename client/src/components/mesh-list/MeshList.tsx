@@ -19,12 +19,12 @@ export default function MeshList(): JSX.Element {
             })
             .catch(error => console.error(error));
     };
-    
+
     return (
         <div className="MeshList">
         <h3>Meshes</h3>
         {meshesList.map((meshName: string) => (
-            <MeshListItem name={meshName} />
+            <MeshListItem name={meshName} key={meshName} />
         ))}
         </div>
     );
