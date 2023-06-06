@@ -1,14 +1,15 @@
 const path = require('path');
 const multer = require('multer');
+const fs = require('fs');
 
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
-        const dir = `public/meshFiles/`;
+        const dir = `public/meshFiles/${file.originalname.split('.')[0]}-${Date.now()}`;
+        fs.mkdirSync(dir, { recursive: true });
         cb(null, dir);
     },
     filename: (req, file, cb) => {
-        let extension = path.extname(file.originalname);
-        cb(null, `${Date.now()}${extension}`);
+        cb(null, file.originalname);
     }
 });
 
