@@ -14,9 +14,8 @@ export default function MeshList(): JSX.Element {
             .then(response => response.json())
             .then(data => {
                 // get only name from data
-                const names = data.map((mesh: any) => mesh.name);
+                const names = data.meshes.map((mesh: any) => mesh.name);
                 setMeshesList(names);
-                console.log(names);
             })
             .catch(error => console.error(error));
     };

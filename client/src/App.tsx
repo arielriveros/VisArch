@@ -1,7 +1,7 @@
 import MeshList from './components/mesh-list/MeshList';
 import Renderer from './components/renderer/Renderer';
 
-export const API_BASE = 'http://localhost:5000';
+export const API_BASE = 'http://localhost:5000/api';
 
 function App(): JSX.Element {
   return (
