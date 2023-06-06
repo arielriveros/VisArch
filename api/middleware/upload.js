@@ -12,12 +12,16 @@ const storage = multer.diskStorage({
     }
 });
 
-const upload = multer({
+const uploadModel = multer({
     storage: storage,
     fileFilter: (req, file, cb) => {
         let extension = path.extname(file.originalname);
-        if (extension !== '.obj') {
-            return cb(new Error('Only .obj files are allowed'));
+        if (extension !== '.obj' &&
+            extension !== '.mtl' &&
+            extension !== '.png' &&
+            extension !== '.jpg' &&
+            extension !== '.jpeg') {
+            return cb(new Error('Only .obj, .mtl, .png, .jpg and .jpeg files are allowed.'));
         }
         cb(null, true);
     },
@@ -26,4 +30,4 @@ const upload = multer({
     }
 });
 
-module.exports = upload;
+module.exports = uploadModel;

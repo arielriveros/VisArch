@@ -16,9 +16,14 @@ const create = async (req, res) => {
             name: req.body.name,
         });
 
-        if(req.file) {
-            newMesh.vertexData = req.file.path;
-        }
+        if(req.files.model)
+            newMesh.vertexData = req.files.model[0].path;
+
+        if(req.files.material)
+            newMesh.materialData = req.files.material[0].path;
+
+        if(req.files.texture)
+            newMesh.textureData = req.files.texture[0].path;
     
         // Check if mesh already exists
         const meshExists = await MeshModel.findOne({ name: req.body.name });
