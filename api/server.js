@@ -23,18 +23,6 @@ mongoose.connect('mongodb://localhost:27017/visarch-api', {
 .then(() => { console.log('MongoDB connected') })
 .catch((err) => { console.log(err) });
 
-// Storage
-const storage = multer.diskStorage({
-    destination: (req, file, cb) => {
-        cb(null, 'public/meshFiles');
-    },
-    // TODO: Add hash to filename
-    filename: (req, file, cb) => {
-        cb(null, `${file.originalname}`);
-    }
-});
-const upload = multer({ storage: storage });
-
 // Routes
 const MeshRoutes = require('./routes/MeshRoutes');
 app.use('/api/meshes', MeshRoutes);

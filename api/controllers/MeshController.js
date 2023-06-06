@@ -12,24 +12,13 @@ const index = async (req, res) => {
 
 const create = async (req, res) => {
     try {
-        if (!req.file) {
-            return res.status(400).json({
-                status: 'error',
-                error: 'File must be provided',
-            });
-        }
-    
         const newMesh = new MeshModel({
             name: req.body.name,
-            vertexData: {
-                data: fs.readFileSync(`public/meshFiles/${req.file.filename}`),
-                contentType: 'text/plain'
-            },
-            textureData: {
-                data: fs.readFileSync(`public/meshFiles/${req.file.filename}`),
-                contentType: 'image/png'
-            },
         });
+
+        if(req.file) {
+            newMesh.vertexData = req.file.path;
+        }
     
         // Check if mesh already exists
         const meshExists = await MeshModel.findOne({ name: req.body.name });
@@ -41,7 +30,7 @@ const create = async (req, res) => {
         }
     
         const savedMesh = await newMesh.save();
-        
+
         return res.status(200).json({ savedMesh });
     } catch (err) {
         return res.status(500).json({ err });

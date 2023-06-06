@@ -8,12 +8,13 @@ const MeshSchema = new Schema({
         unique: true
     },
     vertexData: {
-        type: Buffer,
-        contentType: String
+        type: String,
+    },
+    materialData: {
+        type: String,
     },
     textureData: {
-        type: Buffer,
-        contentType: String
+        type: String,
     }
 });
 
