@@ -7,9 +7,14 @@ const MeshSchema = new Schema({
         required: true,
         unique: true
     },
-    url: {
-        type: String
+    vertexData: {
+        type: Buffer,
+        contentType: String
     },
+    textureData: {
+        type: Buffer,
+        contentType: String
+    }
 });
 
 const MeshModel = mongoose.model('Mesh', MeshSchema);

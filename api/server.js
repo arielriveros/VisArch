@@ -3,6 +3,7 @@ const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
 const multer = require('multer');
+const fs = require('fs');
 
 // Models
 const MeshModel = require('./models/Mesh');
@@ -22,23 +23,39 @@ mongoose.connect('mongodb://localhost:27017/visarch-api', {
 .then(() => { console.log('MongoDB connected') })
 .catch((err) => { console.log(err) });
 
-// Routes
-app.get('/meshes', async (req, res) => {
-    const meshes = await MeshModel.find({});
-    res.json(meshes);
+// Storage
+const storage = multer.diskStorage({
+    destination: (req, file, cb) => {
+        cb(null, 'public/meshFiles');
+    },
+    // TODO: Add hash to filename
+    filename: (req, file, cb) => {
+        cb(null, `${file.originalname}`);
+    }
 });
+const upload = multer({ storage: storage });
 
-app.post('/meshes/add', async (req, res) => {
-    if (!req.body.name) {
+
+
+// Routes
+app.post('/meshes/upload', upload.array('meshFile'), async (req, res) => {
+    if (!req.file) {
         return res.status(400).json({
             status: 'error',
-            error: 'Name must be provided',
+            error: 'File must be provided',
         });
     }
 
     const newMesh = new MeshModel({
         name: req.body.name,
-        url: `${req.body.name.replace(/\s+/g, '-')}-${Date.now()}`
+        vertexData: {
+            data: fs.readFileSync(`public/meshFiles/${req.file.filename}`),
+            contentType: 'text/plain'
+        },
+        textureData: {
+            data: fs.readFileSync(`public/meshFiles/${req.file.filename}`),
+            contentType: 'image/png'
+        },
     });
 
     // Check if mesh already exists
@@ -52,6 +69,11 @@ app.post('/meshes/add', async (req, res) => {
 
     const savedMesh = await newMesh.save();
     res.json(savedMesh);
+});
+
+app.get('/meshes', async (req, res) => {
+    const meshes = await MeshModel.find({});
+    res.json(meshes);
 });
 
 // delete mesh by name
