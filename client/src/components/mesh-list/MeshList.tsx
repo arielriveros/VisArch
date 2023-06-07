@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
-import { API_URL } from '../../App';
 import { ModelSource } from '../renderer/Renderer';
+import API_URL from '../../utils/config';
 import MeshListItem from '../mesh-list-item/MeshListItem';
 
 interface MeshListProps {

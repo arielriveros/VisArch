@@ -2,9 +2,6 @@ import { useState } from 'react';
 import MeshList from './components/mesh-list/MeshList';
 import Renderer, { ModelSource } from './components/renderer/Renderer';
 
-export const BASE_URL = 'http://localhost:5000';
-export const API_URL = `${BASE_URL}/api`;
-
 function App(): JSX.Element {
   const meshUrl = `http://localhost:5000/meshFiles/0027/0027.obj`;
   const materialUrl = 'http://localhost:5000/meshFiles/0027/0027.obj.mtl';
