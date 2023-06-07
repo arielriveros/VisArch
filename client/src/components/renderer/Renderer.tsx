@@ -3,7 +3,17 @@ import { useEffect, useRef } from 'react';
 import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader';
 import { MTLLoader } from 'three/examples/jsm/loaders/MTLLoader';
 
-const Renderer: React.FC = () => {
+interface ModelSource {
+    obj: string;
+    mtl: string;
+    tex: string;
+}
+
+interface RendererProps {
+    modelSource: ModelSource;
+}
+
+function Renderer(props: RendererProps): JSX.Element {
     const mountRef = useRef<HTMLDivElement | null>(null);
 
     useEffect(() => {
@@ -36,15 +46,15 @@ const Renderer: React.FC = () => {
         };
 
         const mtlLoader = new MTLLoader();
-        mtlLoader.load('./meshes/0027.obj.mtl', (materials) => {
+        mtlLoader.load(props.modelSource.mtl, (materials) => {
         materials.preload();
         const objLoader = new OBJLoader();
         objLoader.setMaterials(materials);
-        objLoader.load('./meshes/0027.obj', (mesh) => {
+        objLoader.load(props.modelSource.obj, (mesh) => {
             object = mesh;
             scene.add(object);
             animate();
-        });
+            });
         });
         
         return () => {

@@ -1,15 +1,26 @@
+import { useState } from 'react';
 import MeshList from './components/mesh-list/MeshList';
 import Renderer from './components/renderer/Renderer';
 
-export const API_BASE = 'http://localhost:5000/api';
+export const BASE_URL = 'http://localhost:5000';
+export const API_URL = `${BASE_URL}/api`;
 
 function App(): JSX.Element {
+  const meshUrl = `http://localhost:5000/meshFiles/0027/0027.obj`;
+  const materialUrl = 'http://localhost:5000/meshFiles/0027/0027.obj.mtl';
+
+  let [modelSrc, setModelSrc] = useState({
+    obj: meshUrl,
+    mtl: materialUrl,
+    tex: ""
+  });
+
   return (
     <div className="App">
       <h1>VisArch</h1>
       <div className="content">
         <MeshList />
-        <Renderer />
+        <Renderer modelSource={modelSrc}/>
       </div>
     </div>
   );
