@@ -3,7 +3,7 @@ import { useEffect, useRef } from 'react';
 import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader';
 import { MTLLoader } from 'three/examples/jsm/loaders/MTLLoader';
 
-interface ModelSource {
+export interface ModelSource {
     obj: string;
     mtl: string;
     tex: string;

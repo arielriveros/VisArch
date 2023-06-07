@@ -1,8 +1,13 @@
 import { useState, useEffect } from 'react';
 import { API_URL } from '../../App';
+import { ModelSource } from '../renderer/Renderer';
 import MeshListItem from '../mesh-list-item/MeshListItem';
 
-export default function MeshList(): JSX.Element {
+interface MeshListProps {
+    setModelCallback: (newModelSrc: ModelSource) => void;
+}
+
+export default function MeshList(props: MeshListProps): JSX.Element {
     const [meshesList, setMeshesList] = useState([]);
 
     useEffect(() => {
@@ -24,7 +29,7 @@ export default function MeshList(): JSX.Element {
         <div className="MeshList">
         <h3>Meshes</h3>
         {meshesList.map((meshName: string) => (
-            <MeshListItem name={meshName} key={meshName} />
+            <MeshListItem name={meshName} key={meshName} setModelCallback={props.setModelCallback}/>
         ))}
         </div>
     );
