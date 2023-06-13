@@ -1,4 +1,5 @@
 import ListItem, { ListItemProps } from '../listItem/ListItem';
+import './List.css';
 
 interface ListProps {
     items: ListItemProps[];
@@ -6,7 +7,7 @@ interface ListProps {
 
 export default function List(props: ListProps): JSX.Element {
     return (
-        <div className="list">
+        <div className="va-list">
             {
                 props.items.map(
                     (item: ListItemProps) => (

@@ -1,3 +1,5 @@
+import './ListItem.css';
+
 export interface ListItemProps{
     text: string;
     onClick: () => void;
@@ -5,7 +7,7 @@ export interface ListItemProps{
 
 export default function ListItem(props: ListItemProps): JSX.Element {
     return (
-        <div className="list-item" onClick={()=>{ props.onClick() }}>
+        <div className="va-list-item" onClick={()=>{ props.onClick() }}>
             {props.text}
         </div>
     );

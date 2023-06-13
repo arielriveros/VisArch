@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import List from '../../components/list/List'
 import Renderer, { ModelSource } from '../../components/renderer/Renderer';
 import { ListItemProps } from '../../components/listItem/ListItem';
+import './MeshList.css'
 
 export default function MeshList(): JSX.Element {
 
@@ -41,8 +42,10 @@ export default function MeshList(): JSX.Element {
     }
 
     return (
-        <div className="MeshList">
-            {meshesList ? <List items={meshesList}/> : <p>loading...</p>}
+        <div className="mesh-list">
+            <div className="mesh-list-container">
+                {meshesList ? <List items={meshesList}/> : <p>loading...</p>}
+            </div>
             <Renderer modelSource={modelSrc}/>
         </div>
     )
