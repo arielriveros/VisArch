@@ -64,8 +64,7 @@ function Renderer(props: RendererProps): JSX.Element {
     }, []);
 
   return (
-    <div className="Renderer">
-      <h3>Renderer</h3>
+    <div className="renderer">
       <div ref={mountRef} />
     </div>
   );
