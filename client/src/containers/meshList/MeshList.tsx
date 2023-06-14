@@ -3,6 +3,7 @@ import List from '../../components/list/List'
 import Renderer, { ModelSource } from '../../components/renderer/Renderer';
 import { ListItemProps } from '../../components/listItem/ListItem';
 import './MeshList.css'
+import MeshInput from '../meshInput/MeshInput';
 
 export default function MeshList(): JSX.Element {
 
@@ -45,6 +46,7 @@ export default function MeshList(): JSX.Element {
         <div className="mesh-list">
             <div className="mesh-list-container">
                 {meshesList ? <List items={meshesList}/> : <p>loading...</p>}
+                <MeshInput />
             </div>
             <Renderer modelSource={modelSrc}/>
         </div>
