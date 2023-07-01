@@ -1,5 +1,5 @@
 import MeshList from './containers/meshList/MeshList';
-import Navbar from './containers/navbar/Navbar';
+import Navbar from './components/navbar/Navbar';
 
 function App(): JSX.Element {
 
