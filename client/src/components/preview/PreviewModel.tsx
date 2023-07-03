@@ -11,10 +11,15 @@ interface PreviewModelProps {
 export default function PreviewModel(props: PreviewModelProps): JSX.Element {
     // TODO: implement different model formats  (e.g. gltf)
     const mtl = useLoader(MTLLoader, props.mtl);
-    const obj = useLoader(OBJLoader, props.obj, loader => {
-        mtl.preload();
-        loader.setMaterials(mtl);
-    });
+    const obj = useLoader(
+        OBJLoader, 
+        props.obj, 
+        loader => {
+            mtl.preload();
+            loader.setMaterials(mtl);
+        },
+        //progress => console.log(progress.loaded / progress.total * 100)
+    );
     
     return (
         <primitive object={obj} material={mtl} />
