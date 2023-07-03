@@ -9,6 +9,7 @@ import PreviewModel from '../../components/preview/PreviewModel';
 export interface ModelSource {
     obj: string;
     mtl: string;
+    tex: string;
 }
 
 export default function MeshList(): JSX.Element {
@@ -16,10 +17,12 @@ export default function MeshList(): JSX.Element {
     // TODO: remove this hardcoded url
     const meshUrl = `http://localhost:5000/meshFiles/0027/0027.obj`;
     const materialUrl = 'http://localhost:5000/meshFiles/0027/0027.mtl';
+    const textureUrl = 'http://localhost:5000/meshFiles/0027/0027.jpg';
 
     let [modelSrc, setModelSrc] = useState<ModelSource>({
         obj: meshUrl,
-        mtl: materialUrl
+        mtl: materialUrl,
+        tex: textureUrl
     });
 
     const [meshesList, setMeshesList] = useState<ListItemProps[]>();
@@ -34,10 +37,10 @@ export default function MeshList(): JSX.Element {
             .then(data => {
                 let meshes: ListItemProps[] = [];
                 for( let m of data.meshes){
-                    console.log(m);
                     meshes.push({text: m.name, onClick: ()=>handleModelSrc(
                         m.vertexData,
-                        m.materialData
+                        m.materialData,
+                        m.textureData
                     )});
                 }
                 setMeshesList(meshes);
@@ -45,11 +48,11 @@ export default function MeshList(): JSX.Element {
             .catch(error => console.error(error));
     };
  
-    function handleModelSrc(obj: string, mtl: string) {
-        console.log(obj, mtl);
+    function handleModelSrc(obj: string, mtl: string, tex: string) {
         setModelSrc({
             obj: "http://localhost:5000/"+obj,
-            mtl: "http://localhost:5000/"+mtl
+            mtl: "http://localhost:5000/"+mtl,
+            tex: "http://localhost:5000/"+tex,
         });
     }
     

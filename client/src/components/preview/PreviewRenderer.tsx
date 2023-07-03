@@ -10,18 +10,15 @@ interface PreviewRendererProps {
 function PreviewGroup(props: PreviewRendererProps)
 {
     const groupRef = useRef<any>();
-
-    const [model, setModel] = useState(<PreviewModel obj={props.source.obj} mtl={props.source.mtl} />);
+    const [model, setModel] = useState(<PreviewModel obj={props.source.obj} mtl={props.source.mtl} tex={props.source.tex} />);
 
     useEffect(() => {
-        setModel(<PreviewModel obj={props.source.obj} mtl={props.source.mtl} />);
+        setModel(<PreviewModel obj={props.source.obj} mtl={props.source.mtl} tex={props.source.tex} />);
     }, [props.source]);
-
-    //const model = <PreviewModel obj={props.source.obj} mtl={props.source.mtl} />;
 
     useFrame(() => {
         if (groupRef.current) {
-            groupRef.current.rotation.y += 0.01; // Adjust the rotation speed as needed
+            groupRef.current.rotation.y += 0.01;
         }
     });
 
