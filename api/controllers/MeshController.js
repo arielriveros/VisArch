@@ -16,14 +16,20 @@ const create = async (req, res) => {
             name: req.body.name,
         });
 
+        // Removes the public folder name in the relative path
+        function filterPublicFolder(path) {
+            let fixedPath = path.split('\\').slice(1).join('\\');
+            return fixedPath;
+        }
+
         if(req.files.model)
-            newMesh.vertexData = req.files.model[0].path;
+            newMesh.vertexData = filterPublicFolder(req.files.model[0].path);
 
         if(req.files.material)
-            newMesh.materialData = req.files.material[0].path;
+            newMesh.materialData = filterPublicFolder(req.files.material[0].path);
 
         if(req.files.texture)
-            newMesh.textureData = req.files.texture[0].path;
+            newMesh.textureData = filterPublicFolder(req.files.texture[0].path);
     
         // Check if mesh already exists
         const meshExists = await MeshModel.findOne({ name: req.body.name });
