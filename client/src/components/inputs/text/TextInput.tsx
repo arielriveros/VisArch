@@ -1,14 +1,16 @@
 import React from 'react'
 
 interface TextInputProps {
-    text: string
-    label?: string
+    targetName: string;
+    text: string;
+    label?: string;
+    handleInput: (e: React.ChangeEvent<HTMLInputElement>) => void;
 }
 function TextInput(props: TextInputProps) {
     return (
         <div className='text-input-container'>
             { props.label ? <label>{props.label}</label>: null}
-            <input type="text" defaultValue={props.text}/>
+            <input name={props.targetName} type="text" defaultValue={props.text} onChange={props.handleInput}/>
         </div>
     )
 }
