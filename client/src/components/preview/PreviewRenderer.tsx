@@ -10,10 +10,11 @@ interface PreviewRendererProps {
 function PreviewGroup(props: PreviewRendererProps)
 {
     const groupRef = useRef<any>();
-    const [model, setModel] = useState(<PreviewModel obj={props.source.obj} mtl={props.source.mtl} tex={props.source.tex} />);
+    const [model, setModel] = useState<JSX.Element | null>(null);
 
     useEffect(() => {
-        setModel(<PreviewModel obj={props.source.obj} mtl={props.source.mtl} tex={props.source.tex} />);
+        if (props.source.obj && props.source.mtl && props.source.tex)
+            setModel(<PreviewModel obj={props.source.obj} mtl={props.source.mtl} tex={props.source.tex} />);
     }, [props.source]);
 
     useFrame(() => {
@@ -24,14 +25,14 @@ function PreviewGroup(props: PreviewRendererProps)
 
     return (
         <group ref={groupRef}>
-            {model}
+            {model ? model : null}
         </group>
     )
 }
 
 export default function PreviewRenderer(props: PreviewRendererProps): JSX.Element {
     return (
-        <Canvas camera={{position: [0, 100, 100]}}>
+        <Canvas camera={{position: [0, 55, 55]}}>
             <color attach="background" args={['#f5efe6']} />
             <ambientLight />
             <pointLight position={[10, 10, 10]} />

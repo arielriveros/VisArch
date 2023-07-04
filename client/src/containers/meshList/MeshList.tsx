@@ -14,15 +14,10 @@ export interface ModelSource {
 
 export default function MeshList(): JSX.Element {
 
-    // TODO: remove this hardcoded url
-    const meshUrl = `http://localhost:5000/meshFiles/0027/0027.obj`;
-    const materialUrl = 'http://localhost:5000/meshFiles/0027/0027.mtl';
-    const textureUrl = 'http://localhost:5000/meshFiles/0027/0027.jpg';
-
     let [modelSrc, setModelSrc] = useState<ModelSource>({
-        obj: meshUrl,
-        mtl: materialUrl,
-        tex: textureUrl
+        obj: "",
+        mtl: "",
+        tex: ""
     });
 
     const [meshesList, setMeshesList] = useState<ListItemProps[]>();
