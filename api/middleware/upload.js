@@ -1,15 +1,16 @@
 const path = require('path');
 const multer = require('multer');
 const fs = require('fs');
+const { v4: uuidv4 } = require('uuid');
 
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
-        const dir = `public/meshFiles/${file.originalname.split('.')[0]}`;
-        fs.mkdirSync(dir, { recursive: true });
+        const dir = `public/meshFiles/`;
         cb(null, dir);
     },
     filename: (req, file, cb) => {
-        cb(null, file.originalname);
+        const newFilename = `${uuidv4()}-${Date.now()}-${path.extname(file.originalname)}`;
+        cb(null, newFilename);
     }
 });
 
