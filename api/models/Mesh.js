@@ -7,13 +7,7 @@ const MeshSchema = new Schema({
         required: true,
         unique: true
     },
-    vertexData: {
-        type: String,
-    },
-    materialData: {
-        type: String,
-    },
-    textureData: {
+    modelPath: {
         type: String,
     }
 });

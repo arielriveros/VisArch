@@ -23,13 +23,7 @@ const create = async (req, res) => {
         }
 
         if(req.files.model)
-            newMesh.vertexData = filterPublicFolder(req.files.model[0].path);
-
-        if(req.files.material)
-            newMesh.materialData = filterPublicFolder(req.files.material[0].path);
-
-        if(req.files.texture)
-            newMesh.textureData = filterPublicFolder(req.files.texture[0].path);
+            newMesh.modelPath = filterPublicFolder(req.files.model[0].path);
     
         // Check if mesh already exists
         const meshExists = await MeshModel.findOne({ name: req.body.name });
