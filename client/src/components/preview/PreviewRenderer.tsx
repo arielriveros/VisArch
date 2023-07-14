@@ -1,10 +1,9 @@
 import React, { useEffect, useRef, useState } from 'react'
 import { Canvas, useFrame } from '@react-three/fiber';
-import { ModelSource } from '../../containers/meshList/MeshList';
 import PreviewModel from './PreviewModel';
 
 interface PreviewRendererProps {
-    source: ModelSource;
+    source: string;
 }
 
 function PreviewGroup(props: PreviewRendererProps)
@@ -13,8 +12,8 @@ function PreviewGroup(props: PreviewRendererProps)
     const [model, setModel] = useState<JSX.Element | null>(null);
 
     useEffect(() => {
-        if (props.source.obj && props.source.mtl && props.source.tex)
-            setModel(<PreviewModel obj={props.source.obj} mtl={props.source.mtl} tex={props.source.tex} />);
+        if (props.source !== "")
+            setModel(<PreviewModel model={props.source}/>);
     }, [props.source]);
 
     useFrame(() => {

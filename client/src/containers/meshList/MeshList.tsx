@@ -1,24 +1,12 @@
 import { useEffect, useState } from 'react'
 import List from '../../components/list/List'
 import { ListItemProps } from '../../components/listItem/ListItem';
-import './MeshList.css'
 import MeshInput from '../meshInput/MeshInput';
 import PreviewRenderer from '../../components/preview/PreviewRenderer';
-import PreviewModel from '../../components/preview/PreviewModel';
-
-export interface ModelSource {
-    obj: string;
-    mtl: string;
-    tex: string;
-}
+import './MeshList.css'
 
 export default function MeshList(): JSX.Element {
-
-    let [modelSrc, setModelSrc] = useState<ModelSource>({
-        obj: "",
-        mtl: "",
-        tex: ""
-    });
+    let [modelSrc, setModelSrc] = useState<string>("");
 
     const [meshesList, setMeshesList] = useState<ListItemProps[]>();
 
@@ -31,24 +19,15 @@ export default function MeshList(): JSX.Element {
             .then(response => response.json())
             .then(data => {
                 let meshes: ListItemProps[] = [];
-                for( let m of data.meshes){
-                    meshes.push({text: m.name, onClick: ()=>handleModelSrc(
-                        m.vertexData,
-                        m.materialData,
-                        m.textureData
-                    )});
-                }
+                for(let m of data.meshes)
+                    meshes.push({text: m.name, onClick: ()=>handleModelSrc(m.modelPath)});
                 setMeshesList(meshes);
             })
             .catch(error => console.error(error));
     };
- 
-    function handleModelSrc(obj: string, mtl: string, tex: string) {
-        setModelSrc({
-            obj: "http://localhost:5000/"+obj,
-            mtl: "http://localhost:5000/"+mtl,
-            tex: "http://localhost:5000/"+tex,
-        });
+  
+    function handleModelSrc(modelPath: string) {
+        setModelSrc("http://localhost:5000/"+modelPath);
     }
     
 
