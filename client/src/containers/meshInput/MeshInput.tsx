@@ -2,6 +2,11 @@ import TextInput from '../../components/inputs/text/TextInput'
 import FileInput from '../../components/inputs/file/FileInput'
 import './MeshInput.css'
 import { useState } from 'react';
+import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader';
+import { GLTFExporter } from 'three/examples/jsm/exporters/GLTFExporter';
+import { MTLLoader } from 'three/examples/jsm/loaders/MTLLoader';
+import { DoubleSide, Mesh, TextureLoader } from 'three';
+
 
 interface IFormData {
     formName: string;
@@ -24,20 +29,50 @@ export default function MeshInput() {
         console.log(formData);
     }
 
-    function submit(): void {
+    function objToGlb(obj: File, mtl: File, tex: File): Promise<File> {
+        return new Promise((resolve, reject) => {
+            const objLoader = new OBJLoader();
+            const mtlLoader = new MTLLoader();
+            const texLoader = new TextureLoader();
+            const gltfExporter = new GLTFExporter();
+    
+            mtlLoader.load(URL.createObjectURL(mtl), (mtl) => {
+                mtl.preload();
+                objLoader.setMaterials(mtl);
+                objLoader.load(URL.createObjectURL(obj), (obj) => {
+                    texLoader.load(URL.createObjectURL(tex), (tex) => {
+                        obj.traverse((child) => {
+                            if (child instanceof Mesh) {
+                                child.material.side = DoubleSide;
+                                child.material.map = tex;
+                            }
+                        });
+                        gltfExporter.parse(
+                            obj,
+                            (gltf) => {
+                                const blob = new Blob([gltf as BlobPart], { type: 'application/octet-stream' });
+                                const glbFile = new File([blob], 'model.glb', { type: 'model/gltf-binary' });
+                                resolve(glbFile);
+                            },
+                            (error) => {
+                                reject(error);
+                            },
+                            { binary: true }
+                        );
+                    });
+                });
+            });
+        });
+    }
+
+    async function submit(): Promise<void> {
         // TODO: Validate form data
         const data = new FormData();
         data.append('name', formData.formName);
-        if(formData.selectedObj)
-            data.append('model', formData.selectedObj);
 
-        if(formData.selectedMtl)
-            data.append('material', formData.selectedMtl);
+        const convertedFile = await objToGlb(formData.selectedObj!, formData.selectedMtl!, formData.selectedTex!);
+        data.append('model', convertedFile);
 
-        if(formData.selectedTex)
-            data.append('texture', formData.selectedTex);
-
-        console.log(data);
         // TODO: Use url from env
         fetch('http://localhost:5000/api/meshes', {
             method: 'POST',
