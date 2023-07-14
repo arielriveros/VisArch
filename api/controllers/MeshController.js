@@ -1,4 +1,5 @@
 const MeshModel = require('../models/Mesh');
+const fs = require('fs');
 
 const index = async (req, res) => {
     try {
@@ -44,8 +45,9 @@ const create = async (req, res) => {
 
 const destroy = async (req, res) => {
     try {
-        const mesh = await MeshModel.findByIdAndDelete(req.params.id);
-        return res.status(200).json({ mesh });
+        const query = await MeshModel.findByIdAndDelete(req.params.id);
+        fs.unlinkSync(`public/${query.modelPath}`);
+        return res.status(200).json({ query });
     } catch (err) {
         return res.status(500).json({ err });
     }
