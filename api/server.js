@@ -4,6 +4,7 @@ const mongoose = require('mongoose');
 const cors = require('cors');
 const MeshRoutes = require('./routes/MeshRoutes');
 const UserRoutes = require('./routes/UserRoutes');
+require('dotenv').config()
 
 // Entry point for the application
 const app = express();  
@@ -11,9 +12,9 @@ app.use(express.json());
 app.use(cors());
 app.use(express.static('public'));
 
-const PORT = process.env.PORT || 5000;
 
-mongoose.connect('mongodb://localhost:27017/visarch-api', {
+const mongo_uri = process.env.MONGO_URI;
+mongoose.connect(mongo_uri, {
     useNewUrlParser: true,
     useUnifiedTopology: true
 })
@@ -26,6 +27,7 @@ app.use('/api/meshes', MeshRoutes);
 app.use('/api/user', UserRoutes);
 
 // Start the server
-app.listen(PORT, () => {
-    console.log(`Server running on port ${PORT}`);
+const port = process.env.PORT;
+app.listen(port, () => {
+    console.log(`Server running on port ${port}`);
 });
