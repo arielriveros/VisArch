@@ -1,8 +1,8 @@
 import { Link } from 'react-router-dom'
 import { useLogout } from '../../hooks/useLogout'
 import { useAuthContext } from '../../hooks/useAuthContext';
-import './Navbar.css'
 import Button from '../button/Button';
+import './Navbar.css'
 
 function Navbar() {
     const { logout } = useLogout();
@@ -20,7 +20,7 @@ function Navbar() {
             <nav>
                 <div className="navigation">
                     <Link className='navbar-link' to="/">Home</Link>
-                    <Link className='navbar-link' to="/meshes">Meshes</Link>
+                    {user && <Link className='navbar-link' to="/projects">Projects</Link>}
                     {user && user.username}
                     {user && <Button text="Logout" onClick={handleLogout}/>}
                     

@@ -1,7 +1,7 @@
-import MeshList from './containers/meshList/MeshList';
 import Navbar from './components/navbar/Navbar';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import Home from './pages/Home/Home';
+import Projects from './pages/Projects/Projects';
 
 function App(): JSX.Element {
 
@@ -12,7 +12,7 @@ function App(): JSX.Element {
         <div className="content">
           <Routes>
             <Route path="/" element={<Home />} />
-            <Route path="/meshes" element={<MeshList />} />
+            <Route path="/projects" element={<Projects />} />
           </Routes>
         </div>
       </BrowserRouter>
