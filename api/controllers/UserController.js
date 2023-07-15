@@ -30,9 +30,20 @@ async function RegisterUser(req, res) {
 
 // Login user
 async function LoginUser(req, res) {
-    res.json({
-        msg: 'Login user'
-    });
+    const { username, password } = req.body;
+
+    try {
+        const user = await User.login(username, password);
+
+        // Create token
+        const token = CreateToken(user._id, user.username);
+
+        res.status(200).json({"user": username, "token:": token});
+    } catch (error) {
+        res.status(400).json({
+            msg: error.message
+        });
+    }
 }
 
 module.exports = {

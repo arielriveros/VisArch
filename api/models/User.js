@@ -54,8 +54,27 @@ async function registerUser(username, email, password){
     return newUser;
 }
 
-
 UserSchema.statics.register = registerUser;
+
+async function loginUser(username, password) {
+    // Validation
+    if (!username || !password)
+        throw new Error('Username and Password fields are required');
+
+    // Find user
+    const user = await this.findOne({ username });
+    if (!user)
+        throw new Error('User not found');
+
+    // Compare passwords
+    const match = await bcrypt.compare(password, user.password);
+    if (!match)
+        throw new Error('Incorrect password');
+
+    return user;
+}
+
+UserSchema.statics.login = loginUser;
 
 const UserModel = mongoose.model('User', UserSchema);
 
