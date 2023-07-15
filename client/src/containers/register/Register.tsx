@@ -30,7 +30,7 @@ export default function Register(): JSX.Element {
             <TextInput targetName="email" text="" label="Email" handleInput={handleOnChange}/>
             <PasswordInput targetName="password" label="Password" handleInput={handleOnChange}/>
             <button disabled={loading} type="submit">Register</button>
-            {error}
+            {error && <p>{error}</p>}
         </form>
     )
 }

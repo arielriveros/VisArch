@@ -1,8 +1,8 @@
 import { createContext, useReducer } from 'react';
 
 interface User {
-  userName: string;
-  email?: string;
+  username: string;
+  token: string;
 }
   
 interface AuthState {
@@ -26,6 +26,7 @@ export const AuthContext = createContext<AuthContextProps>({
 export function authReducer(state: AuthState, action: AuthAction): AuthState {
   switch (action.type) {
     case 'LOGIN':
+      console.log(action.payload);
       return { ...state, user: action.payload || null };
     case 'LOGOUT':
       return { ...state, user: null };
