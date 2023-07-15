@@ -2,11 +2,8 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
-const multer = require('multer');
-const fs = require('fs');
-
-// Models
-const MeshModel = require('./models/Mesh');
+const MeshRoutes = require('./routes/MeshRoutes');
+const UserRoutes = require('./routes/UserRoutes');
 
 // Entry point for the application
 const app = express();  
@@ -24,8 +21,9 @@ mongoose.connect('mongodb://localhost:27017/visarch-api', {
 .catch((err) => { console.log(err) });
 
 // Routes
-const MeshRoutes = require('./routes/MeshRoutes');
+
 app.use('/api/meshes', MeshRoutes);
+app.use('/api/user', UserRoutes);
 
 // Start the server
 app.listen(PORT, () => {
