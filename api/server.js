@@ -4,6 +4,7 @@ const mongoose = require('mongoose');
 const cors = require('cors');
 const MeshRoutes = require('./routes/MeshRoutes');
 const UserRoutes = require('./routes/UserRoutes');
+const ProjectRoutes = require('./routes/ProjectRoutes');
 require('dotenv').config()
 
 // Entry point for the application
@@ -22,9 +23,9 @@ mongoose.connect(mongo_uri, {
 .catch((err) => { console.log(err) });
 
 // Routes
-
-app.use('/api/meshes', MeshRoutes);
 app.use('/api/user', UserRoutes);
+app.use('/api/projects', ProjectRoutes);
+app.use('/api/meshes', MeshRoutes);
 
 // Start the server
 const port = process.env.PORT;
