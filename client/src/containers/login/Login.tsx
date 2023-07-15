@@ -18,7 +18,7 @@ export default function Login(): JSX.Element {
         setUserData({...userData, [e.target.name]: e.target.value});
     }
 
-    function submit() {
+    async function submit() {
 
     }
 

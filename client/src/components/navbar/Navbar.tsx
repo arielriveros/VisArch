@@ -11,8 +11,7 @@ function Navbar() {
             <nav>
                 <div className="navigation">
                     <Link className='navbar-link' to="/">Home</Link>
-                    <Link className='navbar-link' to="/register">Register</Link>
-                    <Link className='navbar-link' to="/login">Login</Link>
+                    <Link className='navbar-link' to="/meshes">Meshes</Link>
                 </div>
             </nav>
         </div>
