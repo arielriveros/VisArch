@@ -1,22 +1,20 @@
-import Button from '../button/Button'
+import { Link } from 'react-router-dom'
 import './Navbar.css'
 
 function Navbar() {
-
-    const dummy = () => {
-        console.log("dummy");
-    }
 
     return (
         <div className="navbar">
             <div className="logo">
                 <h1>VisArch</h1>
             </div>
-            <div className="navigation">
-                <Button text='Section 1' onClick={dummy}/>
-                <Button text='Section 2' onClick={dummy}/>
-                <Button text='Section 3' onClick={dummy}/>
-            </div>
+            <nav>
+                <div className="navigation">
+                    <Link className='navbar-link' to="/">Home</Link>
+                    <Link className='navbar-link' to="/register">Register</Link>
+                    <Link className='navbar-link' to="/login">Login</Link>
+                </div>
+            </nav>
         </div>
     )
 }
