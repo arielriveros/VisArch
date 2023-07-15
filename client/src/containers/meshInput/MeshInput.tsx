@@ -1,11 +1,12 @@
 import TextInput from '../../components/inputs/text/TextInput'
 import FileInput from '../../components/inputs/file/FileInput'
-import './MeshInput.css'
 import { useState } from 'react';
 import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader';
 import { GLTFExporter } from 'three/examples/jsm/exporters/GLTFExporter';
 import { MTLLoader } from 'three/examples/jsm/loaders/MTLLoader';
 import { DoubleSide, Mesh, TextureLoader } from 'three';
+import { config } from '../../utils/config';
+import './MeshInput.css'
 
 
 interface IFormData {
@@ -73,8 +74,7 @@ export default function MeshInput() {
         const convertedFile = await objToGlb(formData.selectedObj!, formData.selectedMtl!, formData.selectedTex!);
         data.append('model', convertedFile);
 
-        // TODO: Use url from env
-        fetch('http://localhost:5000/api/meshes', {
+        fetch(`${config.API_URL}/meshes`, {
             method: 'POST',
             body: data
         })

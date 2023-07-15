@@ -1,6 +1,9 @@
 // TODO: Change to environment variables
 
-export default {
-    BASE_URL: 'http://localhost:5000',
-    API_URL: 'http://localhost:5000/api'
-}
+let config = {
+    BACKEND_URL: 'http://localhost:5000',
+    API_URL :   'http://localhost:5000/api'
+};
+
+
+export { config };

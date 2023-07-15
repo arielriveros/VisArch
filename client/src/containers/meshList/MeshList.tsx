@@ -3,6 +3,7 @@ import List from '../../components/list/List'
 import { ListItemProps } from '../../components/listItem/ListItem';
 import MeshInput from '../meshInput/MeshInput';
 import PreviewRenderer from '../../components/preview/PreviewRenderer';
+import { config } from '../../utils/config';
 import './MeshList.css'
 
 export default function MeshList(): JSX.Element {
@@ -15,7 +16,7 @@ export default function MeshList(): JSX.Element {
     }, []);
 
     function getMeshesNames() {
-        fetch(`http://localhost:5000/api/meshes` )
+        fetch(`${config.API_URL}/meshes` )
             .then(response => response.json())
             .then(data => {
                 let meshes: ListItemProps[] = [];
@@ -27,7 +28,7 @@ export default function MeshList(): JSX.Element {
     };
   
     function handleModelSrc(modelPath: string) {
-        setModelSrc("http://localhost:5000/"+modelPath);
+        setModelSrc(`${config.BACKEND_URL}/${modelPath}`);
     }
     
 
