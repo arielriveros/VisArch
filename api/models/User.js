@@ -12,8 +12,7 @@ const UserSchema = new Schema({
     },
     email: {
         type: String,
-        required: false,
-        unique: true
+        required: false
     },
     password: {
         type: String,
@@ -38,7 +37,7 @@ async function registerUser(username, email, password){
         throw new Error('User already exists');
 
     const emailLinked = await this.findOne({ email });
-    if(emailLinked)
+    if(emailLinked && email)
         throw new Error('Email already linked to another account');
 
     // Hash password
