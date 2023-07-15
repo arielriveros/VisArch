@@ -1,8 +1,8 @@
 import React from 'react'
 import { useState } from 'react'
-import TextInput from '../../components/inputs/text/TextInput'
-import PasswordInput from '../../components/inputs/text/PasswordInput'
-import { useRegister } from '../../hooks/useRegister'
+import TextInput from '../../../components/inputs/text/TextInput'
+import PasswordInput from '../../../components/inputs/text/PasswordInput'
+import { useRegister } from '../../../hooks/useRegister'
 
 interface FormData {
     username: string

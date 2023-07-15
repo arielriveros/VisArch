@@ -1,0 +1,9 @@
+.registration {
+    display: flex;
+    background-color: #ccc;
+    width: 75%;
+    align-items: flex-start;
+    justify-content: space-around;
+    border-radius: 1;
+    border: 1px solid #ccc;
+}
