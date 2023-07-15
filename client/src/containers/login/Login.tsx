@@ -1,6 +1,7 @@
 import React from 'react'
 import { useState } from 'react'
 import TextInput from '../../components/inputs/text/TextInput'
+import PasswordInput from '../../components/inputs/text/PasswordInput'
 
 interface FormData {
     userName: string
@@ -24,8 +25,8 @@ export default function Login(): JSX.Element {
     return (
         <form className="login" onSubmit={submit}>
             <h4> Login </h4>
-            <TextInput targetName="userName"    text=""  label="Username"  handleInput={handleOnChange}/>
-            <TextInput targetName="password"    text=""  label="Password"  handleInput={handleOnChange}/>
+            <TextInput targetName="userName" text="" label="Username" handleInput={handleOnChange}/>
+            <PasswordInput targetName="password" label="Password" handleInput={handleOnChange}/>
             <button type="submit">Login</button>
         </form>
     )
