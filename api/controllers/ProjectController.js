@@ -3,12 +3,32 @@ const UserModel = require('../models/User');
 
 async function index(req, res) {
     try {
-        // Get id from user in request
+        // Get user in request
         const { id: userId } = req.user;
-        // Get projects from user
-        const userProjects = await UserModel.findById(userId).populate('projects');
-        // Return array of projects
-        const projects = Array.isArray(userProjects?.projects) ? userProjects.projects : [userProjects?.projects];
+        const user = await UserModel.findById(userId);
+        // Populate projects with the owner containing _id and username fields
+        const userProjects = await user.populate({
+            path: 'projects',
+            select: '-__v',
+            populate: [
+                { path: 'owner', select: '_id username' },
+                { path: 'members', select: '_id username' }
+              ]
+        });
+        // Return array of projects with the owner and members as user objects
+        const projects = Array.isArray(userProjects?.projects) ? userProjects.projects.map(project => ({
+            _id: project._id,
+            ...project.toJSON(),
+            owner: {
+                _id: project.owner._id,
+                username: project.owner.username
+            },
+            members: project.members.map(member => ({
+                _id: member._id,
+                username: member.username
+            }))
+        })) : [];
+
         return res.status(200).json({ projects });
     } catch (err) {
         console.error(err);

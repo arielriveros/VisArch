@@ -8,8 +8,14 @@ export type Project = {
     _id: number;
     name: string;
     description?: string;
-    members: string[];
-    owner: string;
+    members: {
+        _id: string;
+        username: string;
+    }[];
+    owner: {
+        _id: string;
+        username: string;
+    };
     status: 'active' | 'archived';
 }
 
@@ -19,7 +25,6 @@ export default function ProjectsList(): JSX.Element {
 
     useEffect(() => {
         if (user) getProjects();
-        console.log("User: " + user);
     }, [user]);
 
     async function getProjects() {
