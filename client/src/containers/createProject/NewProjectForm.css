@@ -1,0 +1,39 @@
+.project-form {
+    width: 100%;
+    max-width: 500px;
+    margin: 0 auto;
+    padding: 20px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    box-shadow: 2px 2px 2px #ccc;
+    background-color: #fff;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    padding: 10px 0;
+    margin: 5px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    justify-content: center;
+    align-items: center;
+    
+}
+
+.members {
+    display: flex;
+    flex-direction: column;
+    padding: 10px 0;
+}
+
+.members ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+
+}
+
+.add-member {
+    display: flex;
+}

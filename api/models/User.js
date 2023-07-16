@@ -52,7 +52,8 @@ async function registerUser(username, email, password){
     const newUser = await this.create({
         username,
         email,
-        password: hash
+        password: hash,
+        projects: []
     });
 
     return newUser;
