@@ -97,8 +97,35 @@ async function create(req, res) {
     }
 }
 
+async function deleteById(req, res) {
+    try {
+        const project = await ProjectModel.findById(req.params.id);
+        if (!project)
+            throw new Error('Project not found');
+
+        const { id: userId } = req.user;
+        if (project.owner.toString() !== userId)
+            throw new Error('User is not the owner of the project');
+
+        // remove project from members
+        for (let m of project.members) {
+            const member = await UserModel.findById(m);
+            member.projects.pull(project._id);
+            await member.save();
+        }
+        
+        await project.deleteOne();
+
+        return res.status(200).json({ message: 'Project deleted' });
+    } catch (err) {
+        console.error(err);
+        return res.status(500).json({ err });
+    }
+}
+
 module.exports = {
     index,
     getById,
-    create
+    create,
+    deleteById
 }

@@ -8,6 +8,14 @@
     border-radius: 5px;
     box-shadow: 0 2px 2px #ccc;
     background-color: #fff;
-    cursor: pointer;
     transition: all 0.3s ease-out;
+}
+
+.project-delete-btn {
+    align-self: flex-end;
+    margin-top: 1rem;
+    padding: 0.5rem 1rem;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    cursor: pointer;
 }
