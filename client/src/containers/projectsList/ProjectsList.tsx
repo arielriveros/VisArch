@@ -1,23 +1,9 @@
 import React, { useState, useEffect } from 'react'
+import ProjectItem from '../projectItem/ProjectItem';
 import { useAuthContext } from '../../hooks/useAuthContext';
 import { config } from '../../utils/config';
-import ProjectItem from '../projectItem/ProjectItem';
+import { Project } from '../../pages/Projects/Projects';
 import './ProjectsList.css'
-
-export type Project = {
-    _id: number;
-    name: string;
-    description?: string;
-    members: {
-        _id: string;
-        username: string;
-    }[];
-    owner: {
-        _id: string;
-        username: string;
-    };
-    status: 'active' | 'archived';
-}
 
 export default function ProjectsList(): JSX.Element {
     const [projects, setProjects] = useState<Project[]>([]);

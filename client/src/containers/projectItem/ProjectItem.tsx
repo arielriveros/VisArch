@@ -1,34 +1,58 @@
-import React from 'react'
-import { Project } from '../projectsList/ProjectsList'
-import { useAuthContext } from '../../hooks/useAuthContext'
-import { config } from '../../utils/config'
-import "./ProjectItem.css"
+import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useAuthContext } from '../../hooks/useAuthContext';
+import { config } from '../../utils/config';
+import { Project } from '../../pages/Projects/Projects';
+import './ProjectItem.css';
 
-export default function ProjectItem(props: Project): JSX.Element {
+interface ProjectItemProps extends Project {}
 
-  const { user } = useAuthContext();
+export default function ProjectItem(props: ProjectItemProps): JSX.Element {
+  	const { user } = useAuthContext();
+	const navigate = useNavigate();
+	const [showMenu, setShowMenu] = useState(false);
 
-  async function deleteProject() {
-    fetch(`${config.API_URL}/projects/${props._id}`, {
-      method: 'DELETE',
-      headers: {
-        'Authorization': `Bearer ${user?.token}`
-      }
-    })
-    .then(response => response.json())
-    .then(data => {
-      console.log(data);
-    });
-  }
+	async function deleteProject(e: React.MouseEvent<HTMLButtonElement, MouseEvent>) {
+		fetch(`${config.API_URL}/projects/${props._id}`, {
+			method: 'DELETE',
+			headers: {
+			'Authorization': `Bearer ${user?.token}`
+			}
+		})
+		.then(response => response.json())
+		.then(data => {
+			console.log(data);
+		});
+	}
 
-  return (
-      <div className='project-item'>
-          <div> Name: {props.name} </div>
-          <div> Description: {props.description} </div>
-          <div> Owner: {props.owner.username} </div>
-          <div> Members: {props.members.length} </div>
-          <div> Status: {props.status} </div>
-          { user?.username === props.owner.username && <button onClick={deleteProject} className='project-delete-btn'> Delete </button> }
-      </div>
-  )
+	function handleProjectClick() {
+		setShowMenu((prevShowMenu) => !prevShowMenu);
+	}
+
+	function handleGoToProject() {
+		// Navigate to the project details page and pass the project data as state
+		navigate(`/projects/${props._id}`, {
+			state: {
+				project: props
+			}
+		});
+	}
+
+	return (
+	<div className='project-item' onClick={handleProjectClick}>
+		<div> Name: {props.name} </div>
+		<div> Description: {props.description} </div>
+		<div> Owner: {props.owner.username} </div>
+		<div> Members: {props.members.length} </div>
+		<div> Status: {props.status} </div>
+		{showMenu && (
+		<div className="project-menu">
+			<button onClick={handleGoToProject}>Go to Project</button>
+			{user?.username === props.owner.username && (
+				<button onClick={deleteProject}>Delete</button>
+			)}
+		</div>
+		)}
+	</div>
+	);
 }

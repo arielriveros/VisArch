@@ -3,6 +3,21 @@ import ProjectsList from '../../containers/projectsList/ProjectsList'
 import NewProjectForm from '../../containers/createProject/NewProjectForm'
 import './Projects.css'
 
+export type Project = {
+  _id: number;
+  name: string;
+  description?: string;
+  members: {
+      _id: string;
+      username: string;
+  }[];
+  owner: {
+      _id: string;
+      username: string;
+  };
+  status: 'active' | 'archived';
+}
+
 enum ProjectsMenu {
   MY_PROJECTS,
   CREATE_PROJECT
