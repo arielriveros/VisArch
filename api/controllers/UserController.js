@@ -20,7 +20,7 @@ async function RegisterUser(req, res) {
         // Create token
         const token = CreateToken(newUser._id, newUser.username);
 
-        res.status(200).json({"username": username, "token": token});
+        res.status(200).json({"_id": newUser._id, "username": username, "token": token});
     } catch (error) {
         res.status(400).json({
             msg: error.message
@@ -38,7 +38,7 @@ async function LoginUser(req, res) {
         // Create token
         const token = CreateToken(user._id, user.username);
 
-        res.status(200).json({"username": username, "token": token});
+        res.status(200).json({"_id": user._id, "username": username, "token": token});
     } catch (error) {
         res.status(400).json({
             msg: error.message
