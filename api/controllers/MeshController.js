@@ -11,11 +11,19 @@ const index = async (req, res) => {
     }
 }
 
+const getMeshById = async (req, res) => {
+    try {
+        const mesh = await MeshModel.findById(req.params.id);
+        return res.status(200).json({ mesh });
+    } catch (err) {
+        console.error(err);
+        return res.status(500).json({ err });
+    }
+}
+
 const create = async (req, res) => {
     try {
-        const newMesh = new MeshModel({
-            name: req.body.name,
-        });
+        const newMesh = new MeshModel({});
 
         // Removes the public folder name in the relative path
         function filterPublicFolder(path) {
@@ -25,16 +33,9 @@ const create = async (req, res) => {
 
         if(req.files.model)
             newMesh.modelPath = filterPublicFolder(req.files.model[0].path);
-    
-        // Check if mesh already exists
-        const meshExists = await MeshModel.findOne({ name: req.body.name });
-        if (meshExists) {
-            return res.status(400).json({
-                status: 'error',
-                error: 'Mesh already exists',
-            });
-        }
-    
+
+        // TODO: Rename if file already exists with the same file name (very unlikely)
+
         const savedMesh = await newMesh.save();
 
         return res.status(200).json({ savedMesh });
@@ -56,5 +57,6 @@ const destroy = async (req, res) => {
 module.exports = {
     index,
     create,
-    destroy
+    destroy,
+    getMeshById
 }

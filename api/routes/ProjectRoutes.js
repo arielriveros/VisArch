@@ -7,8 +7,9 @@ const requireAuth = require('../middleware/auth');
 router.use(requireAuth);
 
 router.get('/', ProjectController.index);
-router.get('/:id', ProjectController.getById);
 router.post('/', ProjectController.create);
 router.delete('/:id', ProjectController.deleteById);
+
+router.get('/:id/tasks', ProjectController.getTasksById);
 
 module.exports = router;

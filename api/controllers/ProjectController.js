@@ -4,7 +4,10 @@ const UserModel = require('../models/User');
 async function index(req, res) {
     try {
         // Get user in request
-        const { id: userId } = req.user;
+        const { id: userId } = req.user || {};
+        if (!userId)
+            throw new Error('User not found');
+
         const user = await UserModel.findById(userId);
         // Populate projects with the owner containing _id and username fields
         const userProjects = await user.populate({
@@ -19,6 +22,8 @@ async function index(req, res) {
         const projects = Array.isArray(userProjects?.projects) ? userProjects.projects.map(project => ({
             _id: project._id,
             ...project.toJSON(),
+            tasks: project.tasks.map(task => ({
+                _id: task._id})),
             owner: {
                 _id: project.owner._id,
                 username: project.owner.username
@@ -32,17 +37,7 @@ async function index(req, res) {
         return res.status(200).json({ projects });
     } catch (err) {
         console.error(err);
-        return res.status(500).json({ err });
-    }
-}
-
-async function getById(req, res) {
-    try {
-        const project = await ProjectModel.findById(req.params.id);
-        return res.status(200).json({ project });
-    } catch (err) {
-        console.error(err);
-        return res.status(500).json({ err });
+        return res.status(500).json({ msg: err.message });
     }
 }
 
@@ -79,6 +74,7 @@ async function create(req, res) {
         const newProject = await ProjectModel.create({
             name: req.body.name,
             description: req.body.description,
+            tasks: [],
             owner: owner,
             members: memberUsers,
             status: 'active'
@@ -113,6 +109,14 @@ async function deleteById(req, res) {
             member.projects.pull(project._id);
             await member.save();
         }
+
+        // remove tasks associated with project
+        for (let t of project.tasks) {
+            const task = await TaskModel.findById(t);
+            task.members = [];
+            await task.save();
+            await task.deleteOne();
+        }
         
         await project.deleteOne();
 
@@ -123,9 +127,47 @@ async function deleteById(req, res) {
     }
 }
 
+async function getTasksById(req, res) {
+    try {
+        // Get user in request and check if user is a member of the project
+        const { id: userId } = req.user;
+        const user = await UserModel.findById(userId);
+        const project = await ProjectModel.findById(req.params.id);
+        if (!project)
+            throw new Error('Project not found');
+
+        if (!project.members.some(m => m.toString() === user._id.toString()))
+            throw new Error('User is not a member of the project');
+
+        // Populate tasks with id
+        const projectTasks = await project.populate({
+            path: 'tasks',
+            select: '-__v',
+            populate: [ { path: 'mesh', select: '_id modelPath' } ]
+        });
+
+        // Return array of tasks
+        const tasks = Array.isArray(projectTasks?.tasks) ? projectTasks.tasks.map(task => ({
+            _id: task._id,
+            ...task.toJSON(),
+            mesh: {
+                _id: task.mesh._id,
+                modelPath: task.mesh.modelPath
+            }
+        })) : [];
+
+        console.log(tasks);
+
+        return res.status(200).json({ tasks });
+    } catch (err) {
+        console.error(err);
+        return res.status(500).json({ msg: err.message });
+    }
+}
+
 module.exports = {
     index,
-    getById,
     create,
-    deleteById
+    deleteById,
+    getTasksById
 }
