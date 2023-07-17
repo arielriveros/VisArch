@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
-import ProjectsList from '../../containers/projectsList/ProjectsList'
-import NewProjectForm from '../../containers/createProject/NewProjectForm'
+import ProjectsList from '../../containers/projectContainers/projectsList/ProjectsList'
+import NewProjectForm from '../../containers/projectContainers/createProject/NewProjectForm'
 import './Projects.css'
 
 export type Project = {

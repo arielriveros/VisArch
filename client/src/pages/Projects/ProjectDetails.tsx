@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { useLocation } from 'react-router-dom'
 import { Project } from './Projects'
-import TaskList from '../../containers/tasksList/TaskList';
+import TaskList from '../../containers/taskContainers/tasksList/TaskList';
 
 
 export default function ProjectDetails() {

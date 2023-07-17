@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react'
-import { config } from '../../utils/config';
-import { useAuthContext } from '../../hooks/useAuthContext';
+import { config } from '../../../utils/config';
+import { useAuthContext } from '../../../hooks/useAuthContext';
 import TaskItem from '../taskItem/TaskItem';
+import NewTaskForm from '../createTask/NewTaskForm';
 
 export type Task = {
 	_id: string,
@@ -33,6 +34,7 @@ export default function TaskList(props: TaskListProps) {
 				}
 			});
 			const data = await response.json();
+			console.log(data);
 			setTasks([...tasks, data]);
 		} catch (error) {
 			console.error(error);
@@ -40,6 +42,7 @@ export default function TaskList(props: TaskListProps) {
 	}
     return (
         <div>TaskList
+			<NewTaskForm projectId={props.projectId}/>
             {tasks.map((t: Task) => <TaskItem key={t._id} {...t} />)}
         </div>
     )

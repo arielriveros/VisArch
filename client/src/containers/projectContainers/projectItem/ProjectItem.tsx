@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useAuthContext } from '../../hooks/useAuthContext';
-import { config } from '../../utils/config';
-import { Project } from '../../pages/Projects/Projects';
+import { useAuthContext } from '../../../hooks/useAuthContext';
+import { config } from '../../../utils/config';
+import { Project } from '../../../pages/Projects/Projects';
 import './ProjectItem.css';
 
 interface ProjectItemProps extends Project {}

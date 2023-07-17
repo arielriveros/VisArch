@@ -1,8 +1,8 @@
 import React, { useState } from 'react'
-import TextInput from '../../components/inputs/text/TextInput';
-import { config } from '../../utils/config';
+import TextInput from '../../../components/inputs/text/TextInput';
+import { config } from '../../../utils/config';
 import './NewProjectForm.css'
-import { useAuthContext } from '../../hooks/useAuthContext';
+import { useAuthContext } from '../../../hooks/useAuthContext';
 
 type NewProjectFormData = {
     projectName: string;

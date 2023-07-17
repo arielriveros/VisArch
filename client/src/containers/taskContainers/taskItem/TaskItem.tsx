@@ -1,5 +1,6 @@
 import React from 'react'
 import { Task } from '../tasksList/TaskList'
+import './TaskItem.css'
 
 interface TaskItemProps extends Task {}
 
