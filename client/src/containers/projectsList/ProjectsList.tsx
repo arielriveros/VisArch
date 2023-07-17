@@ -28,6 +28,7 @@ export default function ProjectsList(): JSX.Element {
                     _id: p._id,
                     name: p.name,
                     description: p.description,
+                    tasks: p.tasks,
                     members: p.members,
                     owner: p.owner,
                     status: p.status

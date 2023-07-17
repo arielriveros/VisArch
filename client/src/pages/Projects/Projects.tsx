@@ -4,9 +4,12 @@ import NewProjectForm from '../../containers/createProject/NewProjectForm'
 import './Projects.css'
 
 export type Project = {
-  _id: number;
+  _id: string;
   name: string;
   description?: string;
+  tasks: {
+    _id: string
+  }[];
   members: {
       _id: string;
       username: string;
