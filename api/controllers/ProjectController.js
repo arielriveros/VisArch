@@ -130,7 +130,7 @@ async function deleteById(req, res) {
     }
 }
 
-async function getTasksById(req, res) {
+async function getTasks(req, res) {
     try {
         // Get user in request and check if user is a member of the project
         const { id: userId } = req.user;
@@ -142,24 +142,8 @@ async function getTasksById(req, res) {
         if (!project.members.some(m => m.toString() === user._id.toString()))
             throw new Error('User is not a member of the project');
 
-        // Populate tasks with id
-        const projectTasks = await project.populate({
-            path: 'tasks',
-            select: '-__v',
-            populate: [ { path: 'mesh', select: '_id modelPath' } ]
-        });
-
-        // Return array of tasks
-        const tasks = Array.isArray(projectTasks?.tasks) ? projectTasks.tasks.map(task => ({
-            _id: task._id,
-            ...task.toJSON(),
-            mesh: {
-                _id: task.mesh._id,
-                modelPath: task.mesh.modelPath
-            }
-        })) : [];
-
-        console.log(tasks);
+        // Retrieve tasks based on their IDs
+        const tasks = await TaskModel.find({ _id: { $in: project.tasks } });
 
         return res.status(200).json({ tasks });
     } catch (err) {
@@ -172,5 +156,5 @@ module.exports = {
     index,
     create,
     deleteById,
-    getTasksById
+    getTasks
 }

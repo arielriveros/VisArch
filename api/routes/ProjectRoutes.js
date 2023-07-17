@@ -10,6 +10,6 @@ router.get('/', ProjectController.index);
 router.post('/', ProjectController.create);
 router.delete('/:id', ProjectController.deleteById);
 
-router.get('/:id/tasks', ProjectController.getTasksById);
+router.get('/:id/tasks', ProjectController.getTasks);
 
 module.exports = router;
