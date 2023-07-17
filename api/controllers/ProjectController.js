@@ -1,5 +1,7 @@
 const ProjectModel = require('../models/Project');
 const UserModel = require('../models/User');
+const TaskModel = require('../models/Task');
+const fs = require('fs');
 
 async function index(req, res) {
     try {
@@ -115,7 +117,8 @@ async function deleteById(req, res) {
             const task = await TaskModel.findById(t);
             task.members = [];
             await task.save();
-            await task.deleteOne();
+            const out = await task.deleteOne();
+            fs.unlinkSync(`public/${out.meshPath}`);
         }
         
         await project.deleteOne();
