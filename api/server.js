@@ -2,7 +2,6 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
-const MeshRoutes = require('./routes/MeshRoutes');
 const UserRoutes = require('./routes/UserRoutes');
 const ProjectRoutes = require('./routes/ProjectRoutes');
 const TaskRoutes = require('./routes/TaskRoutes');
@@ -26,7 +25,6 @@ mongoose.connect(mongo_uri, {
 // Routes
 app.use('/api/user', UserRoutes);
 app.use('/api/projects', ProjectRoutes);
-app.use('/api/meshes', MeshRoutes);
 app.use('/api/tasks', TaskRoutes);
 
 // Start the server

@@ -4,20 +4,20 @@ const Schema = mongoose.Schema;
 const TaskSchema = new Schema({
     name: {
         type: String,
-        required: true
+        required: true,
+        unique: true
     },
-    mesh: {
-        type: Schema.Types.ObjectId,
-        ref: 'Mesh'
+    meshPath: {
+        type: String
     },
-    members: [{
-        type: Schema.Types.ObjectId,
-        ref: 'User'
-    }],
     status: {
         type: String,
         enum: ['active', 'archived'],
         default: 'active'
+    },
+    project: {
+        type: Schema.Types.ObjectId,
+        ref: 'Project'
     }
 });
 
