@@ -21,29 +21,26 @@ export default function TaskList(props: TaskListProps) {
     const [tasks, setTasks] = useState<Task[]>([]);
 
     useEffect (() => {
-        props.tasksIds?.forEach( (t: {_id: string}) => {
-			getTasks(t._id);
-		});
-    }, []);
+		getTasks()}, 
+	[]);
 
-    async function getTasks(taskId: string) {
+    async function getTasks() {
 		try {
-			const response = await fetch(`${config.API_URL}/tasks/${taskId}`, {
+			const response = await fetch(`${config.API_URL}/projects/${props.projectId}/tasks/`, {
 				headers: {
 					'Authorization': `Bearer ${user?.token}`
 				}
 			});
 			const data = await response.json();
-			console.log(data);
-			setTasks([...tasks, data]);
+			setTasks(data.tasks);
 		} catch (error) {
 			console.error(error);
 		}
 	}
     return (
         <div>TaskList
-			<NewTaskForm projectId={props.projectId}/>
             {tasks.map((t: Task) => <TaskItem key={t._id} {...t} />)}
+			<NewTaskForm projectId={props.projectId}/>
         </div>
     )
 }
