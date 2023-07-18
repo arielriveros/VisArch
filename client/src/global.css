@@ -1,0 +1,20 @@
+:root {
+    /* Colors */
+    --primary-color-1: #364AA8;
+    --primary-color-2: #2A3A81;
+    --secondary-color-1: #1E295A;
+    --secondary-color-2: #4B67E6;
+    --terciary-color-1: rgb(235, 236, 226);
+
+    /* Fonts */
+    --font-family-1: 'Roboto', sans-serif;
+    --font-family-2: 'Montserrat', sans-serif;
+
+    /* Font Sizes */
+    --font-size-1: 1rem;
+    --font-size-2: 1.2rem;
+
+    /* Border Radia */    
+    --border-radius-1: 0.5rem;
+    --border-radius-2: 1rem;
+}
