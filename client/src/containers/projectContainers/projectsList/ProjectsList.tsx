@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react'
 import ProjectItem from '../projectItem/ProjectItem';
 import { useAuthContext } from '../../../hooks/useAuthContext';
 import { config } from '../../../utils/config';
-import { Project } from '../../../pages/Projects/Projects';
+import { Project } from '../../../api/ModelTypes';
 import './ProjectsList.css'
 
 export default function ProjectsList(): JSX.Element {

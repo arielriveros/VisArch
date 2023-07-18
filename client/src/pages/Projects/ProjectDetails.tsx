@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { useLocation } from 'react-router-dom'
-import { Project } from './Projects'
+import { Project } from '../../api/ModelTypes';
 import TaskList from '../../containers/taskContainers/tasksList/TaskList';
 
 

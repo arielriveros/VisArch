@@ -1,11 +1,6 @@
 import { createContext, useReducer, useEffect } from 'react';
+import { User } from '../api/ModelTypes';
 
-interface User {
-  _id: string;  
-  username: string;
-  token: string;
-}
-  
 interface AuthState {
   user: User | null;
 }

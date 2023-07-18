@@ -1,5 +1,5 @@
 import React from 'react'
-import { Task } from '../tasksList/TaskList'
+import { Task } from '../../../api/ModelTypes'
 import './TaskItem.css'
 
 interface TaskItemProps extends Task {}

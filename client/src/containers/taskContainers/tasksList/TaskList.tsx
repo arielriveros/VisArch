@@ -1,15 +1,9 @@
 import React, { useState, useEffect } from 'react'
 import { config } from '../../../utils/config';
 import { useAuthContext } from '../../../hooks/useAuthContext';
+import { Task } from '../../../api/ModelTypes';
 import TaskItem from '../taskItem/TaskItem';
 import NewTaskForm from '../createTask/NewTaskForm';
-
-export type Task = {
-	_id: string,
-	name: string,
-	meshPath: string,
-	status: 'active' | 'archived',
-}
 
 type TaskListProps = {
     projectId: string;
