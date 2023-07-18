@@ -3,14 +3,10 @@ import { useLogout } from '../../hooks/useLogout'
 import { useAuthContext } from '../../hooks/useAuthContext';
 import Button from '../button/Button';
 import './Navbar.css'
+import ProfileCard from '../profileCard/ProfileCard';
 
 function Navbar() {
-    const { logout } = useLogout();
     const { user } = useAuthContext();
-
-    function handleLogout() {
-        logout();
-    }
 
     return (
         <div className="navbar">
@@ -18,13 +14,13 @@ function Navbar() {
                 <h1>VisArch</h1>
             </div>
             <nav>
-                <div className="navigation">
-                    <Link className='navbar-link' to="/">Home</Link>
-                    {user && <Link className='navbar-link' to="/projects">Projects</Link>}
-                    {user && user.username}
-                    {user && <Button text="Logout" onClick={handleLogout}/>}
-                    
-                </div>
+                { user && 
+                    <div className="navigation">
+                        <Link className='navbar-link' to="/">Home</Link>
+                        <Link className='navbar-link' to="/projects">Projects</Link>
+                        <ProfileCard username={user.username} email={""} />
+                    </div>
+                }
             </nav>
         </div>
     )

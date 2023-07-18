@@ -1,0 +1,70 @@
+@import url("../../global.css");
+
+.profile-card {
+    display: flex;
+    flex-direction: column;
+}
+
+.profile-card-btn {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border: 1px solid var(--terciary-color-1);
+    border-radius: 50%;
+    background-color: var(--terciary-color-1);
+    color: var(--primary-color-2);
+    font-size: var(--font-size-1);
+    padding: 0.2rem;
+    width: 2rem;
+    height: 2rem;
+} 
+
+.profile-card-btn:hover {
+    background-color: var(--primary-color-2);
+    color: var(--terciary-color-1);
+    border: 0.5px solid var(--terciary-color-1);
+    cursor: pointer;
+}
+
+.profile-card-expanded {
+    position: absolute;
+    top: 4rem;
+    right: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    background-color: var(--primary-color-1);
+    border: 1px solid var(--secondary-color-1);
+    border-radius: var(--border-radius-1);
+    padding: 1rem;
+    margin: 0.25rem;
+    width: 15rem;
+    max-width: 20rem;
+    color: var(--terciary-color-1);
+    font-size: var(--font-size-1);
+    transition: 0.25s;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+}
+
+.logout-btn {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border: 1px solid var(--terciary-color-1);
+    border-radius: var(--border-radius-1);
+    background-color: var(--terciary-color-1);
+    color: var(--secondary-color-1);
+    font-size: var(--font-size-1);
+    padding: 1rem;
+    height: 1.5rem;
+    margin: 0.25rem;
+    transition: 0.25s;
+}
+
+.logout-btn:hover {
+    background-color: var(--secondary-color-1);
+    color: var(--terciary-color-1);
+    border: 0.5px solid var(--terciary-color-1);
+    cursor: pointer;
+}
