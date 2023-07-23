@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import { Canvas } from '@react-three/fiber';
 import { config } from '../../../utils/config';
 import { useAuthContext } from '../../../hooks/useAuthContext';
 import MeshInput from '../../../components/inputs/mesh/MeshInput';
@@ -14,11 +13,6 @@ type TaskFormData = {
   model: File | null;
 };
 
-type ModelData = {
-    modelPath: string;
-    texturePath: string;
-};
-
 export default function NewTaskForm(props: NewTaskFormProps) {
     const { user } = useAuthContext();
     const [formData, setFormData] = useState<TaskFormData>({
@@ -26,47 +20,16 @@ export default function NewTaskForm(props: NewTaskFormProps) {
         model: null
     });
 
-    const [modelFiles, setModelFiles] = useState<FileList | null>(null);
 
-    const [previewModelData, setPreviewModelData] = useState<ModelData>({
-        modelPath: "",
-        texturePath: ""
-    });
-
-    function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
-        if (e.target.name === 'model')
-            setModelFiles(e.target.files);
-        else
-            setFormData({ ...formData, [e.target.name]: e.target.value });
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setFormData({ ...formData, [e.target.name]: e.target.value });
     }
 
-    function handleModelConverted(glbFile: File) {
-        setFormData((prevFormData) => ({
-            ...prevFormData,
-            model: glbFile
-        }));
-    }
+    const handleMeshInput = (glbFile: File) => {
+        setFormData({...formData, model: glbFile});
+    } 
 
-    useEffect(() => {
-        if (modelFiles) {
-            const files = Array.from(modelFiles);
-            for (let file of files) {
-                const extension = file.name.split('.').pop();
-                if (extension === 'obj')
-                    setPreviewModelData((prevModelData) => ({
-                        ...prevModelData,
-                        modelPath: URL.createObjectURL(file as File)
-                    }));
-                if (['png', 'jpg', 'jpeg'].includes(extension as string))
-                    setPreviewModelData((prevModelData) => ({
-                        ...prevModelData,
-                        texturePath: URL.createObjectURL(file as File)
-                    }));
-            }
-        }
-      }, [modelFiles]);
-
-    function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+    const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         try {
             if (formData.model) {
@@ -87,6 +50,14 @@ export default function NewTaskForm(props: NewTaskFormProps) {
         }
     }
 
+    const downloadGLB = () => {
+        if(!formData.model) return;
+        const link = document.createElement('a');
+        link.href = URL.createObjectURL(formData.model);
+        link.download = formData.model.name;
+        link.click();
+    }
+
     return (
         <div className='task-form'>
             <h4>New Task</h4>
@@ -95,21 +66,8 @@ export default function NewTaskForm(props: NewTaskFormProps) {
                 <label htmlFor='name'>Name</label>
                 <input type='text' id='name' name='name' onChange={handleChange} />
             </div>
-            <div>
-                <label htmlFor='model'>Mesh Model</label>
-                <input type='file' id='model' name='model' onChange={handleChange} multiple />
-            </div>
-            { previewModelData.modelPath !== "" ? 
-            <Canvas camera={{position: [0, 1, 1]}}>
-                <color attach="background" args={['black']} />
-                <ambientLight />
-                <MeshInput 
-                    modelPath={previewModelData.modelPath}
-                    texturePath={previewModelData.texturePath}
-                    onModelConverted={handleModelConverted}
-                />
-            </Canvas>
-            : null}
+            <MeshInput meshHandler={handleMeshInput} />
+            <button disabled={formData.model === null} onClick={downloadGLB}>Download</button>
             <button disabled={formData.model === null} type='submit'>Create</button>
             </form>
         </div>
