@@ -25,7 +25,7 @@ export default function ProjectDetails() {
 
 	return (
 		<div className='project-details'>
-			{ project && <TaskList projectId={project._id} tasksIds={tasks} /> }
+			{ project && <TaskList type='task-grid' projectId={project._id} tasksIds={tasks} /> }
 			{ project && <NewTaskForm projectId={project._id} handleNewTask={onNewTask}/> }
 		</div>
 	)

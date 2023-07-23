@@ -1,9 +1,22 @@
-.task-list {
-  width: 75%;
+.task-list-container {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
   
 .task-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
   grid-gap: 16px;
+  width: 75%;
+}
+
+.task-list {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 16px;
+  border-radius: 4px;
+  background-color: #fff;
 }

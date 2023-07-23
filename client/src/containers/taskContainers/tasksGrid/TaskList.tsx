@@ -8,6 +8,7 @@ import './TaskList.css';
 type TaskListProps = {
   projectId: string;
   tasksIds: { _id: string }[];
+  type: 'task-list' | 'task-grid';
 };
 
 export default function TaskList(props: TaskListProps) {
@@ -33,14 +34,14 @@ export default function TaskList(props: TaskListProps) {
   	}, [props.tasksIds]);
 
 	return (
-		<div className='task-list'>
-		<div className='task-grid'>
-			{tasks.map((t: Task) => (
-				<div key={t._id} className='task-grid-item'>
-					<TaskItem {...t} />
-				</div>
-			))}
-		</div>
+		<div className='task-list-container'>
+			<div className={props.type}>
+				{tasks.map((t: Task) => (
+					<div key={t._id} className='task-grid-item'>
+						<TaskItem {...t} minimal={props.type === 'task-list'}/>
+					</div>
+				))}
+			</div>
 		</div>
 	);
 }

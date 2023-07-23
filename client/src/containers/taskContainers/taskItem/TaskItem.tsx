@@ -3,7 +3,9 @@ import { useNavigate } from 'react-router-dom';
 import { Task } from '../../../api/ModelTypes'
 import './TaskItem.css'
 
-interface TaskItemProps extends Task {}
+interface TaskItemProps extends Task {
+    minimal?: boolean;
+}
 
 export default function TaskItem(props: TaskItemProps) {
     const navigate = useNavigate();
@@ -19,10 +21,17 @@ export default function TaskItem(props: TaskItemProps) {
 
     return (
         <div className='task-item' onClick={handleGoToTask}>
-            <h4> {props.name} </h4>
-            {/* Set later in development with api retrieved values */}
-            <p> Archetypes: 0 </p>
-            <p> Annotations: 0 </p>
+            {
+                props.minimal ? 
+                <p> {props.name} </p>
+                : 
+                <>
+                    <h4> {props.name} </h4>
+                    <p> Archetypes: 0 </p>
+                    <p> Annotations: 0 </p>
+                </>
+            }
+            
         </div>
     )
 }
