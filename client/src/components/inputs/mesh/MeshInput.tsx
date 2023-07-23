@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
-import { TextureLoader, Mesh, Group, Object3D } from "three";
+import { TextureLoader, Mesh, Group, Object3D, MeshBasicMaterial } from "three";
 import { GLTFExporter } from "three/examples/jsm/exporters/GLTFExporter";
 import { OBJLoader } from "three/examples/jsm/loaders/OBJLoader";
+import { PLYLoader } from "three/examples/jsm/loaders/PLYLoader";
 import { ModelPreview } from "../../preview/ModelPreview";
 import PreviewRenderer from "../../preview/PreviewRenderer";
 
@@ -11,20 +12,20 @@ type ModelInputProps = {
   
 type ModelData = {
     modelPath: string;
+	format: SupportedFormat | null;
     texturePath: string;
 };
+
+type SupportedFormat = 'obj' | 'ply';
 
 export default function MeshInput( props : ModelInputProps): JSX.Element {
 	const [modelFiles, setModelFiles] = useState<FileList | null>(null);
 	const [groupMesh, setGroupMesh] = useState<Group | null>(null);
 	const [previewModelData, setPreviewModelData] = useState<ModelData>({
         modelPath: "",
+		format: null,
         texturePath: ""
     });
-
-    // TODO: implement different model formats  (e.g. gltf)
-    const objLoader = new OBJLoader();
-    const textureLoader = new TextureLoader();
 
     const convertToGLB = (obj: Object3D, onComplete: (output: File) => void, onError: (output: ErrorEvent) => void ) => {
       	const exporter = new GLTFExporter();
@@ -48,31 +49,62 @@ export default function MeshInput( props : ModelInputProps): JSX.Element {
             setModelFiles(e.target.files);
     }
 
-	const loadMesh = (modelPath: string, texturePath: string, onLoad: (group: Group) => void) => {
+	const loadMesh = (modelPath: string, texturePath: string, format: SupportedFormat , onLoad: (group: Group) => void) => {
+		// TODO: implement different model formats  (e.g. gltf)
+		const objLoader = new OBJLoader();
+		const plyLoader = new PLYLoader();
+		const textureLoader = new TextureLoader();
+
 		if (!modelPath) return;
 
-		objLoader.load(
-			modelPath,
-			(obj) => {
-				obj.traverse((child) => {
-					if (child instanceof Mesh) {
+		const setMaterial = (obj: Group) => {
+			obj.traverse((child) => {
+				if (child instanceof Mesh) {
+					child.material.side = 2;
+					child.material.needsUpdate = true;
+					if (!texturePath)
+						onLoad(obj as Group);
+					else {
 						textureLoader.load(
 							texturePath,
 							tex => {
-								child.material.side = 2;
 								child.material.map = tex;
-								child.material.needsUpdate = true;
 								onLoad(obj as Group);
 							}
 						);
 					}
-				});
-			}
-		);
+				}
+			});
+		}
+
+		switch(format) {
+			case 'obj':
+				objLoader.load(
+					modelPath,
+					obj => setMaterial(obj)
+				);
+				break;
+
+			case 'ply':
+				plyLoader.load(
+					modelPath,
+					obj => { 
+						const mesh = new Mesh(obj, new MeshBasicMaterial());
+						const group = new Group();
+						group.add(mesh);
+						setMaterial(group);
+					}
+				)
+				break;
+
+			default:
+				break;
+		}
 	}
 
     useEffect(() => {
-		loadMesh(previewModelData.modelPath, previewModelData.texturePath, setGroupMesh);
+		if (previewModelData.format)
+			loadMesh(previewModelData.modelPath, previewModelData.texturePath, previewModelData.format, setGroupMesh);
     }, [previewModelData]);
 
 	useEffect(() => {
@@ -81,7 +113,21 @@ export default function MeshInput( props : ModelInputProps): JSX.Element {
 			for (let file of files) {
 				const extension = file.name.split('.').pop();
 				if (extension === 'obj') {
-					setPreviewModelData( ( prev ) => ({ ...prev, modelPath: URL.createObjectURL(file as File) }));
+					setPreviewModelData( ( prev ) => (
+						{ ...prev, 
+							modelPath: URL.createObjectURL(file as File),
+							format: 'obj' 
+						})
+					);
+				}
+
+				if (extension === 'ply') {
+					setPreviewModelData( ( prev ) => (
+						{ ...prev, 
+							modelPath: URL.createObjectURL(file as File),
+							format: 'ply' 
+						})
+					);
 				}
 					
 				if (['png', 'jpg', 'jpeg'].includes(extension as string))
@@ -103,7 +149,7 @@ export default function MeshInput( props : ModelInputProps): JSX.Element {
             </div>
 			<PreviewRenderer>
 			{
-				previewModelData.modelPath && previewModelData.texturePath ? 
+				previewModelData.modelPath ? 
 					<ModelPreview modelGroup={groupMesh} />
 					: null
 			}
