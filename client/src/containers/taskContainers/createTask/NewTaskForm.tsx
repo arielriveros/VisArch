@@ -5,7 +5,8 @@ import MeshInput from '../../../components/inputs/mesh/MeshInput';
 import './NewTaskForm.css';
 
 type NewTaskFormProps = {
-  projectId: string;
+    projectId: string;
+    handleNewTask: (task: {_id: string}) => void;
 };
 
 type TaskFormData = {
@@ -29,7 +30,7 @@ export default function NewTaskForm(props: NewTaskFormProps) {
         setFormData({...formData, model: glbFile});
     } 
 
-    const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         try {
             if (formData.model) {
@@ -37,13 +38,15 @@ export default function NewTaskForm(props: NewTaskFormProps) {
                 outFormData.append('name', formData.name);
                 outFormData.append('model', formData.model);
                 outFormData.append('project', props.projectId);
-                fetch(`${config.API_URL}/tasks/`, {
+                const response = await fetch(`${config.API_URL}/tasks/`, {
                     headers: {
                         'Authorization': `Bearer ${user?.token}`
                     },
                     method: 'POST',
                     body: outFormData
                 });
+                const data = await response.json();
+                props.handleNewTask({_id: data._id});
             }
         } catch (error) {
             console.error(error);

@@ -14,11 +14,7 @@ export default function TaskList(props: TaskListProps) {
     const { user } = useAuthContext();
     const [tasks, setTasks] = useState<Task[]>([]);
 
-    useEffect (() => {
-		getTasks()}, 
-	[]);
-
-    async function getTasks() {
+	const getTasks = async () => {
 		try {
 			const response = await fetch(`${config.API_URL}/projects/${props.projectId}/tasks/`, {
 				headers: {
@@ -31,10 +27,14 @@ export default function TaskList(props: TaskListProps) {
 			console.error(error);
 		}
 	}
+
+	useEffect (() => {
+		getTasks()}, 
+	[props.tasksIds]);
+
     return (
-        <div>TaskList
+        <div>
             {tasks.map((t: Task) => <TaskItem key={t._id} {...t} />)}
-			<NewTaskForm projectId={props.projectId}/>
         </div>
     )
 }
