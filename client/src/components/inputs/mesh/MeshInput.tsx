@@ -49,7 +49,8 @@ export default function MeshInput( props : ModelInputProps): JSX.Element {
     }
 
 	const loadMesh = (modelPath: string, texturePath: string, onLoad: (group: Group) => void) => {
-		if (modelPath === "") return;
+		if (!modelPath) return;
+
 		objLoader.load(
 			modelPath,
 			(obj) => {
@@ -72,17 +73,19 @@ export default function MeshInput( props : ModelInputProps): JSX.Element {
 
     useEffect(() => {
 		loadMesh(previewModelData.modelPath, previewModelData.texturePath, setGroupMesh);
-    }, [previewModelData.modelPath, previewModelData.texturePath]);
+    }, [previewModelData]);
 
 	useEffect(() => {
 		if (modelFiles) {
 			const files = Array.from(modelFiles);
 			for (let file of files) {
 				const extension = file.name.split('.').pop();
-				if (extension === 'obj')
-					setPreviewModelData({ ...previewModelData, modelPath: URL.createObjectURL(file as File) });
+				if (extension === 'obj') {
+					setPreviewModelData( ( prev ) => ({ ...prev, modelPath: URL.createObjectURL(file as File) }));
+				}
+					
 				if (['png', 'jpg', 'jpeg'].includes(extension as string))
-					setPreviewModelData({ ...previewModelData, texturePath: URL.createObjectURL(file as File) });
+					setPreviewModelData( ( prev ) => ({ ...prev, texturePath: URL.createObjectURL(file as File) }));
 			}
 		}
 	}, [modelFiles]);
