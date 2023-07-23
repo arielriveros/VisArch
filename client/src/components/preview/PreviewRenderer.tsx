@@ -20,7 +20,7 @@ function CameraController() {
 export default function PreviewRenderer({ children }: { children: React.ReactNode }) {
 
     return (
-        <Canvas camera={{position: [0, 1, 1]}}>
+        <Canvas camera={{position: [0, 1, 1]}} linear={true}>
             <CameraController />
             <color attach="background" args={['black']} />
             <ambientLight />
