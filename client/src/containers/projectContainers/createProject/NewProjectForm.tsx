@@ -81,15 +81,15 @@ export default function NewProjectForm(): JSX.Element {
             <h5> Create New Project</h5>
             <form onSubmit={submit}>
                 <div className='form-group'>
-                    <TextInput targetName="projectName" text="" label="Project Name"  handleInput={handleInput}/>
-                    <TextInput targetName="projectDescription" text="" label="Project Description"  handleInput={handleInput}/>
+                    <TextInput targetName="projectName" type="text" label="Project Name"  handleInput={handleInput}/>
+                    <TextInput targetName="projectDescription" type="text" label="Project Description"  handleInput={handleInput}/>
                     <div className='members'>
                         <ul>
                             {members.map((member, index) => <li key={index}>{member}</li>)}
                         </ul>
                     </div>
                     <div className='add-member'>
-                        <TextInput targetName="members" text="" label="Add Member"  handleInput={handleNewMember}/>
+                        <TextInput targetName="members" type="text" label="Add Member"  handleInput={handleNewMember}/>
                         <button className='add-member-btn' value={newMember} onClick={addMember}>Add</button>
                     </div>
                 </div>

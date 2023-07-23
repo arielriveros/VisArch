@@ -1,9 +1,22 @@
-.registration {
+@import url('../../global.css');
+
+.registration-container {
     display: flex;
-    background-color: #ccc;
-    width: 75%;
-    align-items: flex-start;
-    justify-content: space-around;
+    width: 70%;
+    align-items: center;
+    justify-content: space-evenly;
     border-radius: 1;
-    border: 1px solid #ccc;
+}
+
+.registration-form {
+    display: flex;
+    flex-direction: column;
+    width: 25rem;
+    align-items: center;
+    justify-content: space-between;
+    border-radius: var(--border-radius-1);
+    border: 1px solid black;
+    padding: 0 1rem 1rem 1rem;
+    gap: 1rem;
+    background-color: var(--terciary-color-1);
 }

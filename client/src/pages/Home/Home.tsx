@@ -5,11 +5,10 @@ import Quickguide from '../../containers/quickguide/Quickguide';
 import './Home.css'
 
 export default function Home(): JSX.Element {
-  const { user } = useAuthContext();
-  return (
-    <div className="va-home">
-      <h3> Home </h3>
-      { user ? <Quickguide /> : <AuthenticationContainer /> }
-    </div>
-  )
+	const { user } = useAuthContext();
+	return (
+		<div className="va-home">
+		{ user ? <Quickguide /> : <AuthenticationContainer /> }
+		</div>
+	)
 }

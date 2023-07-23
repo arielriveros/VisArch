@@ -5,7 +5,7 @@ import './authenticationContainer.css'
 
 export default function AuthenticationContainer() {
   return (
-    <div className='registration'>
+    <div className='registration-container'>
       <Login /><Register />
     </div>
   )

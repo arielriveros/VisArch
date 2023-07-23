@@ -1,0 +1,17 @@
+@import url('../../../global.css');
+
+.text-input-container {
+    display: flex;
+    width: 100%;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.text-input {
+    width: 60%;
+    padding: 0.5rem;
+    border: 1px solid black;
+    border-radius: var(--border-radius-1);
+    font-size: 1rem;
+    color: var(--color-1);
+}

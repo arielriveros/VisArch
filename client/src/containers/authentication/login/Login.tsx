@@ -2,7 +2,7 @@ import React from 'react'
 import { useState } from 'react'
 import { useLogin } from '../../../hooks/useLogin'
 import TextInput from '../../../components/inputs/text/TextInput'
-import PasswordInput from '../../../components/inputs/text/PasswordInput'
+import '../authenticationContainer.css'
 
 interface FormData {
     username: string
@@ -23,10 +23,10 @@ export default function Login(): JSX.Element {
     }
 
     return (
-        <form className="login" onSubmit={submit}>
+        <form className="registration-form" onSubmit={submit}>
             <h4> Login </h4>
-            <TextInput targetName="username" text="" label="Username" handleInput={handleOnChange}/>
-            <PasswordInput targetName="password" label="Password" handleInput={handleOnChange}/>
+            <TextInput targetName="username" type="text" label="Username" handleInput={handleOnChange}/>
+            <TextInput targetName="password" type="password" label="Password" handleInput={handleOnChange}/>
             <button disabled={loading} type="submit">Login</button>
             {error && <p>{error}</p>}
         </form>

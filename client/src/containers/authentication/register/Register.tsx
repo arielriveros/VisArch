@@ -1,8 +1,7 @@
-import React from 'react'
-import { useState } from 'react'
-import TextInput from '../../../components/inputs/text/TextInput'
-import PasswordInput from '../../../components/inputs/text/PasswordInput'
+import React, { useState } from 'react'
 import { useRegister } from '../../../hooks/useRegister'
+import TextInput from '../../../components/inputs/text/TextInput'
+import '../authenticationContainer.css'
 
 interface FormData {
     username: string
@@ -24,11 +23,11 @@ export default function Register(): JSX.Element {
     }
 
     return (
-        <form className="register" onSubmit={submit}>
+        <form className="registration-form" onSubmit={submit}>
             <h4> Register </h4>
-            <TextInput targetName="username" text="" label="Username" handleInput={handleOnChange}/>
-            <TextInput targetName="email" text="" label="Email" handleInput={handleOnChange}/>
-            <PasswordInput targetName="password" label="Password" handleInput={handleOnChange}/>
+            <TextInput targetName="username" type="text" label="Username" handleInput={handleOnChange}/>
+            <TextInput targetName="email" type="text" label="Email" handleInput={handleOnChange}/>
+            <TextInput targetName="password" type="password" label="Password" handleInput={handleOnChange}/>
             <button disabled={loading} type="submit">Register</button>
             {error && <p>{error}</p>}
         </form>
