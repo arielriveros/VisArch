@@ -37,7 +37,7 @@ export default function TaskList(props: TaskListProps) {
 		<div className='task-grid'>
 			{tasks.map((t: Task) => (
 				<div key={t._id} className='task-grid-item'>
-					<TaskItem {...t} onTaskClick={(id)=>console.log(id)}/>
+					<TaskItem {...t} />
 				</div>
 			))}
 		</div>

@@ -4,6 +4,7 @@ import Projects from './pages/Projects/Projects';
 import ProjectDetails from './pages/Projects/ProjectDetails';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { useAuthContext } from './hooks/useAuthContext';
+import AnnotateTask from './pages/AnnotateTask/AnnotateTask';
 
 function App(): JSX.Element {
 
@@ -18,6 +19,7 @@ function App(): JSX.Element {
             <Route path="/" element={<Home />} />
             <Route path="/projects" element={ user ? <Projects /> : <Navigate to="/" />} />
             <Route path="/projects/:id" element={ user ? <ProjectDetails /> : <Navigate to="/" />} />
+            <Route path="/task/:id" element={ user ? <AnnotateTask /> : <Navigate to="/" />} />
           </Routes>
         </div>
       </BrowserRouter>

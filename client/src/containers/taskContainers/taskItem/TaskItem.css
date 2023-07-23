@@ -3,3 +3,8 @@
     border-radius: 5px;
     padding: 10px;
 }
+
+.task-item:hover {
+    background-color: #eee;
+    cursor: pointer;
+}
