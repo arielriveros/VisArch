@@ -1,0 +1,9 @@
+.task-list {
+  width: 75%;
+}
+  
+.task-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  grid-gap: 16px;
+}
