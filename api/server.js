@@ -5,13 +5,15 @@ const cors = require('cors');
 const UserRoutes = require('./routes/UserRoutes');
 const ProjectRoutes = require('./routes/ProjectRoutes');
 const TaskRoutes = require('./routes/TaskRoutes');
+const requireAuth = require('./middleware/auth');
 require('dotenv').config()
 
 // Entry point for the application
 const app = express();  
 app.use(express.json());
 app.use(cors());
-app.use(express.static('public'));
+// Apply authentication middleware for the 'public' folder
+app.use('/', requireAuth, express.static('public'));
 
 
 const mongo_uri = process.env.MONGO_URI;
