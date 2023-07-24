@@ -2,9 +2,13 @@ import { useEffect } from 'react'
 import { config } from '../../../../utils/config';
 import { useAuthContext } from '../../../../hooks/useAuthContext';
 import { useTaskContext } from '../../hooks/useTask';
+import TaskList from '../../../../containers/taskContainers/tasksGrid/TaskList';
+import './TaskMain.css';
+import TaskSidebar from '../../components/sidebar/TaskSidebar';
 
 type TaskMainProps = {
     taskId: string;
+    projectId: string;
 }
 
 export default function TaskMain(props: TaskMainProps) {
@@ -30,15 +34,22 @@ export default function TaskMain(props: TaskMainProps) {
 	}, []);
 
     return (
-        <div>
-            {task?._id}
-            <br />
-            {task?.name}
-            <br />
-            {task?.meshPath}
-            <br />
-            {task?.status}
-            <br />
+        <div className='task-main'>
+            <div className='task-sidebar-container'> 
+                <TaskSidebar>
+                    <TaskList projectId={props.projectId} type={'task-list'} />
+                </TaskSidebar>
+            </div>
+            <div className='task-content'>
+                {task?._id}
+                <br />
+                {task?.name}
+                <br />
+                {task?.meshPath}
+                <br />
+                {task?.status}
+                <br />
+            </div>
         </div>
     )
 }

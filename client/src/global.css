@@ -17,4 +17,6 @@
     /* Border Radia */    
     --border-radius-1: 0.5rem;
     --border-radius-2: 1rem;
+
+    --nav-bar-height: 4rem;
 }

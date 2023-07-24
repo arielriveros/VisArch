@@ -1,0 +1,28 @@
+@import url('../../../../global.css');
+
+.task-main {
+    display: flex;
+    flex: 1;
+    overflow: hidden;
+    position: absolute;
+    top: var(--nav-bar-height);
+    left: 0;
+    width: 100%;
+    height: calc(100% - var(--nav-bar-height));
+  }
+  
+.task-sidebar-container {
+    display: flex;
+    flex-direction: column;
+    overflow: auto;
+    width: 200px;
+    height: 100%;
+}
+
+.task-content {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    overflow: hidden;
+    height: 100%;
+}

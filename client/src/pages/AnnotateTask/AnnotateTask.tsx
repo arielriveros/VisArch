@@ -7,7 +7,7 @@ export default function AnnotateTask() {
 
     return (
         <TaskContextProvider>
-            <TaskMain taskId={location.state.taskId} />
+            <TaskMain taskId={location.state.taskId} projectId={location.state.projectId}/>
         </TaskContextProvider>
     )
 }

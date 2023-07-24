@@ -1,22 +1,27 @@
 import React from 'react'
 import { useNavigate } from 'react-router-dom';
 import { Task } from '../../../api/ModelTypes'
+import { useTaskContext } from '../../../features/annotation/hooks/useTask';
 import './TaskItem.css'
 
 interface TaskItemProps extends Task {
+    projectId: string;
     minimal?: boolean;
 }
 
 export default function TaskItem(props: TaskItemProps) {
     const navigate = useNavigate();
+    const { task, dispatch } = useTaskContext();
 
-    function handleGoToTask() {
+    const handleGoToTask = () => {
 		// Navigate to the task annotation tool page and pass task id as state
 		navigate(`/task/${props._id}`, {
 			state: {
-				taskId: props._id
+				taskId: props._id,
+                projectId: props.projectId
 			}
 		});
+        dispatch({ type: 'SET_TASK', payload: props });
 	}
 
     return (

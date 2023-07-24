@@ -11,7 +11,7 @@
     z-index: 1;
     justify-content: space-between;
     align-items: center;
-    height: 4rem;
+    height: var(--nav-bar-height);
     padding: 0 15px;
     border-radius: 0 0 0.5rem 0.5rem;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
