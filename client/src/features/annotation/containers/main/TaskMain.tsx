@@ -5,51 +5,45 @@ import { useTaskContext } from '../../hooks/useTask';
 import TaskList from '../../../../containers/taskContainers/tasksGrid/TaskList';
 import './TaskMain.css';
 import TaskSidebar from '../../components/sidebar/TaskSidebar';
+import AnnotationManager from '../annotation/manager/AnnotationManager';
 
 type TaskMainProps = {
-    taskId: string;
-    projectId: string;
+	taskId: string;
+	projectId: string;
 }
 
 export default function TaskMain(props: TaskMainProps) {
-    const { user } = useAuthContext();
-    const { task, dispatch } = useTaskContext();
+	const { user } = useAuthContext();
+	const { dispatch } = useTaskContext();
 
-    const getTask = async () => {
-        try {
-            const response = await fetch(`${config.API_URL}/tasks/${props.taskId}`, {
-                headers: {
-                    'Authorization': `Bearer ${user?.token}`
-                }
-            });
-            const task = await response.json();
-            dispatch({ type: 'SET_TASK', payload: task });
-        } catch (error) {
-            console.error(error);
-        }
-    };
-            
-    useEffect(() => {
-        getTask();
+	const getTask = async () => {
+		try {
+			const response = await fetch(`${config.API_URL}/tasks/${props.taskId}`, {
+				headers: {
+					'Authorization': `Bearer ${user?.token}`
+				}
+			});
+			const task = await response.json();
+			dispatch({ type: 'SET_TASK', payload: task });
+		} catch (error) {
+			console.error(error);
+		}
+	};
+			
+	useEffect(() => {
+		getTask();
 	}, []);
 
-    return (
-        <div className='task-main'>
-            <div className='task-sidebar-container'> 
-                <TaskSidebar>
-                    <TaskList projectId={props.projectId} type={'task-list'} />
-                </TaskSidebar>
-            </div>
-            <div className='task-content'>
-                {task?._id}
-                <br />
-                {task?.name}
-                <br />
-                {task?.meshPath}
-                <br />
-                {task?.status}
-                <br />
-            </div>
-        </div>
-    )
+	return (
+		<div className='task-main'>
+			<div className='task-sidebar-container'> 
+				<TaskSidebar>
+					<TaskList projectId={props.projectId} type={'task-list'} />
+				</TaskSidebar>
+			</div>
+			<div className='task-content'>
+				<AnnotationManager />
+			</div>
+		</div>
+	)
 }
