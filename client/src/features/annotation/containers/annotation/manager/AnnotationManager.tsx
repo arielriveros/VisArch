@@ -2,15 +2,31 @@ import { useEffect, useState } from 'react'
 import AnnotationViewer from '../viewer/AnnotationViewer'
 import { useTaskContext } from '../../../hooks/useTask';
 import { config } from '../../../../../utils/config';
-import { Group } from 'three';
+import { Mesh, Group, BufferGeometry, NormalBufferAttributes } from 'three';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
-import './AnnotationManager.css';
 import { useAuthContext } from '../../../../../hooks/useAuthContext';
+import './AnnotationManager.css';
+import { get } from 'http';
+
+export type MeshProperties = {
+    geometry?: BufferGeometry<NormalBufferAttributes>;
+    material: any;
+}
 
 export default function AnnotationManager() {
     const { task, dispatch } = useTaskContext();
     const { user } = useAuthContext();
-    const [mesh, setMesh] = useState<Group | null>(null);
+    const [mesh, setMesh] = useState<MeshProperties | null>(null);
+
+    const getGeometry = (group: Group) => {
+        const mesh = group.children[0].children[0] as Mesh;
+        return mesh.geometry as BufferGeometry<NormalBufferAttributes>;
+    }
+
+    const getMaterial = (group: Group) => {
+        const mesh = group.children[0].children[0] as Mesh;
+        return mesh.material
+    }
 
     const loadMesh = async () => {
         try {
@@ -30,7 +46,14 @@ export default function AnnotationManager() {
             const blob = await response.blob();
             const url = URL.createObjectURL(blob);
             const gltf = await loader.loadAsync(url);
-            setMesh(gltf.scene);
+
+            const geometry = getGeometry(gltf.scene);
+            const material = getMaterial(gltf.scene);
+
+            setMesh({
+                geometry,
+                material
+            });
 
         } catch (error) {
             console.error(error);
@@ -43,7 +66,7 @@ export default function AnnotationManager() {
 
     return (
         <div className='annotation-manager-container'>
-            <AnnotationViewer mesh={mesh}/>
+            <AnnotationViewer geometry={mesh?.geometry} material={mesh?.material}/>
         </div>
     )
 }
