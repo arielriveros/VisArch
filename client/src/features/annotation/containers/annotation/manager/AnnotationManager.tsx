@@ -18,7 +18,7 @@ export default function AnnotationManager() {
 
             /* Load glb file into ref */
             const loader = new GLTFLoader();
-            const response = await fetch(`${config.BACKEND_URL}/${task?.meshPath}`, {
+            const response = await fetch(`${config.STATICS_URL}/${task?.meshPath}`, {
                 headers: {
                     'Authorization': `Bearer ${user?.token}`
                 }

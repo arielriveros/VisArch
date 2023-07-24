@@ -2,7 +2,9 @@
 
 let config = {
     BACKEND_URL: 'http://localhost:5000',
-    API_URL :   'http://localhost:5000/api'
+    API_URL:     'http://localhost:5000/api',
+    STATICS_URL: 'http://localhost:5000/statics'
+
 };
 
 

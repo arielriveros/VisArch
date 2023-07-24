@@ -13,7 +13,7 @@ const app = express();
 app.use(express.json());
 app.use(cors());
 // Apply authentication middleware for the 'public' folder
-app.use('/', requireAuth, express.static('public'));
+app.use('/statics', requireAuth, express.static('public'));
 
 
 const mongo_uri = process.env.MONGO_URI;
