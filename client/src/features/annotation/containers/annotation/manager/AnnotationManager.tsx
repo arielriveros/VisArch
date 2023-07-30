@@ -1,23 +1,28 @@
 import { useEffect, useState } from 'react'
-import AnnotationViewer from '../viewer/AnnotationViewer'
 import { useTaskContext } from '../../../hooks/useTask';
 import { config } from '../../../../../utils/config';
-import { Mesh, Group, BufferGeometry, NormalBufferAttributes, BufferAttribute } from 'three';
+import { Mesh, Group, BufferGeometry, NormalBufferAttributes, BufferAttribute, Vector3 } from 'three';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
 import { useAuthContext } from '../../../../../hooks/useAuthContext';
 import './AnnotationManager.css';
-import { get } from 'http';
+import AnnotationController from '../controller/AnnotationController';
+import AnnotationViewer from '../../../components/viewer/AnnotationViewer';
 
 export type ProxyMeshProperties = {
     geometry?: BufferGeometry<NormalBufferAttributes>;
-    indices?: BufferAttribute;
     material: any;
+}
+
+export type IntersectionPayload = {
+	face: {a: number, b: number, c: number, normal: Vector3} | null,
+	faceIndex: number | null
 }
 
 export default function AnnotationManager() {
     const { task, dispatch } = useTaskContext();
     const { user } = useAuthContext();
     const [proxyMesh, setProxyMesh] = useState<ProxyMeshProperties | null>(null);
+    const [selectedIndex, setSelectedIndex] = useState<IntersectionPayload | null>(null);
 
     const getGeometry = (group: Group) => {
         const mesh = group.children[0].children[0] as Mesh;
@@ -27,11 +32,6 @@ export default function AnnotationManager() {
     const getMaterial = (group: Group) => {
         const mesh = group.children[0].children[0] as Mesh;
         return mesh.material
-    }
-
-    const getIndices = (group: Group) => {
-        const mesh = group.children[0].children[0] as Mesh;
-        return mesh.geometry.index as BufferAttribute;
     }
 
     const loadMesh = async () => {
@@ -55,11 +55,9 @@ export default function AnnotationManager() {
 
             const geometry = getGeometry(gltf.scene);
             const material = getMaterial(gltf.scene);
-            const indices = getIndices(gltf.scene);
 
             setProxyMesh({
                 geometry,
-                indices,
                 material
             });
 
@@ -74,7 +72,8 @@ export default function AnnotationManager() {
 
     return (
         <div className='annotation-manager-container'>
-            <AnnotationViewer geometry={proxyMesh?.geometry} material={proxyMesh?.material}/>
+            <AnnotationController geometry={proxyMesh?.geometry} material={proxyMesh?.material} selectIndexHandler={setSelectedIndex}/>
+            <AnnotationViewer geometry={proxyMesh?.geometry} material={proxyMesh?.material} selectedIndex={selectedIndex}/>
         </div>
     )
 }

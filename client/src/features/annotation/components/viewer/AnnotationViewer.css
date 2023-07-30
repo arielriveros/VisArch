@@ -1,0 +1,8 @@
+.small-canvas {
+    position: absolute;
+    bottom: 10px;
+    right: 10px;
+    width: 30%;
+    height: 30%;
+    pointer-events: none; /* Prevent interaction with the second canvas */
+}
