@@ -2,21 +2,22 @@ import { useEffect, useState } from 'react'
 import AnnotationViewer from '../viewer/AnnotationViewer'
 import { useTaskContext } from '../../../hooks/useTask';
 import { config } from '../../../../../utils/config';
-import { Mesh, Group, BufferGeometry, NormalBufferAttributes } from 'three';
+import { Mesh, Group, BufferGeometry, NormalBufferAttributes, BufferAttribute } from 'three';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
 import { useAuthContext } from '../../../../../hooks/useAuthContext';
 import './AnnotationManager.css';
 import { get } from 'http';
 
-export type MeshProperties = {
+export type ProxyMeshProperties = {
     geometry?: BufferGeometry<NormalBufferAttributes>;
+    indices?: BufferAttribute;
     material: any;
 }
 
 export default function AnnotationManager() {
     const { task, dispatch } = useTaskContext();
     const { user } = useAuthContext();
-    const [mesh, setMesh] = useState<MeshProperties | null>(null);
+    const [proxyMesh, setProxyMesh] = useState<ProxyMeshProperties | null>(null);
 
     const getGeometry = (group: Group) => {
         const mesh = group.children[0].children[0] as Mesh;
@@ -26,6 +27,11 @@ export default function AnnotationManager() {
     const getMaterial = (group: Group) => {
         const mesh = group.children[0].children[0] as Mesh;
         return mesh.material
+    }
+
+    const getIndices = (group: Group) => {
+        const mesh = group.children[0].children[0] as Mesh;
+        return mesh.geometry.index as BufferAttribute;
     }
 
     const loadMesh = async () => {
@@ -49,9 +55,11 @@ export default function AnnotationManager() {
 
             const geometry = getGeometry(gltf.scene);
             const material = getMaterial(gltf.scene);
+            const indices = getIndices(gltf.scene);
 
-            setMesh({
+            setProxyMesh({
                 geometry,
+                indices,
                 material
             });
 
@@ -66,7 +74,7 @@ export default function AnnotationManager() {
 
     return (
         <div className='annotation-manager-container'>
-            <AnnotationViewer geometry={mesh?.geometry} material={mesh?.material}/>
+            <AnnotationViewer geometry={proxyMesh?.geometry} material={proxyMesh?.material}/>
         </div>
     )
 }

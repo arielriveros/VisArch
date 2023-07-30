@@ -23,11 +23,11 @@ export default function NewTaskForm(props: NewTaskFormProps) {
 
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setFormData({ ...formData, [e.target.name]: e.target.value });
+        setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
     }
 
     const handleMeshInput = (glbFile: File) => {
-        setFormData({...formData, model: glbFile});
+        setFormData((prev) => ({ ...prev, model: glbFile }));
     } 
 
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {

@@ -1,10 +1,11 @@
 import { useEffect, useState } from "react";
-import { TextureLoader, Mesh, Group, Object3D, MeshBasicMaterial } from "three";
+import { TextureLoader, Mesh, Group, Object3D, MeshBasicMaterial, BufferGeometry } from "three";
 import { GLTFExporter } from "three/examples/jsm/exporters/GLTFExporter";
 import { OBJLoader } from "three/examples/jsm/loaders/OBJLoader";
 import { PLYLoader } from "three/examples/jsm/loaders/PLYLoader";
 import { ModelPreview } from "../../preview/ModelPreview";
 import PreviewRenderer from "../../preview/PreviewRenderer";
+import * as BufferGeometryUtils from "three/examples/jsm/utils/BufferGeometryUtils";
 
 type ModelInputProps = {
     meshHandler: (glbFile: File) => void;
@@ -30,6 +31,14 @@ export default function MeshInput( props : ModelInputProps): JSX.Element {
     const convertToGLB = (obj: Object3D, onComplete: (output: File) => void, onError: (output: ErrorEvent) => void ) => {
       	const exporter = new GLTFExporter();
 
+		obj.traverse((child) => {
+			if (child instanceof Mesh) {
+				const geometry = child.geometry;
+				const newGeometry = BufferGeometryUtils.mergeVertices(geometry);
+				child.geometry = newGeometry;
+			}
+		});
+
       	exporter.parse(
 			obj,
 			gltf => {
@@ -50,7 +59,6 @@ export default function MeshInput( props : ModelInputProps): JSX.Element {
     }
 
 	const loadMesh = (modelPath: string, texturePath: string, format: SupportedFormat , onLoad: (group: Group) => void) => {
-		// TODO: implement different model formats  (e.g. gltf)
 		const objLoader = new OBJLoader();
 		const plyLoader = new PLYLoader();
 		const textureLoader = new TextureLoader();

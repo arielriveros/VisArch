@@ -1,6 +1,6 @@
 import { Canvas, useThree } from '@react-three/fiber';
 import './AnnotationViewer.css';
-import { MeshProperties } from '../manager/AnnotationManager';
+import { ProxyMeshProperties } from '../manager/AnnotationManager';
 import { BufferAttribute, BufferGeometry, NormalBufferAttributes } from 'three';
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 import { useEffect } from 'react';
@@ -20,7 +20,7 @@ function CameraController() {
     return null;
 }
 
-interface AnnotationViewerProps extends MeshProperties {}
+interface AnnotationViewerProps extends ProxyMeshProperties {}
 
 export default function AnnotationViewer(props: AnnotationViewerProps) {
 
