@@ -6,6 +6,7 @@ import TaskList from '../../../../containers/taskContainers/tasksGrid/TaskList';
 import './TaskMain.css';
 import TaskSidebar from '../../components/sidebar/TaskSidebar';
 import AnnotationManager from '../annotation/manager/AnnotationManager';
+import ProxyMeshContextProvider from '../../contexts/ProxyMeshContext';
 
 type TaskMainProps = {
 	taskId: string;
@@ -41,9 +42,11 @@ export default function TaskMain(props: TaskMainProps) {
 					<TaskList projectId={props.projectId} type={'task-list'} />
 				</TaskSidebar>
 			</div>
-			<div className='task-content'>
-				<AnnotationManager />
-			</div>
+			<ProxyMeshContextProvider>
+				<div className='task-content'>
+					<AnnotationManager />
+				</div>
+			</ProxyMeshContextProvider>
 		</div>
 	)
 }

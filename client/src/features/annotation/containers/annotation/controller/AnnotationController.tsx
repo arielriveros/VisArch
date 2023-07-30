@@ -1,7 +1,8 @@
 import { Canvas, useThree } from '@react-three/fiber';
-import { IntersectionPayload, ProxyMeshProperties } from '../manager/AnnotationManager';
+import { IntersectionPayload } from '../manager/AnnotationManager';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 import { useEffect } from 'react';
+import { useProxyMeshContext } from '../../../hooks/useProxyMesh';
 import './AnnotationController.css';
 
 function CameraController() {
@@ -23,38 +24,52 @@ function CameraController() {
 }
 
 function SelectIndex(props: {selectIndex: (index: IntersectionPayload | null) => void}) {
-    const { raycaster, camera, scene } = useThree();
-    useEffect(() => {
-        const handleMouseDown = (e: MouseEvent) => {
-            if(e.button !== 0) return;
-            e.preventDefault();
-            const intersects = raycaster.intersectObjects(scene.children, true);            
-            if (intersects.length > 0) {
-                const intersection: IntersectionPayload = {
-                    face: intersects[0].face ? intersects[0].face : null,
-                    faceIndex: intersects[0].faceIndex ? intersects[0].faceIndex : null
-                 };
-                props.selectIndex(intersection);
-            }
+    const { raycaster, scene } = useThree();
+    let isThrottled = false;
+
+    const handleMouseMove = (e: MouseEvent) => {
+        e.preventDefault();
+
+        if(isThrottled) return;
+
+        isThrottled = true;
+        // Perform raycasting and intersection calculations
+        const intersects = raycaster.intersectObjects(scene.children, true);
+        if (intersects.length > 0) {
+        const intersection: IntersectionPayload = {
+            face: intersects[0].face ? intersects[0].face : null,
+            faceIndex: intersects[0].faceIndex !== undefined ? intersects[0].faceIndex : null,
+        };
+        props.selectIndex(intersection);
         }
 
-        window.addEventListener('mousedown', handleMouseDown);
+        // Set a timeout to reset the throttling flag
+        setTimeout(() => {
+        isThrottled = false;
+        }, 1);
+    };
+
+    useEffect(() => {
+        // Attach the event listener on mount
+        window.addEventListener('mousemove', handleMouseMove);
 
         return () => {
-            window.removeEventListener('mousedown', handleMouseDown);
-        }
-    }, [raycaster, camera, scene]);
+        // Remove the event listener on unmount
+        window.removeEventListener('mousemove', handleMouseMove);
+        };
+    }, []);
 
     return null;
 }
 
-interface AnnotationViewerProps extends ProxyMeshProperties {
+interface AnnotationViewerProps {
     selectIndexHandler: (index: IntersectionPayload | null) => void;
 }
 
 export default function AnnotationController(props: AnnotationViewerProps) {
 
-	const { geometry, material, selectIndexHandler } = props;
+    const { proxyMesh } = useProxyMeshContext();
+	const { selectIndexHandler } = props;
 
 	return (
 		<div className="annotation-viewer-container">
@@ -64,7 +79,7 @@ export default function AnnotationController(props: AnnotationViewerProps) {
 				<ambientLight />
 				<color attach="background" args={['gray']} />
 				<pointLight position={[10, 10, 10]} />
-				{geometry && <mesh geometry={geometry} material={material} />}
+				{proxyMesh?.geometry && <mesh geometry={proxyMesh.geometry} material={proxyMesh.material} />}
 			</Canvas>
 		</div>
 	);

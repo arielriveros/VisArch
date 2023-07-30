@@ -1,17 +1,14 @@
 import { useEffect, useState } from 'react'
 import { useTaskContext } from '../../../hooks/useTask';
 import { config } from '../../../../../utils/config';
-import { Mesh, Group, BufferGeometry, NormalBufferAttributes, BufferAttribute, Vector3 } from 'three';
+import { Mesh, Group, BufferGeometry, NormalBufferAttributes, Vector3 } from 'three';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
 import { useAuthContext } from '../../../../../hooks/useAuthContext';
-import './AnnotationManager.css';
+import { ProxyMeshProperties } from '../../../contexts/ProxyMeshContext';
 import AnnotationController from '../controller/AnnotationController';
 import AnnotationViewer from '../../../components/viewer/AnnotationViewer';
-
-export type ProxyMeshProperties = {
-    geometry?: BufferGeometry<NormalBufferAttributes>;
-    material: any;
-}
+import { useProxyMeshContext } from '../../../hooks/useProxyMesh';
+import './AnnotationManager.css';
 
 export type IntersectionPayload = {
 	face: {a: number, b: number, c: number, normal: Vector3} | null,
@@ -19,9 +16,9 @@ export type IntersectionPayload = {
 }
 
 export default function AnnotationManager() {
-    const { task, dispatch } = useTaskContext();
+    const { task } = useTaskContext();
+    const { dispatch } = useProxyMeshContext();
     const { user } = useAuthContext();
-    const [proxyMesh, setProxyMesh] = useState<ProxyMeshProperties | null>(null);
     const [selectedIndex, setSelectedIndex] = useState<IntersectionPayload | null>(null);
 
     const getGeometry = (group: Group) => {
@@ -56,10 +53,7 @@ export default function AnnotationManager() {
             const geometry = getGeometry(gltf.scene);
             const material = getMaterial(gltf.scene);
 
-            setProxyMesh({
-                geometry,
-                material
-            });
+            dispatch({ type: 'SET_PROXY_MESH', payload: { geometry, material } as ProxyMeshProperties });
 
         } catch (error) {
             console.error(error);
@@ -72,8 +66,8 @@ export default function AnnotationManager() {
 
     return (
         <div className='annotation-manager-container'>
-            <AnnotationController geometry={proxyMesh?.geometry} material={proxyMesh?.material} selectIndexHandler={setSelectedIndex}/>
-            <AnnotationViewer geometry={proxyMesh?.geometry} material={proxyMesh?.material} selectedIndex={selectedIndex}/>
+            <AnnotationController selectIndexHandler={setSelectedIndex}/>
+            <AnnotationViewer selectedIndex={selectedIndex}/>
         </div>
     )
 }
