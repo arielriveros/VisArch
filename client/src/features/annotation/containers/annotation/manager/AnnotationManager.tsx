@@ -19,11 +19,12 @@ export default function AnnotationManager() {
     const { task } = useTaskContext();
     const { dispatch } = useProxyMeshContext();
     const { user } = useAuthContext();
+    const [hoveredIndex, setHoveredIndex] = useState<IntersectionPayload | null>(null);
     const [selectedIndex, setSelectedIndex] = useState<IntersectionPayload | null>(null);
 
     const getGeometry = (group: Group) => {
         const mesh = group.children[0].children[0] as Mesh;
-        return mesh.geometry as BufferGeometry<NormalBufferAttributes>;
+        return mesh.geometry
     }
 
     const getMaterial = (group: Group) => {
@@ -64,10 +65,20 @@ export default function AnnotationManager() {
         loadMesh();
     }, [task]);
 
+    useEffect(() => {
+        if (!selectedIndex) return;
+
+        /* get face */
+        console.log(selectedIndex);        
+    }, [selectedIndex]);
+
     return (
         <div className='annotation-manager-container'>
-            <AnnotationController selectIndexHandler={setSelectedIndex}/>
-            <AnnotationViewer selectedIndex={selectedIndex}/>
+            <AnnotationController 
+                hoverIndexHandler={setHoveredIndex}
+                selectIndexHandler={setSelectedIndex}
+            />
+            <AnnotationViewer selectedIndex={hoveredIndex}/>
         </div>
     )
 }
