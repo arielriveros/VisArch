@@ -3,6 +3,7 @@ import { IntersectionPayload } from '../../containers/annotation/manager/Annotat
 import { useEffect } from 'react';
 import { Vector3 } from 'three';
 import { useProxyMeshContext } from '../../hooks/useProxyMesh';
+import CrossHairs from './CrossHairs';
 import './AnnotationViewer.css';
 
 interface AnnotationViewerProps {
@@ -41,9 +42,6 @@ function LookAtIndex(props: { selectedIndex: IntersectionPayload | null }) {
 
 		if (position) 
 			changeView(position);
-			
-		
-
 	} , [props.selectedIndex, camera]);
 
 	return null;
@@ -56,6 +54,7 @@ export default function AnnotationViewer(props: AnnotationViewerProps) {
 
 	return (
 		<div className="small-canvas">
+			<CrossHairs resolution={100}/>
 			<Canvas camera={{ position: [0, 0, 2] }}>
 				<LookAtIndex selectedIndex={props.selectedIndex} />
 				<ambientLight />
