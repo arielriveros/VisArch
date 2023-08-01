@@ -1,13 +1,13 @@
 import { useEffect, useState } from 'react'
 import { useTaskContext } from '../../../hooks/useTask';
 import { config } from '../../../../../utils/config';
-import { Mesh, Group, BufferGeometry, NormalBufferAttributes, Vector3 } from 'three';
+import { Mesh, Group, Vector3 } from 'three';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
 import { useAuthContext } from '../../../../../hooks/useAuthContext';
 import { ProxyMeshProperties } from '../../../contexts/ProxyMeshContext';
+import { useProxyMeshContext } from '../../../hooks/useProxyMesh';
 import AnnotationController from '../controller/AnnotationController';
 import AnnotationViewer from '../../../components/viewer/AnnotationViewer';
-import { useProxyMeshContext } from '../../../hooks/useProxyMesh';
 import './AnnotationManager.css';
 
 export type IntersectionPayload = {
@@ -38,7 +38,7 @@ export default function AnnotationManager() {
 
             /* Load glb file into ref */
             const loader = new GLTFLoader();
-            const response = await fetch(`${config.STATICS_URL}/${task?.meshPath}`, {
+            const response = await fetch(`${config.STATICS_URL}/${task.meshPath}`, {
                 headers: {
                     'Authorization': `Bearer ${user?.token}`
                 }

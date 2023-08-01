@@ -43,6 +43,7 @@ function SelectIndex(props: {
 
     const raycast = () => {
         // Perform raycasting and intersection calculations
+        raycaster.firstHitOnly = true;
         const intersects = raycaster.intersectObjects(scene.children, true);
         if (intersects.length > 0) {
             const intersection: IntersectionPayload = {
@@ -55,7 +56,6 @@ function SelectIndex(props: {
         }
     }
 
-
     const handleMouseMove = (e: MouseEvent) => {
         e.preventDefault();
 
@@ -66,7 +66,7 @@ function SelectIndex(props: {
         props.handleHover(intersection);
     
         // Set a timeout to reset the throttling flag
-        setTimeout(() => isThrottled = false, 1);
+        setTimeout(() => isThrottled = false, 0.5);
     };
 
     const handleMouseClick = (e: MouseEvent) => {
@@ -102,7 +102,7 @@ export default function AnnotationController(props: AnnotationViewerProps) {
 
     const unwrapMesh = () => {
         const material: Material | undefined = proxyMesh?.material?.clone();            
-        if(material) material.side = 0;
+        if (material) material.side = 0;
         const unwrappedMesh = new Mesh(proxyMesh?.geometry?.clone() as BufferGeometry<NormalBufferAttributes>, material);
         const group = new Group();
         group.add(unwrappedMesh);
@@ -112,24 +112,33 @@ export default function AnnotationController(props: AnnotationViewerProps) {
             const unwrappedPositions = flattenAxis(unwrappedPositionsNotFlattened, "x", 0.05);
             const positionsBufferAttribute = new BufferAttribute(new Float32Array(unwrappedPositions), 3);
 
-            unwrappedMesh.geometry?.setAttribute('position', positionsBufferAttribute);
+            unwrappedMesh.geometry.setAttribute('position', positionsBufferAttribute);
 
-            unwrappedMesh.geometry?.rotateX(Math.PI / 2);
-            unwrappedMesh.geometry?.rotateY(Math.PI / 2);
-            unwrappedMesh.geometry?.translate(0, 2, 0);
+            unwrappedMesh.geometry.rotateX(Math.PI / 2);
+            unwrappedMesh.geometry.rotateY(Math.PI / 2);
+            unwrappedMesh.geometry.translate(0, 2, 0);
             
-            unwrappedMesh.geometry?.normalizeNormals();
-            unwrappedMesh.geometry?.computeVertexNormals();
-            unwrappedMesh.geometry?.computeTangents();
-            unwrappedMesh.geometry?.computeBoundingBox();
-            unwrappedMesh.geometry?.computeBoundingSphere();
-            
+            unwrappedMesh.geometry.computeBoundsTree();
+            unwrappedMesh.geometry.computeVertexNormals();
+            unwrappedMesh.geometry.computeTangents();
         } 
         setUnwrappedMesh(group);
     };
 
+    const disposeMesh = () => {
+        unwrappedMesh?.traverse((obj) => {
+            if (obj instanceof Mesh) {
+                obj.geometry.disposeBoundsTree();
+                obj.geometry.dispose();
+                obj.material.dispose();
+            }
+        });
+        setUnwrappedMesh(null);
+    }
+
     useEffect(() => {
         unwrapMesh();
+        return () => disposeMesh();
     }, [proxyMesh, unwrapAxis]);
 
 
