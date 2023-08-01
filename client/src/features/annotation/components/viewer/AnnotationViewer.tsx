@@ -54,7 +54,7 @@ export default function AnnotationViewer(props: AnnotationViewerProps) {
 
 	return (
 		<div className="small-canvas">
-			<CrossHairs resolution={100}/>
+			<CrossHairs resolution={50}/>
 			<Canvas camera={{ position: [0, 0, 2] }}>
 				<LookAtIndex selectedIndex={props.selectedIndex} />
 				<ambientLight />

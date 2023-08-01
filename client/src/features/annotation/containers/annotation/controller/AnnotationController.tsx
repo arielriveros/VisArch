@@ -1,92 +1,13 @@
 import { useEffect, useState } from 'react';
 import { Canvas, useThree } from '@react-three/fiber';
 import { IntersectionPayload } from '../manager/AnnotationManager';
-import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 import { useProxyMeshContext } from '../../../hooks/useProxyMesh';
-import { BufferAttribute, BufferGeometry, Group, Material, Mesh, NormalBufferAttributes } from 'three';
+import { BufferAttribute, BufferGeometry, Group, Line, LineBasicMaterial, Material, Mesh, NormalBufferAttributes, Vector2, Vector3 } from 'three';
 import { radialUnwrap } from '../../../utils/radialUnwrap';
 import { flattenAxis } from '../../../utils/flattenAxis';
+import CameraController from './CameraController';
+import HoverIndex from './HoverIndex';
 import './AnnotationController.css';
-
-function CameraController() {
-    const { camera, gl } = useThree();
-    useEffect(() => {
-        const controls = new OrbitControls(camera, gl.domElement);  
-        controls.enablePan = true;
-        controls.enableZoom = true;
-		controls.enableRotate = false;
-        controls.enableDamping = false;
-        controls.maxZoom = 0.1;
-        controls.zoomSpeed = 1.5;
-        controls.panSpeed = 0.5;
-
-        controls.minDistance = 0.1;
-        controls.maxDistance = 10;
-
-
-        controls.update();
-
-        return () => {
-            controls.dispose();
-        };
-    }, [camera, gl]);
-    
-    return null;
-}
-
-function SelectIndex(props: {
-    handleHover: (index: IntersectionPayload | null) => void
-    handleSelect: (index: IntersectionPayload | null) => void
-}) {
-    const { raycaster, scene } = useThree();
-    let isThrottled = false;
-
-    const raycast = () => {
-        // Perform raycasting and intersection calculations
-        raycaster.firstHitOnly = true;
-        const intersects = raycaster.intersectObjects(scene.children, true);
-        if (intersects.length > 0) {
-            const intersection: IntersectionPayload = {
-                face: intersects[0].face ? intersects[0].face : null,
-                faceIndex: intersects[0].faceIndex !== undefined ? intersects[0].faceIndex : null,
-            };
-            return intersection;
-        } else {
-            return null;
-        }
-    }
-
-    const handleMouseMove = (e: MouseEvent) => {
-        e.preventDefault();
-
-        if(isThrottled) return;
-        isThrottled = true;
-    
-        const intersection = raycast();
-        props.handleHover(intersection);
-    
-        // Set a timeout to reset the throttling flag
-        setTimeout(() => isThrottled = false, 0.5);
-    };
-
-    const handleMouseClick = (e: MouseEvent) => {
-        e.preventDefault();
-
-        const intersection = raycast();
-        props.handleSelect(intersection);
-    }
-
-    useEffect(() => {
-        window.addEventListener('click', handleMouseClick);
-        window.addEventListener('mousemove', handleMouseMove);
-        return () => {
-            window.removeEventListener('mousemove', handleMouseMove);
-            window.removeEventListener('click', handleMouseClick);
-        };
-    }, []);
-
-    return null;
-}
 
 interface AnnotationViewerProps {
     hoverIndexHandler: (index: IntersectionPayload | null) => void;
@@ -146,12 +67,8 @@ export default function AnnotationController(props: AnnotationViewerProps) {
 		<div className="annotation-viewer-container">
 			<Canvas camera={{ position: [0, 0, 5] }}>
 				<CameraController />
-                <SelectIndex 
-                    handleHover={(index: IntersectionPayload | null)=>hoverIndexHandler(index)} 
-                    handleSelect={(index: IntersectionPayload | null)=>selectIndexHandler(index)}
-                />
+                <HoverIndex rate={0} handleHover={hoverIndexHandler} />
 				<ambientLight />
-                {/* <axesHelper args={[5]} /> */}
 				<color attach="background" args={['gray']} />
 				<pointLight position={[10, 10, 10]} />
                 {unwrappedMesh && <primitive object={unwrappedMesh}  />}
