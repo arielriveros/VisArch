@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Canvas, useThree } from '@react-three/fiber';
+import { Canvas } from '@react-three/fiber';
 import { IntersectionPayload } from '../manager/AnnotationManager';
 import { useProxyMeshContext } from '../../../hooks/useProxyMesh';
 import { BufferAttribute, BufferGeometry, Group, Line, LineBasicMaterial, Material, Mesh, NormalBufferAttributes, Vector2, Vector3 } from 'three';
@@ -7,6 +7,7 @@ import { radialUnwrap } from '../../../utils/radialUnwrap';
 import { flattenAxis } from '../../../utils/flattenAxis';
 import CameraController from './CameraController';
 import HoverIndex from './HoverIndex';
+import LassoSelector from './LassoSelector';
 import './AnnotationController.css';
 
 interface AnnotationViewerProps {
@@ -68,6 +69,7 @@ export default function AnnotationController(props: AnnotationViewerProps) {
 			<Canvas camera={{ position: [0, 0, 5] }}>
 				<CameraController />
                 <HoverIndex rate={0} handleHover={hoverIndexHandler} />
+                <LassoSelector />
 				<ambientLight />
 				<color attach="background" args={['gray']} />
 				<pointLight position={[10, 10, 10]} />

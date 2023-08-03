@@ -1,6 +1,7 @@
 import { useEffect } from "react";
 import { useThree } from "@react-three/fiber";
 import { IntersectionPayload } from "../manager/AnnotationManager";
+import { Mesh } from "three";
 
 type HoverIndexProps = {
     handleHover: (index: IntersectionPayload | null) => void,
@@ -15,10 +16,16 @@ export default function HoverIndex(props: HoverIndexProps) {
         // Perform raycasting and intersection calculations
         raycaster.firstHitOnly = true;
         const intersects = raycaster.intersectObjects(scene.children, true);
-        if (intersects.length > 0) {
+
+        // Get intersection of meshes only
+        const meshIntersects = intersects.filter((intersect) => {
+            return intersect.object instanceof Mesh;
+        });
+
+        if (meshIntersects.length > 0 ) {
             const intersection: IntersectionPayload = {
-                face: intersects[0].face ? intersects[0].face : null,
-                faceIndex: intersects[0].faceIndex !== undefined ? intersects[0].faceIndex : null,
+                face: meshIntersects[0].face ? meshIntersects[0].face : null,
+                faceIndex: meshIntersects[0].faceIndex !== undefined ? meshIntersects[0].faceIndex : null,
             };
             return intersection;
         } else {
