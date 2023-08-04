@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { Canvas } from '@react-three/fiber';
 import { IntersectionPayload } from '../manager/AnnotationManager';
 import { useProxyMeshContext } from '../../../hooks/useProxyMesh';
-import { BufferAttribute, BufferGeometry, Group, Line, LineBasicMaterial, Material, Mesh, NormalBufferAttributes, Vector2, Vector3 } from 'three';
+import { BufferAttribute, BufferGeometry, Group, Material, Mesh, MeshBasicMaterial, NormalBufferAttributes } from 'three';
 import { radialUnwrap } from '../../../utils/radialUnwrap';
 import { flattenAxis } from '../../../utils/flattenAxis';
 import CameraController from './CameraController';
@@ -20,6 +20,7 @@ export default function AnnotationController(props: AnnotationViewerProps) {
     const { proxyMesh } = useProxyMeshContext();
 	const { hoverIndexHandler, selectIndexHandler } = props;
     const [unwrappedMesh , setUnwrappedMesh] = useState<Group | null>(null);
+    const [highlightMesh , setHighlightMesh] = useState<Mesh>(new Mesh());
     const [unwrapAxis, setUnwrapAxis] = useState<'x' | 'y' | 'z'>('y');
 
     const unwrapMesh = () => {
@@ -43,6 +44,22 @@ export default function AnnotationController(props: AnnotationViewerProps) {
             unwrappedMesh.geometry.computeBoundsTree();
             unwrappedMesh.geometry.computeVertexNormals();
             unwrappedMesh.geometry.computeTangents();
+
+            const highlightMesh = new Mesh();
+            highlightMesh.geometry = unwrappedMesh.geometry.clone();
+            highlightMesh.geometry.drawRange.count = 0;
+            highlightMesh.material = new MeshBasicMaterial({
+                opacity: 0.5,
+                color: 0xff9800,
+                depthWrite: false,
+                transparent: true,
+                
+            });
+            highlightMesh.renderOrder = 1;
+            highlightMesh.geometry.computeBoundsTree();
+            
+            setHighlightMesh(highlightMesh);
+            group.add(highlightMesh);
         } 
         setUnwrappedMesh(group);
     };
@@ -56,6 +73,22 @@ export default function AnnotationController(props: AnnotationViewerProps) {
             }
         });
         setUnwrappedMesh(null);
+        highlightMesh?.geometry.disposeBoundsTree();
+        highlightMesh?.geometry.dispose();
+    }
+
+    const indicesSelectHandler = (indices: number[]) => {
+        const indexAttr = (unwrappedMesh?.children[0] as Mesh).geometry.index;
+        const newIndexAttr = highlightMesh.geometry.index;
+        // update the highlight mesh
+        for ( let i = 0, l = indices.length; i < l; i ++ ) {
+            const i2 = indexAttr?.getX( indices[i] );
+            newIndexAttr?.setX( i, i2 as number );
+        }
+
+        highlightMesh.geometry.drawRange.count = indices.length;
+        if (newIndexAttr)
+            newIndexAttr.needsUpdate = true;
     }
 
     useEffect(() => {
@@ -69,7 +102,7 @@ export default function AnnotationController(props: AnnotationViewerProps) {
 			<Canvas camera={{ position: [0, 0, 5] }}>
 				<CameraController />
                 <HoverIndex rate={0} handleHover={hoverIndexHandler} />
-                <LassoSelector />
+                <LassoSelector mesh={unwrappedMesh?.children[0] as Mesh} handleOnSelect={indicesSelectHandler}/>
 				<ambientLight />
 				<color attach="background" args={['gray']} />
 				<pointLight position={[10, 10, 10]} />
