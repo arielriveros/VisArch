@@ -38,7 +38,7 @@ export default function AnnotationController(props: AnnotationViewerProps) {
             unwrappedMesh.geometry.setAttribute('position', positionsBufferAttribute);
 
             unwrappedMesh.geometry.rotateX(Math.PI / 2);
-            unwrappedMesh.geometry.rotateY(Math.PI / 2);
+            unwrappedMesh.geometry.rotateY(-Math.PI / 2);
             unwrappedMesh.geometry.translate(0, 2, 0);
             
             unwrappedMesh.geometry.computeBoundsTree();
@@ -99,7 +99,7 @@ export default function AnnotationController(props: AnnotationViewerProps) {
 
 	return (
 		<div className="annotation-viewer-container">
-			<Canvas camera={{ position: [0, 0, 5] }}>
+			<Canvas camera={{ position: [0, 0, 2] }}>
 				<CameraController />
                 <HoverIndex rate={0} handleHover={hoverIndexHandler} />
                 <LassoSelector mesh={unwrappedMesh?.children[0] as Mesh} handleOnSelect={indicesSelectHandler}/>

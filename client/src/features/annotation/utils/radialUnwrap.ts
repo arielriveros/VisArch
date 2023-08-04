@@ -17,7 +17,7 @@ export function radialUnwrap(vertices: number[], axis: 'x' | 'y' | 'z' = 'y') {
         }
         
         const r = Math.sqrt(x * x + y * y + z * z);
-        const theta = Math.atan2(x, z);
+        const theta = Math.atan2(z, x);
         const phi = Math.acos(y / r);
 
         unwrappedPositions.push(r, theta, phi);
