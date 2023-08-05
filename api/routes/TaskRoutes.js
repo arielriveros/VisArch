@@ -8,6 +8,7 @@ const uploadModel = require('../middleware/upload');
 router.use(requireAuth);
 
 router.get('/:id', TaskController.getById);
+router.get('/:id/annotations', TaskController.getAnnotations);
 router.post('/', uploadModel.fields(
     [{ name: 'model', maxCount: 1 }]
 ), TaskController.create);

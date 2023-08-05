@@ -2,6 +2,7 @@ const TaskModel = require('../models/Task');
 const UserModel = require('../models/User');
 const ProjectModel = require('../models/Project');
 const fs = require('fs');
+const PatternArchetypeModel = require('../models/PatternArchetype');
 
 async function getById(req, res){
     try{
@@ -59,7 +60,8 @@ async function create(req, res) {
             meshPath: filterPublicFolder(req.files.model[0].path),
             members: project.members,
             status: 'active',
-            project: project
+            project: project,
+            annotations: []
         });
 
         project.tasks.push(newTask._id);
@@ -113,13 +115,47 @@ async function remove(req, res) {
         console.error(err);
         return res.status(500).json({msg: err.message});
     }
-
 }
+
+async function getAnnotations(req, res) {
+    try{
+        const { id: userId } = req.user || {};
+        const user = await UserModel.findById(userId);
+        if(!user)
+            throw new Error('User not found');
+
+        const task = await TaskModel.findById(req.params.id);
+        if(!task)
+            throw new Error('Task not found');
+
+        const project = await ProjectModel.findById(task.project);
+        if(!project)
+            throw new Error('Task does not belong to a project');
+
+        // Check if user is a member of the project
+        if(!project.members.some(m => m.toString() === user._id.toString()))
+            throw new Error('User is not a member of the project');
+
+        // Check if task belongs to the project
+        if(task.project.toString() !== project._id.toString())
+            throw new Error('Task does not belong to the project');
+
+        const annotations = await PatternArchetypeModel.find({_id: { $in: task._id }});
+
+        return res.status(200).json(annotations);
+
+    } catch(err){
+        console.error(err);
+        return res.status(500).json({msg: err.message});
+    }
+}
+
 
 
 
 module.exports = {
     getById,
     create,
-    remove
+    remove,
+    getAnnotations
 }
