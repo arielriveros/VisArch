@@ -1,13 +1,13 @@
 import { createContext, useReducer } from "react";
-import { Task } from "../../../api/ModelTypes";
+import { PatternArchetype, Task } from "../../../api/ModelTypes";
 
 interface TaskState {
     task: Task | null;
 }
-    
+
 interface TaskAction {
-    type: string;
-    payload?: Task;
+    type: 'SET_TASK' | 'ADD_PATTERN_ARCHETYPE';
+    payload?: Task | PatternArchetype;
 }
 
 interface TaskContextProps extends TaskState {
@@ -24,7 +24,30 @@ export const TaskContext = createContext<TaskContextProps>(
 function taskReducer(state: TaskState, action: TaskAction): TaskState {
     switch (action.type) {
         case 'SET_TASK':
-            return { ...state, task: action.payload || null };
+            return { ...state, task: (action.payload as Task) };
+        case 'ADD_PATTERN_ARCHETYPE':
+            if (!state.task) return state;
+
+            if (action.payload as PatternArchetype) {
+                if (!state.task.archetypes)
+                {
+                    const updatedTask = {
+                        ...state.task,
+                        archetypes: [action.payload as PatternArchetype],
+                    };
+                    return { ...state, task: updatedTask };
+                }
+                else
+                {
+                    const archetypes = [...state.task.archetypes, action.payload as PatternArchetype];
+                    const updatedTask = {
+                        ...state.task,
+                        archetypes: archetypes,
+                    };
+                    return { ...state, task: updatedTask };
+                }
+            }
+            return state;
         default:
             return state;
     }

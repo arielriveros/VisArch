@@ -12,13 +12,13 @@ import './AnnotationController.css';
 
 interface AnnotationViewerProps {
     hoverIndexHandler: (index: IntersectionPayload | null) => void;
-    selectIndexHandler: (index: IntersectionPayload | null) => void;
+    selectIndicesHandler: (indices: number[]) => void;
 }
 
 export default function AnnotationController(props: AnnotationViewerProps) {
-
+    
+	const { hoverIndexHandler, selectIndicesHandler } = props;
     const { proxyMesh } = useProxyMeshContext();
-	const { hoverIndexHandler, selectIndexHandler } = props;
     const [unwrappedMesh , setUnwrappedMesh] = useState<Group | null>(null);
     const [highlightMesh , setHighlightMesh] = useState<Mesh>(new Mesh());
     const [unwrapAxis, setUnwrapAxis] = useState<'x' | 'y' | 'z'>('y');
@@ -78,15 +78,26 @@ export default function AnnotationController(props: AnnotationViewerProps) {
     }
 
     const indicesSelectHandler = (indices: number[]) => {
+        props.selectIndicesHandler(indices);
+
+        let newIndices: number[] = [];
+        for (let i = 0; i < indices.length; i++) {
+            const index = indices[i] * 3;
+            const a = index + 0;
+            const b = index + 1;
+            const c = index + 2;
+            newIndices.push(a, b, c);
+        }
+
         const indexAttr = (unwrappedMesh?.children[0] as Mesh).geometry.index;
         const newIndexAttr = highlightMesh.geometry.index;
         // update the highlight mesh
-        for ( let i = 0, l = indices.length; i < l; i ++ ) {
-            const i2 = indexAttr?.getX( indices[i] );
-            newIndexAttr?.setX( i, i2 as number );
+        for ( let i = 0, l = newIndices.length; i < l; i ++ ) {
+            const ix = indexAttr?.getX( newIndices[i] );
+            newIndexAttr?.setX( i, ix as number );
         }
 
-        highlightMesh.geometry.drawRange.count = indices.length;
+        highlightMesh.geometry.drawRange.count = newIndices.length;
         if (newIndexAttr)
             newIndexAttr.needsUpdate = true;
     }

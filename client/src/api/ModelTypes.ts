@@ -21,11 +21,28 @@ export type Project = {
         username: string;
     };
     status: 'active' | 'archived';
-  }
+}
 
-  export type Task = {
-	readonly _id: string,
+export type PatternEntity = {
+    readonly _id: string;
+    archetypeId: string;
+    faceIds: number[];
+    orientation: number;
+    scale: number;
+    reflection: boolean;
+}
+
+export type PatternArchetype = {
+    readonly _id: string;
+    fold_symmetry: number;
+    imgPath: string;
+    entities: PatternEntity[];
+}
+
+export type Task = {
+    readonly _id: string,
 	name: string,
 	meshPath: string,
 	status: 'active' | 'archived',
+    archetypes: PatternArchetype[],
 }

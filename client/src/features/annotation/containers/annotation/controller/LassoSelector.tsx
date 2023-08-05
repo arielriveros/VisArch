@@ -133,9 +133,6 @@ export default function LassoSelector(props: LassoSelectorProps) {
 
 			prevX = ex;
 			prevY = ey;
-
-			/* if ( params.liveUpdate ) 
-				selectionNeedsUpdate = true; */
 		}
     }
 
@@ -311,7 +308,8 @@ export default function LassoSelector(props: LassoSelectorProps) {
 
                     const res = props.mesh?.geometry.boundsTree?.raycastFirst(tempRay, BackSide);
                     if (res) return false;
-                    selectionIndices.current.push( a, b, c );
+
+                    selectionIndices.current.push( index );
                     return false;
                 }
 

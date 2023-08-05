@@ -16,11 +16,10 @@ export type IntersectionPayload = {
 }
 
 export default function AnnotationManager() {
-    const { task } = useTaskContext();
-    const { dispatch } = useProxyMeshContext();
+    const { task, dispatch: dispatchTask } = useTaskContext();
+    const { dispatch: dispatchProxyMesh } = useProxyMeshContext();
     const { user } = useAuthContext();
     const [hoveredIndex, setHoveredIndex] = useState<IntersectionPayload | null>(null);
-    const [selectedIndex, setSelectedIndex] = useState<IntersectionPayload | null>(null);
     const [loading, setLoading] = useState<boolean>(false);
 
     const getGeometry = (group: Group) => {
@@ -57,7 +56,7 @@ export default function AnnotationManager() {
             const geometry = getGeometry(gltf.scene);
             const material = getMaterial(gltf.scene);
 
-            dispatch({ type: 'SET_PROXY_MESH', payload: { geometry, material } as ProxyMeshProperties });
+            dispatchProxyMesh({ type: 'SET_PROXY_MESH', payload: { geometry, material } as ProxyMeshProperties });
 
             setLoading(false);
 
@@ -69,21 +68,36 @@ export default function AnnotationManager() {
 
     useEffect(() => {
         loadMesh();
-    }, [task]);
+    }, [task?.meshPath]);
 
-    useEffect(() => {
-        if (!selectedIndex) return;
+    const selectIndicesHandler = (indices: number[]) => {
 
-        /* get face */
-        console.log(selectedIndex);        
-    }, [selectedIndex]);
+        dispatchTask({ type: 'ADD_PATTERN_ARCHETYPE',
+            payload: {
+                _id: "dummy",
+                fold_symmetry: 0,
+                imgPath: "dummy",
+                entities: [
+                    {
+                        _id: "dummy",
+                        archetypeId: "dummy",
+                        faceIds: indices,
+                        orientation: 0,
+                        scale: 1,
+                        reflection: false
+                    }
+                ]
+            }
+        });
+        console.log(indices);
+    }
 
     return (
         <div className='annotation-manager-container'>
             {loading && <div className='loading-container'> Loading... </div>}
             <AnnotationController 
                 hoverIndexHandler={setHoveredIndex}
-                selectIndexHandler={setSelectedIndex}
+                selectIndicesHandler={selectIndicesHandler}
             />
             <AnnotationViewer selectedIndex={hoveredIndex}/>
         </div>
