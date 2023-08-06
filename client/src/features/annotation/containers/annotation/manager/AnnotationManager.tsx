@@ -71,25 +71,7 @@ export default function AnnotationManager() {
     }, [task?.meshPath]);
 
     const selectIndicesHandler = (indices: number[]) => {
-
-        dispatchTask({ type: 'ADD_PATTERN_ARCHETYPE',
-            payload: {
-                _id: "dummy",
-                fold_symmetry: 0,
-                imgPath: "dummy",
-                entities: [
-                    {
-                        _id: "dummy",
-                        archetypeId: "dummy",
-                        faceIds: indices,
-                        orientation: 0,
-                        scale: 1,
-                        reflection: false
-                    }
-                ]
-            }
-        });
-        console.log(indices);
+        
     }
 
     return (

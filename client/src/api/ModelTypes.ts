@@ -24,7 +24,6 @@ export type Project = {
 }
 
 export type PatternEntity = {
-    readonly _id: string;
     archetypeId: string;
     faceIds: number[];
     orientation: number;
@@ -33,7 +32,7 @@ export type PatternEntity = {
 }
 
 export type PatternArchetype = {
-    readonly _id: string;
+    name: string;
     fold_symmetry: number;
     imgPath: string;
     entities: PatternEntity[];
@@ -44,5 +43,5 @@ export type Task = {
 	name: string,
 	meshPath: string,
 	status: 'active' | 'archived',
-    archetypes: PatternArchetype[],
+    archetypes?: PatternArchetype[],
 }

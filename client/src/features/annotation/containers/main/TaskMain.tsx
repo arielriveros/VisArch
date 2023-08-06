@@ -3,10 +3,11 @@ import { config } from '../../../../utils/config';
 import { useAuthContext } from '../../../../hooks/useAuthContext';
 import { useTaskContext } from '../../hooks/useTask';
 import TaskList from '../../../../containers/taskContainers/tasksGrid/TaskList';
-import './TaskMain.css';
 import TaskSidebar from '../../components/sidebar/TaskSidebar';
 import AnnotationManager from '../annotation/manager/AnnotationManager';
 import ProxyMeshContextProvider from '../../contexts/ProxyMeshContext';
+import ArchetypesList from '../archetypesList/ArchetypesList';
+import './TaskMain.css';
 
 type TaskMainProps = {
 	taskId: string;
@@ -15,7 +16,7 @@ type TaskMainProps = {
 
 export default function TaskMain(props: TaskMainProps) {
 	const { user } = useAuthContext();
-	const { dispatch } = useTaskContext();
+	const { task, dispatch } = useTaskContext();
 
 	const getTask = async () => {
 		try {
@@ -39,6 +40,7 @@ export default function TaskMain(props: TaskMainProps) {
 		<div className='task-main'>
 			<div className='task-sidebar-container'> 
 				<TaskSidebar>
+					<ArchetypesList />
 					<TaskList projectId={props.projectId} type={'task-list'} />
 				</TaskSidebar>
 			</div>

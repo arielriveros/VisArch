@@ -78,7 +78,7 @@ export default function AnnotationController(props: AnnotationViewerProps) {
     }
 
     const indicesSelectHandler = (indices: number[]) => {
-        props.selectIndicesHandler(indices);
+        selectIndicesHandler(indices);
 
         let newIndices: number[] = [];
         for (let i = 0; i < indices.length; i++) {
