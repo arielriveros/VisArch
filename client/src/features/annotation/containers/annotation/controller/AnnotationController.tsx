@@ -9,6 +9,7 @@ import CameraController from './CameraController';
 import HoverIndex from './HoverIndex';
 import LassoSelector from './LassoSelector';
 import './AnnotationController.css';
+import Confirmation from '../../../components/confirmation/Confirmation';
 
 interface AnnotationViewerProps {
     hoverIndexHandler: (index: IntersectionPayload | null) => void;
@@ -22,6 +23,8 @@ export default function AnnotationController(props: AnnotationViewerProps) {
     const [unwrappedMesh , setUnwrappedMesh] = useState<Group | null>(null);
     const [highlightMesh , setHighlightMesh] = useState<Mesh>(new Mesh());
     const [unwrapAxis, setUnwrapAxis] = useState<'x' | 'y' | 'z'>('y');
+    const [showConfirmation, setShowConfirmation] = useState<boolean>(false);
+    const [tempIndices, setTempIndices] = useState<number[]>([]);
 
     const unwrapMesh = () => {
         const material: Material | undefined = proxyMesh?.material?.clone();            
@@ -77,9 +80,18 @@ export default function AnnotationController(props: AnnotationViewerProps) {
         highlightMesh?.geometry.dispose();
     }
 
-    const indicesSelectHandler = (indices: number[]) => {
-        selectIndicesHandler(indices);
+    const onConfirm = () => {
+        setShowConfirmation(false);
+        selectIndicesHandler(tempIndices);
+    }
 
+    const onCancel = () => {
+        setShowConfirmation(false);
+        highlightIndices([]);
+        setTempIndices([]);
+    }
+
+    const highlightIndices = (indices: number[]) => {
         let newIndices: number[] = [];
         for (let i = 0; i < indices.length; i++) {
             const index = indices[i] * 3;
@@ -101,9 +113,16 @@ export default function AnnotationController(props: AnnotationViewerProps) {
         if (newIndexAttr)
             newIndexAttr.needsUpdate = true;
     }
+        
+    const indicesSelectHandler = (indices: number[]) => {
+        setTempIndices(indices);
+        highlightIndices(indices);
+        setShowConfirmation(true);
+    }
 
     useEffect(() => {
         unwrapMesh();
+        setShowConfirmation(false);
         return () => disposeMesh();
     }, [proxyMesh, unwrapAxis]);
 
@@ -113,12 +132,16 @@ export default function AnnotationController(props: AnnotationViewerProps) {
 			<Canvas camera={{ position: [0, 0, 2] }}>
 				<CameraController />
                 <HoverIndex rate={0} handleHover={hoverIndexHandler} />
-                <LassoSelector mesh={unwrappedMesh?.children[0] as Mesh} handleOnSelect={indicesSelectHandler}/>
+                <LassoSelector
+                    mesh={unwrappedMesh?.children[0] as Mesh}
+                    handleOnSelect={ !showConfirmation ? indicesSelectHandler : ()=>{}}
+                />
 				<ambientLight />
 				<color attach="background" args={['gray']} />
 				<pointLight position={[10, 10, 10]} />
                 {unwrappedMesh && <primitive object={unwrappedMesh}  />}
 			</Canvas>
+            {showConfirmation && <Confirmation label={"Add Pattern?"} onConfirm={onConfirm} onCancel={onCancel} />}
 		</div>
 	);
 }
