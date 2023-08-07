@@ -16,7 +16,7 @@ export type IntersectionPayload = {
 }
 
 export default function AnnotationManager() {
-    const { task, dispatch: dispatchTask } = useTaskContext();
+    const { task, archetype, dispatch: dispatchTask } = useTaskContext();
     const { dispatch: dispatchProxyMesh } = useProxyMeshContext();
     const { user } = useAuthContext();
     const [hoveredIndex, setHoveredIndex] = useState<IntersectionPayload | null>(null);

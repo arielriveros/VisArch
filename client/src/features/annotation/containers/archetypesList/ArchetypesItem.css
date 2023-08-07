@@ -1,0 +1,11 @@
+.archetype-item {
+    display: flex;
+    justify-content: space-between;
+    height: 100%;
+    padding: 0 10px;
+}
+
+.archetype-item:hover {
+    background-color: #f5f5f5;
+    cursor: pointer;
+}

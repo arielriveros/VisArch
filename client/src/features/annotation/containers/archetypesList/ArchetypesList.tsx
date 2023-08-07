@@ -26,10 +26,14 @@ export default function ArchetypesList() {
         dispatchTask({ type: 'ADD_PATTERN_ARCHETYPE', payload: newArchetype});
     }
 
+    const selectArchetype = (name: string) => {
+        dispatchTask({ type: 'SELECT_PATTERN_ARCHETYPE', payload: { patternArchetypeName: name }});
+    }
+
     return (
         <div className='archetypes-list'>
             {archetypes.map((archetype, index) => (
-                <ArchetypesItem key={index} name={archetype.name} />
+                <ArchetypesItem key={index} name={archetype.name} onClick={selectArchetype} />
             ))}
             <button className='add-archetype' onClick={addArchetype}>
                 Add Archetype
