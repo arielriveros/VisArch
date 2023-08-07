@@ -1,12 +1,13 @@
 import { useEffect, useRef, useState } from 'react';
 import { Canvas } from '@react-three/fiber';
-import { BufferAttribute, ColorRepresentation, Group, Material, Mesh, MeshBasicMaterial } from 'three';
+import { BufferAttribute, Group, Material, Mesh } from 'three';
 import { useProxyMeshContext } from '../../../hooks/useProxyMesh';
 import { useTaskContext } from '../../../hooks/useTask';
 import { useIndicesContext } from '../../../hooks/useIndices';
 import { radialUnwrap } from '../../../utils/radialUnwrap';
 import { flattenAxis } from '../../../utils/flattenAxis';
 import { highlightIndices } from '../../../utils/highlightIndices';
+import { createHighlightMesh } from '../../../utils/createHighlightMesh';
 import CameraController from './CameraController';
 import HoverIndex from './HoverIndex';
 import LassoSelector from './LassoSelector';
@@ -62,6 +63,8 @@ export default function AnnotationController() {
             unwrappedProxyMesh.geometry.rotateY(-Math.PI / 2);
             unwrappedProxyMesh.geometry.translate(0, 2, 0);
 
+            unwrappedProxyMesh.geometry.setIndex(proxyGeometry.index);
+
             unwrappedProxyMesh.geometry.computeBoundsTree();
             unwrappedProxyMesh.geometry.computeVertexNormals();
             unwrappedProxyMesh.geometry.computeTangents();
@@ -70,22 +73,6 @@ export default function AnnotationController() {
         });
     };
     
-    const createHighlightMesh = (originalMesh: Mesh, color: ColorRepresentation = 0xff9800) => {
-        const highlightMesh = new Mesh();
-        highlightMesh.geometry = originalMesh.geometry.clone();
-        highlightMesh.geometry.drawRange.count = 0;
-        highlightMesh.material = new MeshBasicMaterial({
-            opacity: 0.5,
-            color: color,
-            depthWrite: false,
-            transparent: true,
-            
-        });
-        highlightMesh.renderOrder = 1;
-        
-        return highlightMesh;
-    }
-
     const disposeMesh = () => {
         unwrappedMesh?.traverse((obj) => {
             if (obj instanceof Mesh) {
@@ -105,17 +92,21 @@ export default function AnnotationController() {
 
     const onCancel = () => {
         setShowConfirmation(false);
-        highlightIndices(unwrappedMesh, highlightMesh, []);
         dispatchIndices({ type: 'SET_SELECTED_INDICES', payload: [] });
     }
         
     const indicesSelectHandler = (indices: number[]) => {
         if (indices.length < 3) return;
-
-        highlightIndices(unwrappedMesh, highlightMesh, indices);
         setShowConfirmation(true);
         dispatchIndices({ type: 'SET_SELECTED_INDICES', payload: indices });
     }
+
+    useEffect(() => {
+        if (!selectedIndices) return;
+
+        highlightIndices(unwrappedMesh, highlightMesh, selectedIndices);
+    }, [selectedIndices]);
+
 
     useEffect(() => {
         init();

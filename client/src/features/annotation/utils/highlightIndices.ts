@@ -10,7 +10,7 @@ export function highlightIndices(originalMesh: Mesh, meshToHighlight: Mesh, indi
         newIndices.push(a, b, c);
     }
 
-    const indexAttr = originalMesh.geometry.index;
+    const indexAttr = originalMesh.geometry.clone().index;
     const newIndexAttr = meshToHighlight.geometry.index;
     // update the highlight mesh
     for ( let i = 0, l = newIndices.length; i < l; i ++ ) {

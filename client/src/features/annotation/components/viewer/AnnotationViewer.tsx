@@ -1,54 +1,65 @@
-import { Canvas, useThree } from '@react-three/fiber';
-import { IntersectionPayload } from '../../containers/annotation/manager/AnnotationManager';
-import { useEffect } from 'react';
-import { Vector3 } from 'three';
+import { Canvas } from '@react-three/fiber';
+import { useEffect, useRef, useState } from 'react';
+import { Group, Mesh } from 'three';
 import { useProxyMeshContext } from '../../hooks/useProxyMesh';
-import CrossHairs from './CrossHairs';
 import { useIndicesContext } from '../../hooks/useIndices';
+import { highlightIndices } from '../../utils/highlightIndices';
+import { createHighlightMesh } from '../../utils/createHighlightMesh';
+import CrossHairs from './CrossHairs';
+import LookAtIndex from './LookAtIndex';
 import './AnnotationViewer.css';
-
-
-function LookAtIndex() {
-	const { camera } = useThree();
-	const { proxyGeometry } = useProxyMeshContext();
-	const { indexPosition } = useIndicesContext();
-
-	const getPosition = (face: {a: number, b: number, c: number, normal: Vector3}) => {
-		const { a, b, c } = face;
-		if (!proxyGeometry) return null;
-
-		const vertices = proxyGeometry.attributes.position.array;
-		const x = (vertices[a * 3] + vertices[b * 3] + vertices[c * 3]) / 3;
-		const y = (vertices[a * 3 + 1] + vertices[b * 3 + 1] + vertices[c * 3 + 1]) / 3;
-		const z = (vertices[a * 3 + 2] + vertices[b * 3 + 2] + vertices[c * 3 + 2]) / 3;
-
-		return new Vector3(x, y, z);
-	}
-
-	const changeView = (newPosition: Vector3) => {
-		camera.position.set(newPosition.x, newPosition.y, newPosition.z);
-		camera.position.multiplyScalar(2);
-		camera.lookAt(0, 0, 0);
-	}
-
-	useEffect(() => {
-		if (!indexPosition) return;
-		const { face } = indexPosition;
-		
-		if (!face) return;
-		const position = getPosition(face);
-
-		if (position) 
-			changeView(position);
-	} , [indexPosition, camera]);
-
-	return null;
-}
-
 
 export default function AnnotationViewer() {
 
 	const { proxyGeometry, proxyMaterial } = useProxyMeshContext();
+	const { selectedIndices } = useIndicesContext();
+	const [originalMesh, setOriginalMesh] = useState<Mesh>(new Mesh());
+	const [highlightMesh, setHighlightMesh] = useState<Mesh>(new Mesh());
+
+	const groupRef = useRef<Group | null>(null);
+
+	const init = () => {
+		groupRef.current = new Group();
+
+		if(!proxyGeometry || !proxyMaterial) return;
+
+        const originalMesh = new Mesh();
+		originalMesh.geometry = proxyGeometry.clone();
+		originalMesh.material = proxyMaterial.clone();
+
+        setOriginalMesh(originalMesh);
+        groupRef.current?.add(originalMesh);
+
+        const highlightMesh = createHighlightMesh(originalMesh, 'violet');
+        setHighlightMesh(highlightMesh);
+        groupRef.current?.add(highlightMesh);
+	}
+
+	const dispose = () => {
+		if (!groupRef.current) return;
+
+		for (let child of groupRef.current.children)  {
+			(child as Mesh).geometry.dispose();
+			groupRef.current.remove(child);
+		}
+
+		highlightMesh.geometry.dispose();
+		groupRef.current.remove(highlightMesh);
+	}
+
+	useEffect(() => {
+		init();
+
+		return () => {
+			dispose();
+		}
+	}, [proxyGeometry, proxyMaterial]);
+
+	useEffect(() => {
+        if (!selectedIndices) return;
+
+        highlightIndices(originalMesh, highlightMesh, selectedIndices);
+    }, [selectedIndices]);
 
 	return (
 		<div className="small-canvas">
@@ -57,7 +68,7 @@ export default function AnnotationViewer() {
 				<LookAtIndex />
 				<ambientLight />
 				<pointLight position={[10, 10, 10]} />
-				{proxyGeometry && proxyMaterial && <mesh geometry={proxyGeometry} material={proxyMaterial} />}
+				{groupRef.current && <primitive object={groupRef.current} />}
 			</Canvas>
 		</div>
 	);
