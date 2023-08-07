@@ -1,15 +1,16 @@
 import { useEffect } from "react";
+import { Mesh } from "three";
 import { useThree } from "@react-three/fiber";
 import { IntersectionPayload } from "../manager/AnnotationManager";
-import { Mesh } from "three";
+import { useIndicesContext } from "../../../hooks/useIndices";
 
 type HoverIndexProps = {
-    handleHover: (index: IntersectionPayload | null) => void,
     rate?: number
 }
 
 export default function HoverIndex(props: HoverIndexProps) {
     const { raycaster, scene, gl } = useThree();
+    const { dispatch } = useIndicesContext();
     let isThrottled = false;
 
     const raycast = () => {
@@ -40,7 +41,7 @@ export default function HoverIndex(props: HoverIndexProps) {
         isThrottled = true;
     
         const intersection = raycast();
-        props.handleHover(intersection);
+        dispatch({ type: 'SET_INDEX_POSITION', payload: intersection });
     
         // Set a timeout to reset the throttling flag
         setTimeout(() => isThrottled = false, props.rate ?? 1000);

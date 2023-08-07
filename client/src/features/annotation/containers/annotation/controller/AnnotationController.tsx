@@ -1,9 +1,9 @@
 import { useEffect, useRef, useState } from 'react';
 import { Canvas } from '@react-three/fiber';
 import { BufferAttribute, ColorRepresentation, Group, Material, Mesh, MeshBasicMaterial } from 'three';
-import { IntersectionPayload } from '../manager/AnnotationManager';
 import { useProxyMeshContext } from '../../../hooks/useProxyMesh';
 import { useTaskContext } from '../../../hooks/useTask';
+import { useIndicesContext } from '../../../hooks/useIndices';
 import { radialUnwrap } from '../../../utils/radialUnwrap';
 import { flattenAxis } from '../../../utils/flattenAxis';
 import { highlightIndices } from '../../../utils/highlightIndices';
@@ -13,19 +13,13 @@ import LassoSelector from './LassoSelector';
 import Confirmation from '../../../components/confirmation/Confirmation';
 import './AnnotationController.css';
 
-interface AnnotationViewerProps {
-    hoverIndexHandler: (index: IntersectionPayload | null) => void;
-    selectIndicesHandler: (indices: number[]) => void;
-}
-
-export default function AnnotationController(props: AnnotationViewerProps) {
-	const { hoverIndexHandler, selectIndicesHandler } = props;
-    const { selectedArchetype: archetype } = useTaskContext();
+export default function AnnotationController() {
+    const { selectedArchetype: archetype,  dispatch: dispatchTask } = useTaskContext();
     const { proxyGeometry, proxyMaterial } = useProxyMeshContext();
+    const { selectedIndices, dispatch: dispatchIndices } = useIndicesContext();
     const [unwrappedMesh, setUnwrappedMesh] = useState<Mesh>(new Mesh());
     const [highlightMesh, setHighlightMesh] = useState<Mesh>(new Mesh());
     const [showConfirmation, setShowConfirmation] = useState<boolean>(false);
-    const [tempIndices, setTempIndices] = useState<number[]>([]);
     
     const groupRef = useRef<Group | null>(null);
 
@@ -106,19 +100,21 @@ export default function AnnotationController(props: AnnotationViewerProps) {
 
     const onConfirm = () => {
         setShowConfirmation(false);
-        selectIndicesHandler(tempIndices);
+        dispatchTask({ type: 'ADD_PATTERN_ENTITY', payload: { patternIndices: selectedIndices } });
     }
 
     const onCancel = () => {
         setShowConfirmation(false);
         highlightIndices(unwrappedMesh, highlightMesh, []);
-        setTempIndices([]);
+        dispatchIndices({ type: 'SET_SELECTED_INDICES', payload: [] });
     }
         
     const indicesSelectHandler = (indices: number[]) => {
-        setTempIndices(indices);
+        if (indices.length < 3) return;
+
         highlightIndices(unwrappedMesh, highlightMesh, indices);
         setShowConfirmation(true);
+        dispatchIndices({ type: 'SET_SELECTED_INDICES', payload: indices });
     }
 
     useEffect(() => {
@@ -132,7 +128,7 @@ export default function AnnotationController(props: AnnotationViewerProps) {
 		<div className="annotation-viewer-container">
 			<Canvas camera={{ position: [0, 0, 2] }}>
 				<CameraController />
-                <HoverIndex rate={0} handleHover={hoverIndexHandler} />
+                <HoverIndex rate={0} />
                 <LassoSelector
                     mesh={unwrappedMesh as Mesh}
                     handleOnSelect={ (!showConfirmation) && archetype ? indicesSelectHandler : ()=>{}}

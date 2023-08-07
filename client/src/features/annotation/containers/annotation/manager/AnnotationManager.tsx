@@ -16,10 +16,9 @@ export type IntersectionPayload = {
 }
 
 export default function AnnotationManager() {
-    const { task, dispatch: dispatchTask } = useTaskContext();
+    const { task } = useTaskContext();
     const { dispatch: dispatchProxyMesh } = useProxyMeshContext();
     const { user } = useAuthContext();
-    const [hoveredIndex, setHoveredIndex] = useState<IntersectionPayload | null>(null);
     const [loading, setLoading] = useState<boolean>(false);
 
     const getGeometry = (group: Group) => {
@@ -70,18 +69,11 @@ export default function AnnotationManager() {
         loadMesh();
     }, [task?.meshPath]);
 
-    const selectIndicesHandler = (indices: number[]) => {
-        dispatchTask({ type: 'ADD_PATTERN_ENTITY', payload: { patternIndices: indices } });
-    }
-
     return (
         <div className='annotation-manager-container'>
             {loading && <div className='loading-container'> Loading... </div>}
-            <AnnotationController 
-                hoverIndexHandler={setHoveredIndex}
-                selectIndicesHandler={selectIndicesHandler}
-            />
-            <AnnotationViewer selectedIndex={hoveredIndex}/>
+            <AnnotationController />
+            <AnnotationViewer />
         </div>
     )
 }

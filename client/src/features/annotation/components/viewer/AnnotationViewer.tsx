@@ -4,15 +4,14 @@ import { useEffect } from 'react';
 import { Vector3 } from 'three';
 import { useProxyMeshContext } from '../../hooks/useProxyMesh';
 import CrossHairs from './CrossHairs';
+import { useIndicesContext } from '../../hooks/useIndices';
 import './AnnotationViewer.css';
 
-interface AnnotationViewerProps {
-	selectedIndex: IntersectionPayload | null;
-}
 
-function LookAtIndex(props: { selectedIndex: IntersectionPayload | null }) {
+function LookAtIndex() {
 	const { camera } = useThree();
 	const { proxyGeometry } = useProxyMeshContext();
+	const { indexPosition } = useIndicesContext();
 
 	const getPosition = (face: {a: number, b: number, c: number, normal: Vector3}) => {
 		const { a, b, c } = face;
@@ -33,21 +32,21 @@ function LookAtIndex(props: { selectedIndex: IntersectionPayload | null }) {
 	}
 
 	useEffect(() => {
-		if (!props.selectedIndex) return;
-		const { face } = props.selectedIndex;
+		if (!indexPosition) return;
+		const { face } = indexPosition;
 		
 		if (!face) return;
 		const position = getPosition(face);
 
 		if (position) 
 			changeView(position);
-	} , [props.selectedIndex, camera]);
+	} , [indexPosition, camera]);
 
 	return null;
 }
 
 
-export default function AnnotationViewer(props: AnnotationViewerProps) {
+export default function AnnotationViewer() {
 
 	const { proxyGeometry, proxyMaterial } = useProxyMeshContext();
 
@@ -55,7 +54,7 @@ export default function AnnotationViewer(props: AnnotationViewerProps) {
 		<div className="small-canvas">
 			<CrossHairs resolution={50}/>
 			<Canvas camera={{ position: [0, 0, 2] }}>
-				<LookAtIndex selectedIndex={props.selectedIndex} />
+				<LookAtIndex />
 				<ambientLight />
 				<pointLight position={[10, 10, 10]} />
 				{proxyGeometry && proxyMaterial && <mesh geometry={proxyGeometry} material={proxyMaterial} />}

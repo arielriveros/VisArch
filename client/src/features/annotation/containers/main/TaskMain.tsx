@@ -4,9 +4,10 @@ import { useAuthContext } from '../../../../hooks/useAuthContext';
 import { useTaskContext } from '../../hooks/useTask';
 import TaskList from '../../../../containers/taskContainers/tasksGrid/TaskList';
 import TaskSidebar from '../../components/sidebar/TaskSidebar';
+import ArchetypesList from '../archetypesList/ArchetypesList';
 import AnnotationManager from '../annotation/manager/AnnotationManager';
 import ProxyMeshContextProvider from '../../contexts/ProxyMeshContext';
-import ArchetypesList from '../archetypesList/ArchetypesList';
+import IndicesContextProvider from '../../contexts/IndicesContext';
 import './TaskMain.css';
 
 type TaskMainProps = {
@@ -16,7 +17,7 @@ type TaskMainProps = {
 
 export default function TaskMain(props: TaskMainProps) {
 	const { user } = useAuthContext();
-	const { task, dispatch } = useTaskContext();
+	const { dispatch } = useTaskContext();
 
 	const getTask = async () => {
 		try {
@@ -45,9 +46,11 @@ export default function TaskMain(props: TaskMainProps) {
 				</TaskSidebar>
 			</div>
 			<ProxyMeshContextProvider>
-				<div className='task-content'>
-					<AnnotationManager />
-				</div>
+				<IndicesContextProvider>
+					<div className='task-content'>
+						<AnnotationManager />
+					</div>
+				</IndicesContextProvider>
 			</ProxyMeshContextProvider>
 		</div>
 	)
