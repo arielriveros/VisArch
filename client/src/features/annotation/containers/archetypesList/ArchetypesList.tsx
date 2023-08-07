@@ -16,24 +16,26 @@ export default function ArchetypesList() {
     }, [task?.archetypes]);
 
     const addArchetype = () => {
-        const newArchetype: PatternArchetype = {
-            name: `pat-${archetypes.length}`,
-            fold_symmetry: 0,
-            imgPath: '',
-            entities: []
-        };
-
-        dispatchTask({ type: 'ADD_PATTERN_ARCHETYPE', payload: newArchetype});
+        dispatchTask({ type: 'ADD_PATTERN_ARCHETYPE', payload: null});
     }
 
     const selectArchetype = (name: string) => {
         dispatchTask({ type: 'SELECT_PATTERN_ARCHETYPE', payload: { patternArchetypeName: name }});
     }
 
+    const deleteArchetype = (name: string) => {
+        dispatchTask({ type: 'REMOVE_PATTERN_ARCHETYPE', payload: { patternArchetypeName: name }});
+    }
+
     return (
         <div className='archetypes-list'>
             {archetypes.map((archetype, index) => (
-                <ArchetypesItem key={index} name={archetype.name} onClick={selectArchetype} />
+                <ArchetypesItem
+                    key={index}
+                    name={archetype.name}
+                    onClick={selectArchetype}
+                    onDelete={deleteArchetype}
+                />
             ))}
             <button className='add-archetype' onClick={addArchetype}>
                 Add Archetype

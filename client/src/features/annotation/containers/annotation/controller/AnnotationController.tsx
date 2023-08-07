@@ -10,6 +10,7 @@ import HoverIndex from './HoverIndex';
 import LassoSelector from './LassoSelector';
 import './AnnotationController.css';
 import Confirmation from '../../../components/confirmation/Confirmation';
+import { useTaskContext } from '../../../hooks/useTask';
 
 interface AnnotationViewerProps {
     hoverIndexHandler: (index: IntersectionPayload | null) => void;
@@ -17,7 +18,7 @@ interface AnnotationViewerProps {
 }
 
 export default function AnnotationController(props: AnnotationViewerProps) {
-    
+    const { selectedArchetype: archetype } = useTaskContext();
 	const { hoverIndexHandler, selectIndicesHandler } = props;
     const { proxyMesh } = useProxyMeshContext();
     const [unwrappedMesh , setUnwrappedMesh] = useState<Group | null>(null);
@@ -134,7 +135,7 @@ export default function AnnotationController(props: AnnotationViewerProps) {
                 <HoverIndex rate={0} handleHover={hoverIndexHandler} />
                 <LassoSelector
                     mesh={unwrappedMesh?.children[0] as Mesh}
-                    handleOnSelect={ !showConfirmation ? indicesSelectHandler : ()=>{}}
+                    handleOnSelect={ (!showConfirmation) && archetype ? indicesSelectHandler : ()=>{}}
                 />
 				<ambientLight />
 				<color attach="background" args={['gray']} />
