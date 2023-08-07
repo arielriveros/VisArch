@@ -12,14 +12,13 @@ interface AnnotationViewerProps {
 
 function LookAtIndex(props: { selectedIndex: IntersectionPayload | null }) {
 	const { camera } = useThree();
-	const { proxyMesh } = useProxyMeshContext();
+	const { proxyGeometry } = useProxyMeshContext();
 
 	const getPosition = (face: {a: number, b: number, c: number, normal: Vector3}) => {
 		const { a, b, c } = face;
-		const geometry = proxyMesh?.geometry;
-		if (!geometry) return null;
+		if (!proxyGeometry) return null;
 
-		const vertices = geometry.attributes.position.array;
+		const vertices = proxyGeometry.attributes.position.array;
 		const x = (vertices[a * 3] + vertices[b * 3] + vertices[c * 3]) / 3;
 		const y = (vertices[a * 3 + 1] + vertices[b * 3 + 1] + vertices[c * 3 + 1]) / 3;
 		const z = (vertices[a * 3 + 2] + vertices[b * 3 + 2] + vertices[c * 3 + 2]) / 3;
@@ -50,7 +49,7 @@ function LookAtIndex(props: { selectedIndex: IntersectionPayload | null }) {
 
 export default function AnnotationViewer(props: AnnotationViewerProps) {
 
-	const { proxyMesh } = useProxyMeshContext();
+	const { proxyGeometry, proxyMaterial } = useProxyMeshContext();
 
 	return (
 		<div className="small-canvas">
@@ -59,7 +58,7 @@ export default function AnnotationViewer(props: AnnotationViewerProps) {
 				<LookAtIndex selectedIndex={props.selectedIndex} />
 				<ambientLight />
 				<pointLight position={[10, 10, 10]} />
-				{proxyMesh?.geometry && <mesh geometry={proxyMesh.geometry} material={proxyMesh.material} />}
+				{proxyGeometry && proxyMaterial && <mesh geometry={proxyGeometry} material={proxyMaterial} />}
 			</Canvas>
 		</div>
 	);

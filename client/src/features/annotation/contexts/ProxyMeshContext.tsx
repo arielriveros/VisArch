@@ -1,13 +1,14 @@
 import { createContext, useReducer } from "react";
-import { BufferGeometry, NormalBufferAttributes } from "three";
+import { BufferGeometry, Material, NormalBufferAttributes } from "three";
 
 export type ProxyMeshProperties = {
-    readonly geometry?: BufferGeometry<NormalBufferAttributes>;
-    readonly material: any;
+    readonly geometry: BufferGeometry<NormalBufferAttributes>;
+    readonly material: Material;
 }
 
 interface ProxyMeshState {
-    proxyMesh: ProxyMeshProperties | null;
+    proxyGeometry: BufferGeometry<NormalBufferAttributes> | null;
+    proxyMaterial: Material | null
 }
     
 interface ProxyMeshAction {
@@ -21,7 +22,8 @@ interface ProxyMeshContextProps extends ProxyMeshState {
 
 export const ProxyMeshContext = createContext<ProxyMeshContextProps>(
     {
-        proxyMesh: null,
+        proxyGeometry: null,
+        proxyMaterial: null,
         dispatch: () => {}
     }
 );
@@ -29,7 +31,7 @@ export const ProxyMeshContext = createContext<ProxyMeshContextProps>(
 function proxyMeshReducer(state: ProxyMeshState, action: ProxyMeshAction): ProxyMeshState {
     switch (action.type) {
         case 'SET_PROXY_MESH':
-            return { ...state, proxyMesh: action.payload || null };
+            return { ...state, proxyGeometry: action.payload?.geometry || null, proxyMaterial: action.payload?.material || null };
         default:
             return state;
     }
@@ -37,7 +39,7 @@ function proxyMeshReducer(state: ProxyMeshState, action: ProxyMeshAction): Proxy
 
 export default function ProxyMeshContextProvider({ children }: { children: React.ReactNode}) {
 
-    const [state, dispatch] = useReducer(proxyMeshReducer, { proxyMesh: null });
+    const [state, dispatch] = useReducer(proxyMeshReducer, { proxyGeometry: null, proxyMaterial: null });
     return (
         <ProxyMeshContext.Provider value={{ ...state, dispatch }}>
             {children}

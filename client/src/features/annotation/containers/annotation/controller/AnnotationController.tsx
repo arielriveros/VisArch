@@ -20,7 +20,7 @@ interface AnnotationViewerProps {
 export default function AnnotationController(props: AnnotationViewerProps) {
     const { selectedArchetype: archetype } = useTaskContext();
 	const { hoverIndexHandler, selectIndicesHandler } = props;
-    const { proxyMesh } = useProxyMeshContext();
+    const { proxyGeometry, proxyMaterial } = useProxyMeshContext();
     const [unwrappedMesh , setUnwrappedMesh] = useState<Group | null>(null);
     const [highlightMesh , setHighlightMesh] = useState<Mesh>(new Mesh());
     const [unwrapAxis, setUnwrapAxis] = useState<'x' | 'y' | 'z'>('y');
@@ -28,14 +28,14 @@ export default function AnnotationController(props: AnnotationViewerProps) {
     const [tempIndices, setTempIndices] = useState<number[]>([]);
 
     const unwrapMesh = () => {
-        const material: Material | undefined = proxyMesh?.material?.clone();            
+        const material: Material | undefined = proxyMaterial?.clone();            
         if (material) material.side = 0;
-        const unwrappedMesh = new Mesh(proxyMesh?.geometry?.clone() as BufferGeometry<NormalBufferAttributes>, material);
+        const unwrappedMesh = new Mesh(proxyGeometry?.clone() as BufferGeometry<NormalBufferAttributes>, material);
         const group = new Group();
         group.add(unwrappedMesh);
         
-        if (proxyMesh?.geometry) {
-            const unwrappedPositionsNotFlattened = radialUnwrap(Array.from(proxyMesh.geometry.attributes.position.array), unwrapAxis);
+        if (proxyGeometry) {
+            const unwrappedPositionsNotFlattened = radialUnwrap(Array.from(proxyGeometry.attributes.position.array), unwrapAxis);
             const unwrappedPositions = flattenAxis(unwrappedPositionsNotFlattened, "x", 0.05);
             const positionsBufferAttribute = new BufferAttribute(new Float32Array(unwrappedPositions), 3);
 
@@ -125,7 +125,7 @@ export default function AnnotationController(props: AnnotationViewerProps) {
         unwrapMesh();
         setShowConfirmation(false);
         return () => disposeMesh();
-    }, [proxyMesh, unwrapAxis]);
+    }, [proxyGeometry, proxyMaterial, unwrapAxis]);
 
 
 	return (

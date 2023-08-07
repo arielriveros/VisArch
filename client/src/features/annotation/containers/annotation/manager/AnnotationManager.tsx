@@ -16,7 +16,7 @@ export type IntersectionPayload = {
 }
 
 export default function AnnotationManager() {
-    const { task, selectedArchetype: archetype, dispatch: dispatchTask } = useTaskContext();
+    const { task, dispatch: dispatchTask } = useTaskContext();
     const { dispatch: dispatchProxyMesh } = useProxyMeshContext();
     const { user } = useAuthContext();
     const [hoveredIndex, setHoveredIndex] = useState<IntersectionPayload | null>(null);
@@ -71,7 +71,7 @@ export default function AnnotationManager() {
     }, [task?.meshPath]);
 
     const selectIndicesHandler = (indices: number[]) => {
-        
+        dispatchTask({ type: 'ADD_PATTERN_ENTITY', payload: { patternIndices: indices } });
     }
 
     return (
