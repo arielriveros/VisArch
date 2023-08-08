@@ -11,7 +11,7 @@ export function createHighlightMesh(originalMesh: Mesh, color: ColorRepresentati
         transparent: true,
         
     });
-    highlightMesh.renderOrder = 1;
+    highlightMesh.renderOrder = 0;
     
     return highlightMesh;
 }

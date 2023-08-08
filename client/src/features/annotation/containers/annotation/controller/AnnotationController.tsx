@@ -15,11 +15,12 @@ import Confirmation from '../../../components/confirmation/Confirmation';
 import './AnnotationController.css';
 
 export default function AnnotationController() {
-    const { selectedArchetype: archetype,  dispatch: dispatchTask } = useTaskContext();
+    const { task, selectedArchetype,  dispatch: dispatchTask } = useTaskContext();
     const { proxyGeometry, proxyMaterial } = useProxyMeshContext();
     const { selectedIndices, dispatch: dispatchIndices } = useIndicesContext();
     const [unwrappedMesh, setUnwrappedMesh] = useState<Mesh>(new Mesh());
     const [highlightMesh, setHighlightMesh] = useState<Mesh>(new Mesh());
+    const [patternHighlightMeshes, setPatternHighlightMeshes] = useState<{name: string, mesh: Mesh}[]>([]);
     const [showConfirmation, setShowConfirmation] = useState<boolean>(false);
     
     const groupRef = useRef<Group | null>(null);
@@ -35,6 +36,8 @@ export default function AnnotationController() {
         const highlightMesh = createHighlightMesh(unwrappedProxyMesh, 'red');
         setHighlightMesh(highlightMesh);
         groupRef.current?.add(highlightMesh);
+
+        updateHighlightMeshes();
     }
 
     const unwrapMesh = async (unwrapAxis: 'x' | 'y' | 'z') => {
@@ -83,11 +86,17 @@ export default function AnnotationController() {
         });
         highlightMesh?.geometry.disposeBoundsTree();
         highlightMesh?.geometry.dispose();
+
+        for (let tempHighlightMesh of patternHighlightMeshes) {
+            tempHighlightMesh.mesh.geometry.disposeBoundsTree();
+            tempHighlightMesh.mesh.geometry.dispose();
+        }
     }
 
     const onConfirm = () => {
         setShowConfirmation(false);
         dispatchTask({ type: 'ADD_PATTERN_ENTITY', payload: { patternIndices: selectedIndices } });
+        dispatchIndices({ type: 'SET_SELECTED_INDICES', payload: [] });
     }
 
     const onCancel = () => {
@@ -99,6 +108,21 @@ export default function AnnotationController() {
         if (indices.length < 3) return;
         setShowConfirmation(true);
         dispatchIndices({ type: 'SET_SELECTED_INDICES', payload: indices });
+    }
+
+    const updateHighlightMeshes = () => {
+        for (let archetype of task?.archetypes ?? []) {
+            const highlightMesh = {name: archetype.name, mesh:createHighlightMesh(unwrappedMesh, Math.random() * 0xffffff)};
+            setPatternHighlightMeshes([...patternHighlightMeshes, highlightMesh]);
+            groupRef.current?.add(highlightMesh.mesh);
+        }
+
+        for (let tempHighlightMesh of patternHighlightMeshes) {
+            if (!task?.archetypes?.find(archetype => archetype.name === tempHighlightMesh.name)) {
+                groupRef.current?.remove(tempHighlightMesh.mesh);
+                setPatternHighlightMeshes(patternHighlightMeshes.filter(mesh => mesh.name !== tempHighlightMesh.name));
+            }
+        }
     }
 
     useEffect(() => {
@@ -115,6 +139,21 @@ export default function AnnotationController() {
     }, [proxyGeometry, proxyMaterial]);
 
 
+    useEffect(() => {
+        updateHighlightMeshes();
+
+        if (!selectedArchetype) return;
+
+        const tempHighlightMesh = patternHighlightMeshes.find(mesh => mesh.name === selectedArchetype.name)?.mesh;
+        if (!tempHighlightMesh) return;
+
+        const patternIndices = task?.archetypes?.find(archetype => archetype.name === selectedArchetype.name)?.entities.flatMap(entity => entity.faceIds);
+        if (!patternIndices) return;
+
+        highlightIndices(unwrappedMesh, tempHighlightMesh, patternIndices);
+    }, [task?.archetypes]);
+
+
 	return (
 		<div className="annotation-viewer-container">
 			<Canvas camera={{ position: [0, 0, 2] }}>
@@ -122,7 +161,7 @@ export default function AnnotationController() {
                 <HoverIndex rate={0} />
                 <LassoSelector
                     mesh={unwrappedMesh as Mesh}
-                    handleOnSelect={ (!showConfirmation) && archetype ? indicesSelectHandler : ()=>{}}
+                    handleOnSelect={ (!showConfirmation) && selectedArchetype ? indicesSelectHandler : ()=>{}}
                 />
 				<ambientLight />
 				<color attach="background" args={['gray']} />
