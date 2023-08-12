@@ -27,14 +27,19 @@ export default function ArchetypesList() {
         dispatchTask({ type: 'REMOVE_PATTERN_ARCHETYPE', payload: { patternArchetypeName: name }});
     }
 
+    const changeColor = (name: string, color: string) => {
+        dispatchTask({ type: 'UPDATE_SELECTED_PATTERN_ARCHETYPE', payload: { patternArchetypeName: name, color }});
+    }
+
     return (
         <div className='archetypes-list'>
             {archetypes.map((archetype, index) => (
                 <ArchetypesItem
                     key={index}
-                    name={archetype.name}
+                    archetype={archetype}
                     onClick={selectArchetype}
                     onDelete={deleteArchetype}
+                    onColorChange={changeColor}
                 />
             ))}
             <button className='add-archetype' onClick={addArchetype}>

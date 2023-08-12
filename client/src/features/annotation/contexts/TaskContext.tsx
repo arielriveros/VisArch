@@ -12,7 +12,8 @@ interface TaskAction {
         'ADD_PATTERN_ARCHETYPE' |
         'SELECT_PATTERN_ARCHETYPE' |
         'REMOVE_PATTERN_ARCHETYPE' |
-        'ADD_PATTERN_ENTITY';
+        'ADD_PATTERN_ENTITY' |
+        'UPDATE_SELECTED_PATTERN_ARCHETYPE';
     payload?: 
         Task |
         PatternArchetype |
@@ -56,6 +57,7 @@ function taskReducer(state: TaskState, action: TaskAction): TaskState {
                 fold_symmetry: 0,
                 imgPath: '',
                 entities: [],
+                color: "#ffffff"
             };
 
             if (!state.task.archetypes) {
@@ -114,9 +116,22 @@ function taskReducer(state: TaskState, action: TaskAction): TaskState {
 
             return { ...state, task: { ...state.task, archetypes: updatedArchetypes } };
 
+        case 'UPDATE_SELECTED_PATTERN_ARCHETYPE':
+            if (!state.task || !state.selectedArchetype) return state;
+
+            const updatedSelectedArchetypes = state.task.archetypes?.map(archetype => {
+                if (archetype.name === state.selectedArchetype?.name) {
+                    return { ...archetype, ...action.payload };
+                }
+                else {
+                    return archetype;
+                }
+            });
+
+            return { ...state, task: { ...state.task, archetypes: updatedSelectedArchetypes } };
+
         default:
             return state;
-
         
     }
 }

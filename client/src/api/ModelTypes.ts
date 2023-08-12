@@ -36,6 +36,9 @@ export type PatternArchetype = {
     fold_symmetry: number;
     imgPath: string;
     entities: PatternEntity[];
+
+    // Client only
+    color: string;
 }
 
 export type Task = {
