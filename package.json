@@ -1,0 +1,26 @@
+{
+  "name": "visarch",
+  "version": "1.0.0",
+  "description": "Web application for the visualization and labeling of repetitive patterns in 3D meshes' surface.",
+  "scripts": {
+    "start-client": "cd client && npm start",
+    "start-api": "cd api && npm start",
+    "install-client": "cd client && npm install",
+    "install-api": "cd api && npm install",
+    "install": "concurrently \"npm run install-api\" \"npm run install-client\"",
+    "start": "concurrently \"npm run start-api\" \"npm run start-client\""
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/arielriveros/VisArch.git"
+  },
+  "author": "Ariel Riveros",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/arielriveros/VisArch/issues"
+  },
+  "homepage": "https://github.com/arielriveros/VisArch#readme",
+  "dependencies": {
+    "concurrently": "^8.2.0"
+  }
+}
