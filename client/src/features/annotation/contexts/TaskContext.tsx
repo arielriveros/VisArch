@@ -34,16 +34,17 @@ export const TaskContext = createContext<TaskContextProps>(
     }
 );
 
-function renameAllArchetypes(archetypes: PatternArchetype[]) {
-    const renamedArchetypes = archetypes.map((archetype, index) => {
-        archetype.name = `pat-${index}`;
-        return archetype;
-    });
-
-    return renamedArchetypes;
-}
-
 function taskReducer(state: TaskState, action: TaskAction): TaskState {
+    
+    function randomName(max: number): string {
+        let value = Math.floor(Math.random() * max);
+        let name = `pat-${value}`;
+        if (state.task?.archetypes?.find(archetype => archetype.name === name))
+            return randomName(max);
+
+        return name;
+    }
+    
     switch (action.type) {
         case 'SET_TASK':
             state.selectedArchetype = null;    
@@ -53,7 +54,7 @@ function taskReducer(state: TaskState, action: TaskAction): TaskState {
             if (!state.task) return state;
 
             const newArchetype: PatternArchetype = {
-                name: `pat-${state.task.archetypes?.length ?? 0}`,
+                name: randomName(100000),
                 fold_symmetry: 0,
                 imgPath: '',
                 entities: [],
@@ -88,8 +89,6 @@ function taskReducer(state: TaskState, action: TaskAction): TaskState {
             if (!state.task) return state;
 
             const filteredArchetypes = state.task.archetypes?.filter(archetype => archetype.name !== (action.payload as { patternArchetypeName: string }).patternArchetypeName);
-            renameAllArchetypes(filteredArchetypes ?? []);
-
             state.selectedArchetype = null;
 
             return { ...state, task: { ...state.task, archetypes: filteredArchetypes } };
