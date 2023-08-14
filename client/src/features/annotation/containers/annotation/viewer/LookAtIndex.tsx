@@ -1,8 +1,8 @@
 import { useThree } from "@react-three/fiber";
 import { useEffect } from "react";
 import { Vector3 } from "three";
-import { useIndicesContext } from "../../hooks/useIndices";
-import { useProxyMeshContext } from "../../hooks/useProxyMesh";
+import { useIndicesContext } from "../../../hooks/useIndices";
+import { useProxyMeshContext } from "../../../hooks/useProxyMesh";
 
 export default function LookAtIndex() {
 	const { camera } = useThree();

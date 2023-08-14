@@ -114,7 +114,7 @@ export default function AnnotationController() {
         if(!updateEntitiesOnly) {
             for (let archetype of task?.archetypes ?? []) {
                 const highlightMesh = {
-                    name: archetype.name,
+                    name: archetype.nameId,
                     mesh:createHighlightMesh(unwrappedMesh, Math.random() * 0xffffff)
                 };
                 setPatternHighlightMeshes([...patternHighlightMeshes, highlightMesh]);
@@ -122,24 +122,24 @@ export default function AnnotationController() {
             }
     
             for (let tempHighlightMesh of patternHighlightMeshes) {
-                if (!task?.archetypes?.find(archetype => archetype.name === tempHighlightMesh.name)) {
+                if (!task?.archetypes?.find(archetype => archetype.nameId === tempHighlightMesh.name)) {
                     groupRef.current?.remove(tempHighlightMesh.mesh);
                     setPatternHighlightMeshes(patternHighlightMeshes.filter(mesh => mesh.name !== tempHighlightMesh.name));
                 }
             }
         }
 
-        const updatedArchetype = task?.archetypes?.find(archetype => archetype.name === selectedArchetype?.name);
+        const updatedArchetype = task?.archetypes?.find(archetype => archetype.nameId === selectedArchetype?.nameId);
         if (!updatedArchetype) return;
 
         const updatedColor = updatedArchetype.color;
-        const meshToHighlight = patternHighlightMeshes.find(mesh => mesh.name === selectedArchetype?.name)?.mesh;
+        const meshToHighlight = patternHighlightMeshes.find(mesh => mesh.name === selectedArchetype?.nameId)?.mesh;
         if (!meshToHighlight) return;
 
         let hexColor = updatedColor.padStart(6, '0');
         (meshToHighlight.material as MeshBasicMaterial).color.set(hexColor)
 
-        const patternIndices = task?.archetypes?.find(archetype => archetype.name === selectedArchetype?.name)?.entities.flatMap(entity => entity.faceIds);
+        const patternIndices = task?.archetypes?.find(archetype => archetype.nameId === selectedArchetype?.nameId)?.entities.flatMap(entity => entity.faceIds);
         if (!patternIndices) return;
 
         highlightIndices(unwrappedMesh, meshToHighlight, patternIndices);

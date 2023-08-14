@@ -4,7 +4,7 @@ import { useAuthContext } from '../../../../hooks/useAuthContext';
 import { useTaskContext } from '../../hooks/useTask';
 import TaskList from '../../../../containers/taskContainers/tasksGrid/TaskList';
 import TaskSidebar from '../../components/sidebar/TaskSidebar';
-import ArchetypesList from '../archetypesList/ArchetypesList';
+import ArchetypesList from '../../components/archetypesList/ArchetypesList';
 import AnnotationManager from '../annotation/manager/AnnotationManager';
 import ProxyMeshContextProvider from '../../contexts/ProxyMeshContext';
 import IndicesContextProvider from '../../contexts/IndicesContext';

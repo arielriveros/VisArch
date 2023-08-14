@@ -7,7 +7,7 @@ import { useAuthContext } from '../../../../../hooks/useAuthContext';
 import { ProxyMeshProperties } from '../../../contexts/ProxyMeshContext';
 import { useProxyMeshContext } from '../../../hooks/useProxyMesh';
 import AnnotationController from '../controller/AnnotationController';
-import AnnotationViewer from '../../../components/viewer/AnnotationViewer';
+import AnnotationViewer from '../viewer/AnnotationViewer';
 import './AnnotationManager.css';
 
 export type IntersectionPayload = {

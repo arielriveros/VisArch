@@ -25,6 +25,7 @@ export type Project = {
 
 export type PatternEntity = {
     archetypeId: string;
+    nameId: string;
     faceIds: number[];
     orientation: number;
     scale: number;
@@ -32,7 +33,7 @@ export type PatternEntity = {
 }
 
 export type PatternArchetype = {
-    name: string;
+    nameId: string;
     fold_symmetry: number;
     imgPath: string;
     entities: PatternEntity[];

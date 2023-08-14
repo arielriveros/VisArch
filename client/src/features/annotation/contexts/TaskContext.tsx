@@ -13,11 +13,13 @@ interface TaskAction {
         'SELECT_PATTERN_ARCHETYPE' |
         'REMOVE_PATTERN_ARCHETYPE' |
         'ADD_PATTERN_ENTITY' |
+        'REMOVE_PATTERN_ENTITY' |
         'UPDATE_SELECTED_PATTERN_ARCHETYPE';
     payload?: 
         Task |
         PatternArchetype |
         { patternArchetypeName: string } |
+        { patternEntityName: string } |
         { patternIndices: number[] } |
         null;
 }
@@ -36,11 +38,11 @@ export const TaskContext = createContext<TaskContextProps>(
 
 function taskReducer(state: TaskState, action: TaskAction): TaskState {
     
-    function randomName(max: number): string {
+    function randomName(indexName: string, max: number): string {
         let value = Math.floor(Math.random() * max);
-        let name = `pat-${value}`;
-        if (state.task?.archetypes?.find(archetype => archetype.name === name))
-            return randomName(max);
+        let name = `${indexName}-${value}`;
+        if (state.task?.archetypes?.find(archetype => archetype.nameId === name))
+            return randomName(indexName, max);
 
         return name;
     }
@@ -54,7 +56,7 @@ function taskReducer(state: TaskState, action: TaskAction): TaskState {
             if (!state.task) return state;
 
             const newArchetype: PatternArchetype = {
-                name: randomName(100000),
+                nameId: randomName('pat', 10000),
                 fold_symmetry: 0,
                 imgPath: '',
                 entities: [],
@@ -80,7 +82,7 @@ function taskReducer(state: TaskState, action: TaskAction): TaskState {
         case 'SELECT_PATTERN_ARCHETYPE':
             if (!state.task) return state;
 
-            let selectedArchetype = state.task.archetypes?.find(archetype => archetype.name === (action.payload as { patternArchetypeName: string }).patternArchetypeName);
+            let selectedArchetype = state.task.archetypes?.find(archetype => archetype.nameId === (action.payload as { patternArchetypeName: string }).patternArchetypeName);
             if (!selectedArchetype) return state;
 
             return { ...state, selectedArchetype: selectedArchetype}
@@ -88,7 +90,7 @@ function taskReducer(state: TaskState, action: TaskAction): TaskState {
         case 'REMOVE_PATTERN_ARCHETYPE':
             if (!state.task) return state;
 
-            const filteredArchetypes = state.task.archetypes?.filter(archetype => archetype.name !== (action.payload as { patternArchetypeName: string }).patternArchetypeName);
+            const filteredArchetypes = state.task.archetypes?.filter(archetype => archetype.nameId !== (action.payload as { patternArchetypeName: string }).patternArchetypeName);
             state.selectedArchetype = null;
 
             return { ...state, task: { ...state.task, archetypes: filteredArchetypes } };
@@ -97,7 +99,8 @@ function taskReducer(state: TaskState, action: TaskAction): TaskState {
             if (!state.task || !state.selectedArchetype) return state;
 
             const newEntity: PatternEntity = {
-                archetypeId: state.selectedArchetype.name,
+                archetypeId: state.selectedArchetype.nameId,
+                nameId: randomName('ent', 10000),
                 orientation: 0,
                 scale: 1,
                 reflection: false,
@@ -105,7 +108,7 @@ function taskReducer(state: TaskState, action: TaskAction): TaskState {
             }
 
             const updatedArchetypes = state.task.archetypes?.map(archetype => {
-                if (archetype.name === state.selectedArchetype?.name) {
+                if (archetype.nameId === state.selectedArchetype?.nameId) {
                     return { ...archetype, entities: [...archetype.entities, newEntity] };
                 }
                 else {
@@ -115,11 +118,28 @@ function taskReducer(state: TaskState, action: TaskAction): TaskState {
 
             return { ...state, task: { ...state.task, archetypes: updatedArchetypes } };
 
+        case 'REMOVE_PATTERN_ENTITY':
+            if (!state.task || !state.selectedArchetype) return state;
+
+            const updatedEntities = state.task.archetypes?.map(archetype => {
+                if (archetype.nameId === state.selectedArchetype?.nameId) {
+                    return { 
+                        ...archetype,
+                        entities: archetype.entities.filter(entity => entity.nameId !== (action.payload as { patternEntityName: string }).patternEntityName)
+                    };
+                }
+                else {
+                    return archetype;
+                }
+            });
+
+            return { ...state, task: { ...state.task, archetypes: updatedEntities } };
+
         case 'UPDATE_SELECTED_PATTERN_ARCHETYPE':
             if (!state.task || !state.selectedArchetype) return state;
 
             const updatedSelectedArchetypes = state.task.archetypes?.map(archetype => {
-                if (archetype.name === state.selectedArchetype?.name) {
+                if (archetype.nameId === state.selectedArchetype?.nameId) {
                     return { ...archetype, ...action.payload };
                 }
                 else {

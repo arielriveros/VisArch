@@ -1,11 +1,11 @@
 import { Canvas } from '@react-three/fiber';
 import { useEffect, useRef, useState } from 'react';
 import { Group, Mesh, MeshBasicMaterial } from 'three';
-import { useProxyMeshContext } from '../../hooks/useProxyMesh';
-import { useIndicesContext } from '../../hooks/useIndices';
-import { useTaskContext } from '../../hooks/useTask';
-import { highlightIndices } from '../../utils/highlightIndices';
-import { createHighlightMesh } from '../../utils/createHighlightMesh';
+import { useProxyMeshContext } from '../../../hooks/useProxyMesh';
+import { useIndicesContext } from '../../../hooks/useIndices';
+import { useTaskContext } from '../../../hooks/useTask';
+import { highlightIndices } from '../../../utils/highlightIndices';
+import { createHighlightMesh } from '../../../utils/createHighlightMesh';
 import CrossHairs from './CrossHairs';
 import LookAtIndex from './LookAtIndex';
 import './AnnotationViewer.css';
@@ -61,7 +61,7 @@ export default function AnnotationViewer() {
         if(!updateEntitiesOnly) {
             for (let archetype of task?.archetypes ?? []) {
                 const highlightMesh = {
-                    name: archetype.name,
+                    name: archetype.nameId,
                     mesh:createHighlightMesh(originalMesh, Math.random() * 0xffffff)
                 };
                 setPatternHighlightMeshes([...patternHighlightMeshes, highlightMesh]);
@@ -69,7 +69,7 @@ export default function AnnotationViewer() {
             }
     
             for (let tempHighlightMesh of patternHighlightMeshes) 
-                if (!task?.archetypes?.find(archetype => archetype.name === tempHighlightMesh.name)) {
+                if (!task?.archetypes?.find(archetype => archetype.nameId === tempHighlightMesh.name)) {
                     groupRef.current?.remove(tempHighlightMesh.mesh);
                     setPatternHighlightMeshes(patternHighlightMeshes.filter(mesh => mesh.name !== tempHighlightMesh.name));
                 }
@@ -77,7 +77,7 @@ export default function AnnotationViewer() {
         }
 
 		for (let archetype of task?.archetypes ?? []) {
-			const meshToHighlight = patternHighlightMeshes.find(mesh => mesh.name === archetype.name)?.mesh;
+			const meshToHighlight = patternHighlightMeshes.find(mesh => mesh.name === archetype.nameId)?.mesh;
 			if (!meshToHighlight) continue;
 
 			let hexColor = archetype.color.padStart(6, '0');
