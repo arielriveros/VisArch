@@ -1,8 +1,9 @@
 import { Canvas } from '@react-three/fiber';
 import { useEffect, useRef, useState } from 'react';
-import { Group, Mesh } from 'three';
+import { Group, Mesh, MeshBasicMaterial } from 'three';
 import { useProxyMeshContext } from '../../hooks/useProxyMesh';
 import { useIndicesContext } from '../../hooks/useIndices';
+import { useTaskContext } from '../../hooks/useTask';
 import { highlightIndices } from '../../utils/highlightIndices';
 import { createHighlightMesh } from '../../utils/createHighlightMesh';
 import CrossHairs from './CrossHairs';
@@ -10,11 +11,12 @@ import LookAtIndex from './LookAtIndex';
 import './AnnotationViewer.css';
 
 export default function AnnotationViewer() {
-
+	const { task, selectedArchetype} = useTaskContext();
 	const { proxyGeometry, proxyMaterial } = useProxyMeshContext();
 	const { selectedIndices } = useIndicesContext();
 	const [originalMesh, setOriginalMesh] = useState<Mesh>(new Mesh());
-	const [highlightMesh, setHighlightMesh] = useState<Mesh>(new Mesh());
+	const [selectionHighlightMesh, setSelectionHighlightMesh] = useState<Mesh>(new Mesh());
+	const [patternHighlightMeshes, setPatternHighlightMeshes] = useState<{name: string, mesh: Mesh}[]>([]);
 
 	const groupRef = useRef<Group | null>(null);
 
@@ -31,8 +33,10 @@ export default function AnnotationViewer() {
         groupRef.current?.add(originalMesh);
 
         const highlightMesh = createHighlightMesh(originalMesh, 'violet');
-        setHighlightMesh(highlightMesh);
+        setSelectionHighlightMesh(highlightMesh);
         groupRef.current?.add(highlightMesh);
+
+		updateHighlightMeshes(false);
 	}
 
 	const dispose = () => {
@@ -43,9 +47,46 @@ export default function AnnotationViewer() {
 			groupRef.current.remove(child);
 		}
 
-		highlightMesh.geometry.dispose();
-		groupRef.current.remove(highlightMesh);
+		selectionHighlightMesh.geometry.dispose();
+		groupRef.current.remove(selectionHighlightMesh);
+
+		for (let tempHighlightMesh of patternHighlightMeshes) {
+			tempHighlightMesh.mesh.geometry.disposeBoundsTree();
+            tempHighlightMesh.mesh.geometry.dispose();
+			groupRef.current.remove(tempHighlightMesh.mesh);
+        }
 	}
+
+	const updateHighlightMeshes = (updateEntitiesOnly: boolean) => {
+        if(!updateEntitiesOnly) {
+            for (let archetype of task?.archetypes ?? []) {
+                const highlightMesh = {
+                    name: archetype.name,
+                    mesh:createHighlightMesh(originalMesh, Math.random() * 0xffffff)
+                };
+                setPatternHighlightMeshes([...patternHighlightMeshes, highlightMesh]);
+                groupRef.current?.add(highlightMesh.mesh);
+            }
+    
+            for (let tempHighlightMesh of patternHighlightMeshes) 
+                if (!task?.archetypes?.find(archetype => archetype.name === tempHighlightMesh.name)) {
+                    groupRef.current?.remove(tempHighlightMesh.mesh);
+                    setPatternHighlightMeshes(patternHighlightMeshes.filter(mesh => mesh.name !== tempHighlightMesh.name));
+                }
+            
+        }
+
+		for (let archetype of task?.archetypes ?? []) {
+			const meshToHighlight = patternHighlightMeshes.find(mesh => mesh.name === archetype.name)?.mesh;
+			if (!meshToHighlight) continue;
+
+			let hexColor = archetype.color.padStart(6, '0');
+			(meshToHighlight.material as MeshBasicMaterial).color.set(hexColor)
+
+			const patternIndices = archetype.entities.flatMap(entity => entity.faceIds);
+			highlightIndices(originalMesh, meshToHighlight, patternIndices);
+		}
+    }
 
 	useEffect(() => {
 		init();
@@ -58,8 +99,15 @@ export default function AnnotationViewer() {
 	useEffect(() => {
         if (!selectedIndices) return;
 
-        highlightIndices(originalMesh, highlightMesh, selectedIndices);
+        highlightIndices(originalMesh, selectionHighlightMesh, selectedIndices);
     }, [selectedIndices]);
+
+	useEffect(() => {
+        // Check if the number of archetypes has changed
+        const updateEntitiesOnly = task?.archetypes?.length === patternHighlightMeshes.length;
+
+        updateHighlightMeshes(updateEntitiesOnly);
+    }, [task?.archetypes]);
 
 	return (
 		<div className="small-canvas">
