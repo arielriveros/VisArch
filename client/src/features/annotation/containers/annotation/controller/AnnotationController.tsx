@@ -112,7 +112,7 @@ export default function AnnotationController() {
 
     const updateHighlightMeshes = (updateEntitiesOnly: boolean) => {
         if(!updateEntitiesOnly) {
-            for (let archetype of task?.archetypes ?? []) {
+            for (let archetype of task?.annotations ?? []) {
                 const highlightMesh = {
                     name: archetype.nameId,
                     mesh:createHighlightMesh(unwrappedMesh, Math.random() * 0xffffff)
@@ -122,14 +122,14 @@ export default function AnnotationController() {
             }
     
             for (let tempHighlightMesh of patternHighlightMeshes) {
-                if (!task?.archetypes?.find(archetype => archetype.nameId === tempHighlightMesh.name)) {
+                if (!task?.annotations?.find(archetype => archetype.nameId === tempHighlightMesh.name)) {
                     groupRef.current?.remove(tempHighlightMesh.mesh);
                     setPatternHighlightMeshes(patternHighlightMeshes.filter(mesh => mesh.name !== tempHighlightMesh.name));
                 }
             }
         }
 
-        const updatedArchetype = task?.archetypes?.find(archetype => archetype.nameId === selectedArchetype?.nameId);
+        const updatedArchetype = task?.annotations?.find(archetype => archetype.nameId === selectedArchetype?.nameId);
         if (!updatedArchetype) return;
 
         const updatedColor = updatedArchetype.color;
@@ -139,7 +139,7 @@ export default function AnnotationController() {
         let hexColor = updatedColor.padStart(6, '0');
         (meshToHighlight.material as MeshBasicMaterial).color.set(hexColor)
 
-        const patternIndices = task?.archetypes?.find(archetype => archetype.nameId === selectedArchetype?.nameId)?.entities.flatMap(entity => entity.faceIds);
+        const patternIndices = task?.annotations?.find(archetype => archetype.nameId === selectedArchetype?.nameId)?.entities.flatMap(entity => entity.faceIds);
         if (!patternIndices) return;
 
         highlightIndices(unwrappedMesh, meshToHighlight, patternIndices);
@@ -161,10 +161,10 @@ export default function AnnotationController() {
 
     useEffect(() => {
         // Check if the number of archetypes has changed
-        const updateEntitiesOnly = task?.archetypes?.length === patternHighlightMeshes.length;
+        const updateEntitiesOnly = task?.annotations?.length === patternHighlightMeshes.length;
 
         updateHighlightMeshes(updateEntitiesOnly);
-    }, [task?.archetypes]);
+    }, [task?.annotations]);
 
 
 	return (

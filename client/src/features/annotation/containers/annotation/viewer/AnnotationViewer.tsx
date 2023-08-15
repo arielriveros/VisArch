@@ -59,7 +59,7 @@ export default function AnnotationViewer() {
 
 	const updateHighlightMeshes = (updateEntitiesOnly: boolean) => {
         if(!updateEntitiesOnly) {
-            for (let archetype of task?.archetypes ?? []) {
+            for (let archetype of task?.annotations ?? []) {
                 const highlightMesh = {
                     name: archetype.nameId,
                     mesh:createHighlightMesh(originalMesh, Math.random() * 0xffffff)
@@ -69,14 +69,14 @@ export default function AnnotationViewer() {
             }
     
             for (let tempHighlightMesh of patternHighlightMeshes) 
-                if (!task?.archetypes?.find(archetype => archetype.nameId === tempHighlightMesh.name)) {
+                if (!task?.annotations?.find(archetype => archetype.nameId === tempHighlightMesh.name)) {
                     groupRef.current?.remove(tempHighlightMesh.mesh);
                     setPatternHighlightMeshes(patternHighlightMeshes.filter(mesh => mesh.name !== tempHighlightMesh.name));
                 }
             
         }
 
-		for (let archetype of task?.archetypes ?? []) {
+		for (let archetype of task?.annotations ?? []) {
 			const meshToHighlight = patternHighlightMeshes.find(mesh => mesh.name === archetype.nameId)?.mesh;
 			if (!meshToHighlight) continue;
 
@@ -104,10 +104,10 @@ export default function AnnotationViewer() {
 
 	useEffect(() => {
         // Check if the number of archetypes has changed
-        const updateEntitiesOnly = task?.archetypes?.length === patternHighlightMeshes.length;
+        const updateEntitiesOnly = task?.annotations?.length === patternHighlightMeshes.length;
 
         updateHighlightMeshes(updateEntitiesOnly);
-    }, [task?.archetypes]);
+    }, [task?.annotations]);
 
 	return (
 		<div className="small-canvas">

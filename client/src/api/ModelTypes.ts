@@ -33,12 +33,11 @@ export type PatternEntity = {
 }
 
 export type PatternArchetype = {
-    nameId: string;
     fold_symmetry: number;
-    imgPath: string;
     entities: PatternEntity[];
 
     // Client only
+    nameId: string;
     color: string;
 }
 
@@ -47,5 +46,5 @@ export type Task = {
 	name: string,
 	meshPath: string,
 	status: 'active' | 'archived',
-    archetypes?: PatternArchetype[],
+    annotations?: PatternArchetype[],
 }

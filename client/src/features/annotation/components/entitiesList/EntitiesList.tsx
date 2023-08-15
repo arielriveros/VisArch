@@ -9,14 +9,14 @@ export default function EntitiesList() {
 
 	useEffect(() => {
 		if (selectedArchetype && selectedArchetype.entities) {
-			task?.archetypes?.forEach(archetype => {
+			task?.annotations?.forEach(archetype => {
 				if (archetype.nameId === selectedArchetype.nameId)
 					setEntities(archetype.entities);
 			});
 		}
 		else
 			setEntities([]);
-	}, [task?.archetypes, selectedArchetype]);
+	}, [task?.annotations, selectedArchetype]);
 
 	return (
 		<div>

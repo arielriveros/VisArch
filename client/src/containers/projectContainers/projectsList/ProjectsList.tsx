@@ -1,8 +1,8 @@
-import React, { useState, useEffect } from 'react'
-import ProjectItem from '../projectItem/ProjectItem';
+import { useState, useEffect } from 'react'
 import { useAuthContext } from '../../../hooks/useAuthContext';
 import { config } from '../../../utils/config';
 import { Project } from '../../../api/ModelTypes';
+import ProjectItem from '../projectItem/ProjectItem';
 import './ProjectsList.css'
 
 export default function ProjectsList(): JSX.Element {
@@ -21,7 +21,6 @@ export default function ProjectsList(): JSX.Element {
         })
         .then(response => response.json())
         .then(data => {
-            console.log(data);
             const projects: Project[] = [];
             for(let p of data.projects) {
                 projects.push({

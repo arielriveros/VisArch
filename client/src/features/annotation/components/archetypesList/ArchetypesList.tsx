@@ -8,12 +8,12 @@ export default function ArchetypesList() {
     const [archetypes, setArchetypes] = useState<PatternArchetype[]>([]);
 
     useEffect(() => {
-        if (task && task.archetypes) 
-            setArchetypes(task.archetypes);
+        if (task && task.annotations) 
+            setArchetypes(task.annotations);
         else
             setArchetypes([]);
 
-    }, [task?.archetypes]);
+    }, [task?.annotations]);
 
     const addArchetype = () => {
         dispatchTask({ type: 'ADD_PATTERN_ARCHETYPE', payload: null});
