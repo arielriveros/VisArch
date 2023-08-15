@@ -6,22 +6,7 @@ const PatternArchetypeModel = require('../models/PatternArchetype');
 
 async function getById(req, res){
     try{
-        const { id: userId } = req.user || {};
-        const user = await UserModel.findById(userId);
-        if(!user)
-            throw new Error('User not found');
-
-        const task = await TaskModel.findById(req.params.id);
-        if(!task)
-            throw new Error('Task not found');
-
-        const project = await ProjectModel.findById(task.project);
-        if(!project)
-            throw new Error('Task does not belong to a project');
-
-        if(!project.members.some(m => m.toString() === user._id.toString()))
-            throw new Error('User is not a member of the project');
-
+        let task = req.task
         return res.status(200).json(task);
     } catch(err){
         console.error(err);
@@ -81,33 +66,12 @@ async function create(req, res) {
 
 async function remove(req, res) {
     try {
-        const { id: userId } = req.user || {};
-        const user = await UserModel.findById(userId);
-        if(!user)
-            throw new Error('User not found');
-
-        const task = await TaskModel.findById(req.params.id);
-        if(!task)
-            throw new Error('Task not found');
-
-        const project = await ProjectModel.findById(task.project._id);
-        if(!project)
-            throw new Error('Project not found');
-
-        // Check if user is a member of the project
-        if(!project.members.some(m => m.toString() === user._id.toString()))
-            throw new Error('User is not a member of the project');
-
-        // Check if task belongs to the project
-        if(task.project.toString() !== project._id.toString())
-            throw new Error('Task does not belong to the project');
-
         // Remove task from project
-        project.tasks.pull(task._id);
-        await project.save();
+        req.project.tasks.pull(req.task._id);
+        await req.project.save();
 
         // Remove task from database
-        const out = await task.deleteOne();
+        const out = await req.task.deleteOne();
         fs.unlinkSync(`public/${out.meshPath}`);
 
         return res.status(200).json({msg: 'Task deleted'});
@@ -119,28 +83,7 @@ async function remove(req, res) {
 
 async function getAnnotations(req, res) {
     try{
-        const { id: userId } = req.user || {};
-        const user = await UserModel.findById(userId);
-        if(!user)
-            throw new Error('User not found');
-
-        const task = await TaskModel.findById(req.params.id);
-        if(!task)
-            throw new Error('Task not found');
-
-        const project = await ProjectModel.findById(task.project);
-        if(!project)
-            throw new Error('Task does not belong to a project');
-
-        // Check if user is a member of the project
-        if(!project.members.some(m => m.toString() === user._id.toString()))
-            throw new Error('User is not a member of the project');
-
-        // Check if task belongs to the project
-        if(task.project.toString() !== project._id.toString())
-            throw new Error('Task does not belong to the project');
-
-        const annotations = await PatternArchetypeModel.find({_id: { $in: task._id }});
+        const annotations = await PatternArchetypeModel.find({_id: { $in: req.task._id }});
 
         return res.status(200).json(annotations);
 
@@ -149,8 +92,6 @@ async function getAnnotations(req, res) {
         return res.status(500).json({msg: err.message});
     }
 }
-
-
 
 
 module.exports = {

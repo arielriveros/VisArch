@@ -6,9 +6,6 @@ const PatternArchetypeSchema = new Schema({
         type: Schema.Types.ObjectId,
         ref: 'Task'
     },
-    imgPath: {
-        type: String
-    },
     foldSymmetry: {
         type: Number,
         default: 0
