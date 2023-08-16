@@ -33,11 +33,11 @@ export type PatternEntity = {
 }
 
 export type PatternArchetype = {
+    nameId: string;
     fold_symmetry: number;
     entities: PatternEntity[];
 
     // Client only
-    nameId: string;
     color: string;
 }
 

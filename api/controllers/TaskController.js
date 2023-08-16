@@ -1,8 +1,8 @@
 const TaskModel = require('../models/Task');
 const UserModel = require('../models/User');
 const ProjectModel = require('../models/Project');
+const AnnotationModel = require('../models/Annotation');
 const fs = require('fs');
-const PatternArchetypeModel = require('../models/PatternArchetype');
 
 async function getById(req, res){
     try{
@@ -83,9 +83,43 @@ async function remove(req, res) {
 
 async function getAnnotations(req, res) {
     try{
-        const annotations = await PatternArchetypeModel.find({_id: { $in: req.task._id }});
+        const annotations = await AnnotationModel.find({_id: { $in: req.task._id }});
 
         return res.status(200).json(annotations);
+
+    } catch(err){
+        console.error(err);
+        return res.status(500).json({msg: err.message});
+    }
+}
+
+async function updateTask(req, res) {
+    try{
+        const { task } = req;
+
+        let updatedTask = {}
+
+        updatedTask.name = req.body.name ?? task.name;
+        updatedTask.status = req.body.status ?? task.status;
+        
+        // If no annotations are provided, keep the old ones
+        if (!req.body.annotations)
+            updatedTask.annotations = task.annotations;
+        
+/*         else {
+            const updatedAnnotations = req.body.annotations;
+
+            const annotations = await AnnotationModel.find({_id: { $in: req.task._id }});
+    
+            // If there are no annotations related to the task, create them
+            if (annotations.length === 0) {
+    
+            }
+        } */
+        
+        task.set(updatedTask);
+        await task.save();
+        return res.status(200).json(task);
 
     } catch(err){
         console.error(err);
@@ -98,5 +132,6 @@ module.exports = {
     getById,
     create,
     remove,
-    getAnnotations
+    getAnnotations,
+    updateTask
 }

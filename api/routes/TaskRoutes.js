@@ -14,5 +14,6 @@ router.post('/', uploadModel.fields(
     [{ name: 'model', maxCount: 1 }]
 ), TaskController.create);
 router.delete('/:id', requireTaskPermission, TaskController.remove);
+router.put('/:id', requireTaskPermission, TaskController.updateTask);
 
 module.exports = router;

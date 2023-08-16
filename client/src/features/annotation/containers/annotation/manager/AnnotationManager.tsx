@@ -16,7 +16,7 @@ export type IntersectionPayload = {
 }
 
 export default function AnnotationManager() {
-    const { task } = useTaskContext();
+    const { task, dispatch: dispatchTask } = useTaskContext();
     const { dispatch: dispatchProxyMesh } = useProxyMeshContext();
     const { user } = useAuthContext();
     const [loading, setLoading] = useState<boolean>(false);
@@ -65,38 +65,9 @@ export default function AnnotationManager() {
         }
     };
 
-    const uploadTask = async () => {
-        try {
-            if (!task) return;
-
-            setLoading(true);
-
-            const response = await fetch(`${config.API_URL}/tasks/${task._id}`, {
-                headers: {
-                    'Authorization': `Bearer ${user?.token}`
-                }
-            });
-
-            if (!response.ok)
-                throw new Error('Failed to upload task');
-
-            let data = await response.json();
-            setLoading(false);
-
-        } catch (error) {
-            console.error(error);
-            setLoading(false);
-        }
-    }
-
-
     useEffect(() => {
         loadMesh();
     }, [task?.meshPath]);
-
-    useEffect(() => {
-        uploadTask();
-    }, [task]);
 
     return (
         <div className='annotation-manager-container'>

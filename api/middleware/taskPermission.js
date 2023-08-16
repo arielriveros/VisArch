@@ -25,7 +25,7 @@ const requireTaskPermission = async (req, res, next) => {
         req.user = user;
         next();
     } catch (error) {
-        return res.status(401).send({ error: "Error" });
+        return res.status(401).send({ error: error.message });
     }
 }
 

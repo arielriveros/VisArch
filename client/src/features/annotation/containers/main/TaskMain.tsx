@@ -17,7 +17,7 @@ type TaskMainProps = {
 
 export default function TaskMain(props: TaskMainProps) {
 	const { user } = useAuthContext();
-	const { dispatch } = useTaskContext();
+	const { task, dispatch } = useTaskContext();
 
 	const getTask = async () => {
 		try {
@@ -32,6 +32,35 @@ export default function TaskMain(props: TaskMainProps) {
 			console.error(error);
 		}
 	};
+
+	const uploadTask = async () => {
+        try {
+            if (!task) return;
+
+            let curatedTask = {
+                name: task.name,
+                status: task.status,
+            };
+
+            const response = await fetch(`${config.API_URL}/tasks/${task._id}`, {
+                method: 'PUT',
+                headers: {
+                    'Authorization': `Bearer ${user?.token}`,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(curatedTask)
+            });
+
+            const data = await response.json();
+            dispatch({ type: 'SET_TASK', payload: data }); // Update
+
+            if (!response.ok)
+                throw new Error('Failed to upload task');
+
+        } catch (error) {
+            console.error(error);
+        }
+    }
 			
 	useEffect(() => {
 		getTask();
@@ -42,6 +71,7 @@ export default function TaskMain(props: TaskMainProps) {
 			<div className='task-sidebar-container'> 
 				<TaskSidebar>
 					<ArchetypesList />
+					<button onClick={uploadTask}> Upload </button>
 					<TaskList projectId={props.projectId} type={'task-list'} />
 				</TaskSidebar>
 			</div>
