@@ -7,6 +7,11 @@ const fs = require('fs');
 async function getById(req, res){
     try{
         let task = req.task
+        const annotations = await AnnotationModel.find({_id: { $in: task.annotations }});
+        
+        task = task.toObject();
+        task.annotations = annotations;
+
         return res.status(200).json(task);
     } catch(err){
         console.error(err);
@@ -101,21 +106,42 @@ async function updateTask(req, res) {
 
         updatedTask.name = req.body.name ?? task.name;
         updatedTask.status = req.body.status ?? task.status;
+        updatedTask.annotations = task.annotations;
         
-        // If no annotations are provided, keep the old ones
-        if (!req.body.annotations)
-            updatedTask.annotations = task.annotations;
-        
-/*         else {
-            const updatedAnnotations = req.body.annotations;
-
-            const annotations = await AnnotationModel.find({_id: { $in: req.task._id }});
-    
-            // If there are no annotations related to the task, create them
-            if (annotations.length === 0) {
-    
+        for (let a of req.body.annotations) {
+            /* 
+            {
+                nameId: 'pat-3042',
+                fold_symmetry: 0,
+                entities: [
+                  {
+                    nameId: 'ent-7563',
+                    orientation: 0,
+                    scale: 1,
+                    reflection: false,
+                    faceIds: [Array]
+                  }
+                ],
+                color: '#c52020',
             }
-        } */
+             */
+            // Check if annotation of nameId already exists
+            let annotation = await AnnotationModel.findOne({nameId: a.nameId, task: task._id});
+
+            if(!annotation){
+                annotation = await AnnotationModel.create({
+                    nameId: a.nameId,
+                    foldSymmetry: a.fold_symmetry,
+                    task: task._id,
+                    entities: a.entities
+                });
+                updatedTask.annotations.push(annotation._id);
+            }
+
+            annotation.foldSymmetry = a.fold_symmetry;
+            annotation.entities = a.entities;
+            await annotation.save();
+        }
         
         task.set(updatedTask);
         await task.save();
