@@ -4,6 +4,7 @@ import { PatternArchetype, PatternEntity, Task } from "../../../api/ModelTypes";
 interface TaskState {
     task: Task | null;
     selectedArchetype: PatternArchetype | null;
+    loading: boolean;
 }
 
 interface TaskAction {
@@ -14,13 +15,15 @@ interface TaskAction {
         'REMOVE_PATTERN_ARCHETYPE' |
         'ADD_PATTERN_ENTITY' |
         'REMOVE_PATTERN_ENTITY' |
-        'UPDATE_SELECTED_PATTERN_ARCHETYPE';
+        'UPDATE_SELECTED_PATTERN_ARCHETYPE' |
+        'SET_LOADING';
     payload?: 
         Task |
         PatternArchetype |
         { patternArchetypeName: string } |
         { patternEntityName: string } |
         { patternIndices: number[] } |
+        boolean |
         null;
 }
 
@@ -32,6 +35,7 @@ export const TaskContext = createContext<TaskContextProps>(
     {
         task: null,
         selectedArchetype: null,
+        loading: false,
         dispatch: () => {}
     }
 );
@@ -137,14 +141,17 @@ function taskReducer(state: TaskState, action: TaskAction): TaskState {
 
             const updatedSelectedArchetypes = state.task.annotations?.map(archetype => {
                 if (archetype.nameId === state.selectedArchetype?.nameId) {
-                    return { ...archetype, ...action.payload };
+                    return { ...archetype, ...(action.payload as PatternArchetype) };
                 }
                 else {
                     return archetype;
                 }
             });
 
-            return { ...state, task: { ...state.task, annotations: updatedSelectedArchetypes } };  
+            return { ...state, task: { ...state.task, annotations: updatedSelectedArchetypes } };
+
+        case 'SET_LOADING':
+            return { ...state, loading: (action.payload as boolean) };
 
         default:
             return state;
@@ -154,7 +161,7 @@ function taskReducer(state: TaskState, action: TaskAction): TaskState {
 
 export default function TaskContextProvider({ children }: { children: React.ReactNode}) {
 
-    const [state, dispatch] = useReducer(taskReducer, { task: null, selectedArchetype: null });
+    const [state, dispatch] = useReducer(taskReducer, { task: null, loading: false, selectedArchetype: null });
     return (
         <TaskContext.Provider value={{ ...state, dispatch }}>
             {children}

@@ -1,11 +1,12 @@
-import { useEffect, useState } from 'react'
+import { useEffect } from 'react'
 import { useTaskContext } from '../../../hooks/useTask';
 import { config } from '../../../../../utils/config';
-import { Mesh, Group, Vector3 } from 'three';
+import { Mesh, Group, Vector3, BufferGeometry, NormalBufferAttributes, Material, BufferAttribute } from 'three';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
 import { useAuthContext } from '../../../../../hooks/useAuthContext';
-import { ProxyMeshProperties } from '../../../contexts/ProxyMeshContext';
 import { useProxyMeshContext } from '../../../hooks/useProxyMesh';
+import { radialUnwrap } from '../../../utils/radialUnwrap';
+import { flattenAxis } from '../../../utils/flattenAxis';
 import AnnotationController from '../controller/AnnotationController';
 import AnnotationViewer from '../viewer/AnnotationViewer';
 import './AnnotationManager.css';
@@ -16,10 +17,9 @@ export type IntersectionPayload = {
 }
 
 export default function AnnotationManager() {
-    const { task, dispatch: dispatchTask } = useTaskContext();
+    const { task, loading, dispatch } = useTaskContext();
     const { dispatch: dispatchProxyMesh } = useProxyMeshContext();
     const { user } = useAuthContext();
-    const [loading, setLoading] = useState<boolean>(false);
 
     const getGeometry = (group: Group) => {
         const mesh = group.children[0].children[0] as Mesh;
@@ -31,11 +31,40 @@ export default function AnnotationManager() {
         return mesh.material
     }
 
-    const loadMesh = async () => {
+    const unwrapMesh = async (geometry: BufferGeometry<NormalBufferAttributes> , unwrapAxis: 'x' | 'y' | 'z') => {
+        return new Promise<BufferGeometry<NormalBufferAttributes> | null>((resolve) => {
+            if (!geometry) {
+                resolve(null);
+                return;
+            }
+
+
+            const unwrappedGeometry = geometry.clone();
+            const unwrappedPositionsNotFlattened = radialUnwrap(
+                Array.from(geometry.attributes.position.array),
+                unwrapAxis
+            );
+            const unwrappedPositions = flattenAxis(unwrappedPositionsNotFlattened, 'x', 0.05);
+            const positionsBufferAttribute = new BufferAttribute(new Float32Array(unwrappedPositions), 3);
+
+            unwrappedGeometry.setAttribute('position', positionsBufferAttribute);
+            unwrappedGeometry.rotateX(Math.PI / 2);
+            unwrappedGeometry.rotateY(-Math.PI / 2);
+            unwrappedGeometry.translate(0, 2, 0);
+            unwrappedGeometry.setIndex(geometry.index);
+            unwrappedGeometry.computeBoundsTree();
+            unwrappedGeometry.computeVertexNormals();
+            unwrappedGeometry.computeTangents();
+
+            resolve(unwrappedGeometry);
+        });
+    };
+
+    const loadMesh = async (shouldUnwrap: boolean) => {
         try {
             if (!task) return;
 
-            setLoading(true);
+            dispatch({ type: 'SET_LOADING', payload: true });
 
             /* Load glb file into ref */
             const loader = new GLTFLoader();
@@ -45,8 +74,10 @@ export default function AnnotationManager() {
                 }
             });
     
-            if (!response.ok)
+            if (!response.ok) {
+                dispatch({ type: 'SET_LOADING', payload: false });
                 throw new Error('Failed to load mesh');
+            }
 
             const blob = await response.blob();
             const url = URL.createObjectURL(blob);
@@ -55,25 +86,39 @@ export default function AnnotationManager() {
             const geometry = getGeometry(gltf.scene);
             const material = getMaterial(gltf.scene);
 
-            dispatchProxyMesh({ type: 'SET_PROXY_MESH', payload: { geometry, material } as ProxyMeshProperties });
+            dispatchProxyMesh({ type: 'SET_PROXY_GEOMETRY', payload: geometry });
+            dispatchProxyMesh({ type: 'SET_PROXY_MATERIAL', payload: material as Material });
 
-            setLoading(false);
+            if (!shouldUnwrap) {
+                dispatchProxyMesh({ type: 'SET_UNWRAPPED_GEOMETRY', payload: geometry.clone() });
+            }
+
+            else {
+                const unwrappedGeometry = await unwrapMesh(geometry, 'y');
+                dispatchProxyMesh({ type: 'SET_UNWRAPPED_GEOMETRY', payload: unwrappedGeometry });
+            }
+
+
+            dispatch({ type: 'SET_LOADING', payload: false });
 
         } catch (error) {
             console.error(error);
-            setLoading(false);
+            dispatch({ type: 'SET_LOADING', payload: false });
         }
     };
 
     useEffect(() => {
-        loadMesh();
+        loadMesh(true);
     }, [task?.meshPath]);
 
     return (
         <div className='annotation-manager-container'>
-            {loading && <div className='loading-container'> Loading... </div>}
-            <AnnotationController />
-            <AnnotationViewer />
+            {loading ? <div className='loading-container'> Loading... </div> :
+                <>
+                    <AnnotationController />
+                    <AnnotationViewer />
+                </>
+            }
         </div>
     )
 }

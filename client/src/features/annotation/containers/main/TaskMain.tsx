@@ -2,7 +2,6 @@ import { useEffect } from 'react'
 import { config } from '../../../../utils/config';
 import { useAuthContext } from '../../../../hooks/useAuthContext';
 import { useTaskContext } from '../../hooks/useTask';
-import { Task } from '../../../../api/ModelTypes';
 import TaskList from '../../../../containers/taskContainers/tasksGrid/TaskList';
 import TaskSidebar from '../../components/sidebar/TaskSidebar';
 import ArchetypesList from '../../components/archetypesList/ArchetypesList';
@@ -22,6 +21,7 @@ export default function TaskMain(props: TaskMainProps) {
 
 	const getTask = async () => {
 		try {
+			dispatch({ type: 'SET_LOADING', payload: true });
 			const response = await fetch(`${config.API_URL}/tasks/${props.taskId}`, {
 				headers: {
 					'Authorization': `Bearer ${user?.token}`
@@ -32,8 +32,10 @@ export default function TaskMain(props: TaskMainProps) {
 				annotation.color = '#'+(Math.random()*0xFFFFFF<<0).toString(16);
 
 			dispatch({ type: 'SET_TASK', payload: task });
+			dispatch({ type: 'SET_LOADING', payload: false });
 		} catch (error) {
 			console.error(error);
+			dispatch({ type: 'SET_LOADING', payload: false });
 		}
 	};
 
