@@ -1,4 +1,4 @@
-import { useEffect } from 'react'
+import { useState, useEffect } from 'react'
 import { useTaskContext } from '../../../hooks/useTask';
 import { config } from '../../../../../utils/config';
 import { Mesh, Group, Vector3, BufferGeometry, NormalBufferAttributes, Material, BufferAttribute } from 'three';
@@ -17,9 +17,10 @@ export type IntersectionPayload = {
 }
 
 export default function AnnotationManager() {
-    const { task, loading, dispatch } = useTaskContext();
-    const { dispatch: dispatchProxyMesh } = useProxyMeshContext();
+    const { task, loading: loadingTask } = useTaskContext();
+    const { loading: loadingMesh, dispatch: dispatchProxyMesh } = useProxyMeshContext();
     const { user } = useAuthContext();
+    const [ready, setReady] = useState<boolean>(false);
 
     const getGeometry = (group: Group) => {
         const mesh = group.children[0].children[0] as Mesh;
@@ -64,7 +65,7 @@ export default function AnnotationManager() {
         try {
             if (!task) return;
 
-            dispatch({ type: 'SET_LOADING', payload: true });
+            dispatchProxyMesh({ type: 'SET_LOADING', payload: true });
 
             /* Load glb file into ref */
             const loader = new GLTFLoader();
@@ -75,7 +76,7 @@ export default function AnnotationManager() {
             });
     
             if (!response.ok) {
-                dispatch({ type: 'SET_LOADING', payload: false });
+                dispatchProxyMesh({ type: 'SET_LOADING', payload: false });
                 throw new Error('Failed to load mesh');
             }
 
@@ -99,11 +100,11 @@ export default function AnnotationManager() {
             }
 
 
-            dispatch({ type: 'SET_LOADING', payload: false });
+            dispatchProxyMesh({ type: 'SET_LOADING', payload: false });
 
         } catch (error) {
             console.error(error);
-            dispatch({ type: 'SET_LOADING', payload: false });
+            dispatchProxyMesh({ type: 'SET_LOADING', payload: false });
         }
     };
 
@@ -111,9 +112,13 @@ export default function AnnotationManager() {
         loadMesh(true);
     }, [task?.meshPath]);
 
+    useEffect(() => {
+        setReady(!loadingTask && !loadingMesh);
+    }, [loadingTask, loadingMesh]);
+
     return (
         <div className='annotation-manager-container'>
-            {loading ? <div className='loading-container'> Loading... </div> :
+            { !ready ? <div className='loading-container'> Loading... </div> :
                 <>
                     <AnnotationController />
                     <AnnotationViewer />
