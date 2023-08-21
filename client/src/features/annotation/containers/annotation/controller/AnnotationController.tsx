@@ -37,7 +37,8 @@ export default function AnnotationController() {
         setSelectionHighlightMesh(highlightMesh);
         groupRef.current?.add(highlightMesh);
 
-        updateHighlightMeshes(false);
+        updateHighlightMeshes();
+        updateHighlightMeshesIndices();
     }
 
     const unwrapMesh = async (unwrapAxis: 'x' | 'y' | 'z') => {
@@ -110,39 +111,35 @@ export default function AnnotationController() {
         dispatchIndices({ type: 'SET_SELECTED_INDICES', payload: indices });
     }
 
-    const updateHighlightMeshes = (updateEntitiesOnly: boolean) => {
-        if(!updateEntitiesOnly) {
-            for (let archetype of task?.annotations ?? []) {
-                const highlightMesh = {
-                    name: archetype.nameId,
-                    mesh:createHighlightMesh(unwrappedMesh, Math.random() * 0xffffff)
-                };
-                setPatternHighlightMeshes([...patternHighlightMeshes, highlightMesh]);
-                groupRef.current?.add(highlightMesh.mesh);
-            }
-    
-            for (let tempHighlightMesh of patternHighlightMeshes) {
-                if (!task?.annotations?.find(archetype => archetype.nameId === tempHighlightMesh.name)) {
-                    groupRef.current?.remove(tempHighlightMesh.mesh);
-                    setPatternHighlightMeshes(patternHighlightMeshes.filter(mesh => mesh.name !== tempHighlightMesh.name));
-                }
+    const updateHighlightMeshes = () => {
+        for (let tempHighlightMesh of patternHighlightMeshes) {
+            if (!task?.annotations?.find(archetype => archetype.nameId === tempHighlightMesh.name)) {
+                groupRef.current?.remove(tempHighlightMesh.mesh);
+                setPatternHighlightMeshes(patternHighlightMeshes.filter(mesh => mesh.name !== tempHighlightMesh.name));
             }
         }
 
-        const updatedArchetype = task?.annotations?.find(archetype => archetype.nameId === selectedArchetype?.nameId);
-        if (!updatedArchetype) return;
+        for (let archetype of task?.annotations ?? []) {
+            const highlightMesh = {
+                name: archetype.nameId,
+                mesh: createHighlightMesh(unwrappedMesh, archetype.color)
+            };
+            setPatternHighlightMeshes([...patternHighlightMeshes, highlightMesh]);
+            groupRef.current?.add(highlightMesh.mesh);
+        }
+    }
 
-        const updatedColor = updatedArchetype.color;
-        const meshToHighlight = patternHighlightMeshes.find(mesh => mesh.name === selectedArchetype?.nameId)?.mesh;
-        if (!meshToHighlight) return;
+    const updateHighlightMeshesIndices = () => {
+        for (let archetype of task?.annotations ?? []) {
+			const meshToHighlight = patternHighlightMeshes.find(mesh => mesh.name === archetype.nameId)?.mesh;
+			if (!meshToHighlight) continue;
 
-        let hexColor = updatedColor.padStart(6, '0');
-        (meshToHighlight.material as MeshBasicMaterial).color.set(hexColor)
+			let hexColor = archetype.color.padStart(6, '0');
+			(meshToHighlight.material as MeshBasicMaterial).color.set(hexColor)
 
-        const patternIndices = task?.annotations?.find(archetype => archetype.nameId === selectedArchetype?.nameId)?.entities.flatMap(entity => entity.faceIds);
-        if (!patternIndices) return;
-
-        highlightIndices(unwrappedMesh, meshToHighlight, patternIndices);
+			const patternIndices = archetype.entities.flatMap(entity => entity.faceIds);
+			highlightIndices(unwrappedMesh, meshToHighlight, patternIndices);
+		}
     }
 
     useEffect(() => {
@@ -155,16 +152,20 @@ export default function AnnotationController() {
     useEffect(() => {
         init();
         setShowConfirmation(false);
-        return () => disposeMesh();
+        return () => {
+            disposeMesh()
+            setPatternHighlightMeshes([]);
+        };
     }, [proxyGeometry, proxyMaterial]);
 
 
     useEffect(() => {
-        // Check if the number of archetypes has changed
-        const updateEntitiesOnly = task?.annotations?.length === patternHighlightMeshes.length;
-
-        updateHighlightMeshes(updateEntitiesOnly);
+        updateHighlightMeshesIndices();
     }, [task?.annotations]);
+
+    useEffect(() => {
+        updateHighlightMeshes();
+    }, [task?.annotations?.length]);
 
 
 	return (

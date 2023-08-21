@@ -97,7 +97,6 @@ function taskReducer(state: TaskState, action: TaskAction): TaskState {
             if (!state.task || !state.selectedArchetype) return state;
 
             const newEntity: PatternEntity = {
-                archetypeId: state.selectedArchetype.nameId,
                 nameId: randomName('ent', 10000),
                 orientation: 0,
                 scale: 1,
