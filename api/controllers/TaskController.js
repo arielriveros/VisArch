@@ -143,6 +143,19 @@ async function updateTask(req, res) {
             await annotation.save();
         }
         
+        // get all annotations from task
+        const allAnnotations = await AnnotationModel.find({task: task._id});
+
+        for (let a of allAnnotations) {
+            // Check if annotation of nameId already exists
+            let annotation = req.body.annotations.find(ann => ann.nameId === a.nameId);
+
+            if(!annotation){
+                await a.deleteOne();
+                updatedTask.annotations.pull(a._id);
+            }
+        }
+        
         task.set(updatedTask);
         await task.save();
         return res.status(200).json(task);
