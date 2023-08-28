@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useTaskContext } from '../../../hooks/useTask';
 import { config } from '../../../../../utils/config';
 import { Mesh, Group, Vector3, BufferGeometry, NormalBufferAttributes, Material, BufferAttribute } from 'three';
@@ -7,6 +7,7 @@ import { useAuthContext } from '../../../../../hooks/useAuthContext';
 import { useProxyMeshContext } from '../../../hooks/useProxyMesh';
 import { radialUnwrap } from '../../../utils/radialUnwrap';
 import { flattenAxis } from '../../../utils/flattenAxis';
+import { Socket, io, } from 'socket.io-client';
 import AnnotationController from '../controller/AnnotationController';
 import AnnotationViewer from '../viewer/AnnotationViewer';
 import './AnnotationManager.css';
@@ -21,6 +22,7 @@ export default function AnnotationManager() {
     const { loading: loadingMesh, dispatch: dispatchProxyMesh } = useProxyMeshContext();
     const { user } = useAuthContext();
     const [ready, setReady] = useState<boolean>(false);
+    const socket = useRef<Socket<any> | null>(null);
 
     const getGeometry = (group: Group) => {
         const mesh = group.children[0].children[0] as Mesh;
@@ -115,6 +117,14 @@ export default function AnnotationManager() {
     useEffect(() => {
         setReady(!loadingTask && !loadingMesh);
     }, [loadingTask, loadingMesh]);
+
+    useEffect(() => {
+        socket.current = io(config.SOCKET_URL, { transports: ['websocket'] });
+
+        return () => {
+            socket.current?.disconnect();
+        }
+    }, [task]);
 
     return (
         <div className='annotation-manager-container'>

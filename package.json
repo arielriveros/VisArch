@@ -5,10 +5,12 @@
   "scripts": {
     "start-client": "cd client && npm start",
     "start-api": "cd api && npm start",
+    "start-websocket": "cd websocket && npm start",
     "install-client": "cd client && npm install",
     "install-api": "cd api && npm install",
-    "install": "concurrently \"npm run install-api\" \"npm run install-client\"",
-    "start": "concurrently \"npm run start-api\" \"npm run start-client\""
+    "install-websocket": "cd websocket && npm install",
+    "install-all": "npm install && npm run install-client && npm run install-api && npm run install-websocket",
+    "start": "concurrently \"npm run start-api\" \"npm run start-websocket\" \"npm run start-client\""
   },
   "repository": {
     "type": "git",
