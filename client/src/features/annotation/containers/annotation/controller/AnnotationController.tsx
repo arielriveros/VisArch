@@ -4,6 +4,7 @@ import { Group, Material, Mesh } from 'three';
 import { useProxyMeshContext } from '../../../hooks/useProxyMesh';
 import { useTaskContext } from '../../../hooks/useTask';
 import { useIndicesContext } from '../../../hooks/useIndices';
+import { calculateBoundingBox } from '../../../utils/boundingBox';
 import CameraController from './CameraController';
 import HoverIndex from './HoverIndex';
 import LassoSelector from './LassoSelector';
@@ -45,7 +46,16 @@ export default function AnnotationController() {
 
     const onConfirm = () => {
         setShowConfirmation(false);
-        dispatchTask({ type: 'ADD_PATTERN_ENTITY', payload: { patternIndices: selectedIndices } });
+        let bb = calculateBoundingBox(selectedIndices, unwrappedGeometry);
+        if (!bb) return;
+        dispatchTask({
+            type: 'ADD_PATTERN_ENTITY',
+            payload: {
+                patternIndices: selectedIndices,
+                centroid: bb.centroid,
+                box: bb.boundingBox
+            }
+        });
         dispatchIndices({ type: 'SET_SELECTED_INDICES', payload: [] });
     }
 

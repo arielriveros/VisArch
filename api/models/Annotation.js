@@ -23,6 +23,8 @@ const AnnotationSchema = new Schema({
             orientation: number;
             scale: number;
             reflection: boolean;
+            centroid: {x: number, y: number, z: number};
+            box: {min: {x: number, y: number, z: number}, max: {x: number, y: number, z: number}};
         }
     */
     entities: [{

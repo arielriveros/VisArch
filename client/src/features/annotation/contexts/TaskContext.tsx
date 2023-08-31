@@ -7,6 +7,12 @@ interface TaskState {
     loading: boolean;
 }
 
+interface AddPatternEntityAction { 
+        patternIndices: number[];
+        centroid: {x: number, y: number, z: number};
+        box: {min: {x: number, y: number, z: number}, max: {x: number, y: number, z: number}};
+}
+
 interface TaskAction {
     type: 
         'SET_TASK' |
@@ -22,7 +28,7 @@ interface TaskAction {
         PatternArchetype |
         { patternArchetypeName: string } |
         { patternEntityName: string } |
-        { patternIndices: number[] } |
+        AddPatternEntityAction |
         boolean |
         null;
 }
@@ -100,12 +106,16 @@ function taskReducer(state: TaskState, action: TaskAction): TaskState {
         case 'ADD_PATTERN_ENTITY':
             if (!state.task || !state.selectedArchetype) return state;
 
+            const addEntityPayload = action.payload as AddPatternEntityAction;
+
             const newEntity: PatternEntity = {
                 nameId: randomName('ent', 10000),
                 orientation: 0,
                 scale: 1,
                 reflection: false,
-                faceIds: (action.payload as {patternIndices: number[]}).patternIndices
+                faceIds: addEntityPayload.patternIndices,
+                centroid: addEntityPayload.centroid,
+                box: addEntityPayload.box,
             }
 
             const updatedArchetypes = state.task.annotations?.map(archetype => {
