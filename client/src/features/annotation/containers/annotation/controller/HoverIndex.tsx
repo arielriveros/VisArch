@@ -6,6 +6,7 @@ import { useIndicesContext } from "../../../hooks/useIndices";
 
 type HoverIndexProps = {
     rate?: number
+    mesh: Mesh
 }
 
 export default function HoverIndex(props: HoverIndexProps) {
@@ -20,7 +21,7 @@ export default function HoverIndex(props: HoverIndexProps) {
 
         // Get intersection of meshes only
         const meshIntersects = intersects.filter((intersect) => {
-            return intersect.object instanceof Mesh;
+            return intersect.object === props.mesh;
         });
 
         if (meshIntersects.length > 0 ) {
