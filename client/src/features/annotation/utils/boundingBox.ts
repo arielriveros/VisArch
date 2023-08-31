@@ -3,24 +3,16 @@ import { BufferGeometry, NormalBufferAttributes, Vector3 } from "three";
 export function calculateBoundingBox(faces: number[], geometry: BufferGeometry<NormalBufferAttributes> | null) {
     if(!geometry ) return;
 
-    const indices: number[] = [];
     const indexAttr = geometry.index;
-    for (let i = 0; i < faces.length; i++) {
-        const index = faces[i] * 3;
-        const a = index + 0;
-        const b = index + 1;
-        const c = index + 2;
-        indices.push(a, b, c);
-    }
-
     const positionAttrib = geometry.attributes.position.array;
     const positionVectors = []
 
-    for ( let i = 0, l = indices.length; i < l; i ++ ) {
-        const ix = indexAttr?.getX( indices[i] );
-        const x = positionAttrib[ix as number * 3];
-        const y = positionAttrib[ix as number * 3 + 1];
-        const z = positionAttrib[ix as number * 3 + 2];
+    for (let i = 0; i < faces.length; i+=3) {
+        const index = indexAttr?.getX( faces[i] * 3 );
+        const x = positionAttrib[index as number * 3];
+        const y = positionAttrib[index as number * 3 + 1];
+        const z = positionAttrib[index as number * 3 + 2];
+
         positionVectors.push(new Vector3(x, y, z));
     }
 
@@ -31,12 +23,28 @@ export function calculateBoundingBox(faces: number[], geometry: BufferGeometry<N
 
     centroid.divideScalar(positionVectors.length);
 
-    const minX = Math.min(...positionVectors.map(v => v.x));
-    const minY = Math.min(...positionVectors.map(v => v.y));
-    const minZ = Math.min(...positionVectors.map(v => v.z));
-    const maxX = Math.max(...positionVectors.map(v => v.x));
-    const maxY = Math.max(...positionVectors.map(v => v.y));
-    const maxZ = Math.max(...positionVectors.map(v => v.z));
+    let minX = centroid.x;
+    let maxX = centroid.x;
+    let minY = centroid.y;
+    let maxY = centroid.y;
+    let minZ = centroid.z;
+    let maxZ = centroid.z;
+
+    for (let v of positionVectors) {
+        let tempMinxX = v.x;
+        let tempMinxY = v.y;
+        let tempMinZ = v.z;
+        let tempMaxX = v.x;
+        let tempMaxY = v.y;
+        let tempMaxZ = v.z;
+
+        if (tempMinxX < minX) minX = tempMinxX;
+        if (tempMinxY < minY) minY = tempMinxY;
+        if (tempMinZ < minZ) minZ = tempMinZ;
+        if (tempMaxX > maxX) maxX = tempMaxX;
+        if (tempMaxY > maxY) maxY = tempMaxY;
+        if (tempMaxZ > maxZ) maxZ = tempMaxZ;
+    }
 
     const boundingBox = {
         min: new Vector3(minX, minY, minZ),
