@@ -124,7 +124,7 @@ export default function AnnotationManager() {
         return () => {
             socket.current?.disconnect();
         }
-    }, [task]);
+    }, []);
 
     return (
         <div className='annotation-manager-container'>
