@@ -4,13 +4,24 @@ import { PatternArchetype, PatternEntity, Task } from "../../../api/ModelTypes";
 interface TaskState {
     task: Task | null;
     selectedArchetype: PatternArchetype | null;
+    selectedEntity: PatternEntity | null;
     loading: boolean;
 }
 
-interface AddPatternEntityAction { 
+interface AddPatternEntityPayload { 
         patternIndices: number[];
         centroid: {x: number, y: number, z: number};
         box: {min: {x: number, y: number, z: number}, max: {x: number, y: number, z: number}};
+}
+
+interface UpdatePatternEntityPropertiesPayload {
+    patternArchetypeName: string;
+    patternEntityName: string;
+    entityProperties: {
+        orientation: number;
+        scale: number;
+        reflection: boolean;
+    };
 }
 
 interface TaskAction {
@@ -21,6 +32,8 @@ interface TaskAction {
         'REMOVE_PATTERN_ARCHETYPE' |
         'ADD_PATTERN_ENTITY' |
         'REMOVE_PATTERN_ENTITY' |
+        'SELECT_PATTERN_ENTITY' |
+        'UPDATE_PATTERN_ENTITY_PROPERTIES' |
         'UPDATE_SELECTED_PATTERN_ARCHETYPE' |
         'SET_LOADING';
     payload?: 
@@ -28,7 +41,9 @@ interface TaskAction {
         PatternArchetype |
         { patternArchetypeName: string } |
         { patternEntityName: string } |
-        AddPatternEntityAction |
+        { patternArchetypeName: string, patternEntityName: string} |
+        AddPatternEntityPayload |
+        UpdatePatternEntityPropertiesPayload |
         boolean |
         null;
 }
@@ -41,6 +56,7 @@ export const TaskContext = createContext<TaskContextProps>(
     {
         task: null,
         selectedArchetype: null,
+        selectedEntity: null,
         loading: false,
         dispatch: () => {}
     }
@@ -106,7 +122,7 @@ function taskReducer(state: TaskState, action: TaskAction): TaskState {
         case 'ADD_PATTERN_ENTITY':
             if (!state.task || !state.selectedArchetype) return state;
 
-            const addEntityPayload = action.payload as AddPatternEntityAction;
+            const addEntityPayload = action.payload as AddPatternEntityPayload;
 
             const newEntity: PatternEntity = {
                 nameId: randomName('ent', 10000),
@@ -160,6 +176,39 @@ function taskReducer(state: TaskState, action: TaskAction): TaskState {
 
             return { ...state, task: { ...state.task, annotations: updatedSelectedArchetypes } };
 
+        case 'SELECT_PATTERN_ENTITY':
+            if (!state.task || !state.selectedArchetype) return state;
+
+            const selectEntityPayload = action.payload as { patternArchetypeName: string, patternEntityName: string };
+
+            const selectedEntity = state.task.annotations?.find(archetype => archetype.nameId === selectEntityPayload.patternArchetypeName)?.entities.find(entity => entity.nameId === selectEntityPayload.patternEntityName);
+            if (!selectedEntity) return state;
+
+            return { ...state, selectedEntity: selectedEntity };
+
+        case 'UPDATE_PATTERN_ENTITY_PROPERTIES':
+            if (!state.task || !state.selectedArchetype) return state;
+
+            const { patternArchetypeName, patternEntityName, entityProperties } = action.payload as UpdatePatternEntityPropertiesPayload;
+
+            const updatedEntityProperties = state.task.annotations?.map(archetype => {
+                if (archetype.nameId !== patternArchetypeName) 
+                    return archetype;
+
+                return {
+                    ...archetype,
+                    entities: archetype.entities.map(entity => {
+                        if (entity.nameId === patternEntityName)
+                            return { ...entity, ...entityProperties };
+
+                        else
+                            return entity;
+                    })
+                };
+            });
+
+            return { ...state, task: { ...state.task, annotations: updatedEntityProperties } };	
+
         case 'SET_LOADING':
             return { ...state, loading: (action.payload as boolean) };
 
@@ -171,7 +220,7 @@ function taskReducer(state: TaskState, action: TaskAction): TaskState {
 
 export default function TaskContextProvider({ children }: { children: React.ReactNode}) {
 
-    const [state, dispatch] = useReducer(taskReducer, { task: null, loading: false, selectedArchetype: null });
+    const [state, dispatch] = useReducer(taskReducer, { task: null, loading: false, selectedArchetype: null, selectedEntity: null });
     return (
         <TaskContext.Provider value={{ ...state, dispatch }}>
             {children}

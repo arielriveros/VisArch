@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { Group, Mesh, Vector3 } from "three";
 import { MeshBVHVisualizer } from 'three-mesh-bvh';
 import { Perf } from 'r3f-perf'
-import { useTaskContext } from "../../../hooks/useTask";
+import { useTaskContext } from "../../../../hooks/useTask";
 import DebugBox from "./DebugBox";
 
 type DebugGroupProps = {

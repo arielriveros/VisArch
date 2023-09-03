@@ -11,10 +11,10 @@ import LassoSelector from './LassoSelector';
 import Confirmation from '../../../components/confirmation/Confirmation';
 import HighlightMesh from '../highlightMesh/HighlightMesh';
 import SelectionHighlightMesh from '../highlightMesh/SelectionHighlightMesh';
-import DebugGroup from '../debugGroup/DebugGroup';
+import DebugGroup from './debugGroup/DebugGroup';
 import './AnnotationController.css';
 
-const DEBUG = true;
+const DEBUG = false;
 
 export default function AnnotationController() {
     const { task, selectedArchetype, loading, dispatch: dispatchTask } = useTaskContext();

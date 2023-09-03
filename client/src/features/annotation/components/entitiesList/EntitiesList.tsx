@@ -25,6 +25,7 @@ export default function EntitiesList() {
 				<EntityItem
 					key={index}
 					entity={entity}
+					archetypeName={selectedArchetype?.nameId || ''}
 				/>
 			))}
 		</div>
