@@ -2,6 +2,8 @@ import { useEffect, useState } from 'react';
 import { PatternEntity } from '../../../../api/ModelTypes'
 import { useTaskContext } from '../../hooks/useTask';
 import './EntityItem.css'
+import { useIndicesContext } from '../../hooks/useIndices';
+import { Vector3 } from 'three';
 
 type EntityItemProps = {
     entity: PatternEntity;
@@ -11,6 +13,7 @@ type EntityItemProps = {
 export default function EntityItem(props: EntityItemProps) {
 
 	const { selectedEntity, dispatch: dispatchTask} = useTaskContext();
+	const { dispatch: dispatchIndices } = useIndicesContext();
 	const [selected, setSelected] = useState<boolean>(false);
 	const [properties, setProperties] = useState<{orientation: number, scale: number, reflection: boolean}>({
 		orientation: props.entity.orientation,
@@ -18,16 +21,16 @@ export default function EntityItem(props: EntityItemProps) {
 		reflection: props.entity.reflection
 	});
 
-	const onClickDelete = () => {
+	const onClickDelete = (e: React.MouseEvent<HTMLButtonElement>) => {
+		e.stopPropagation();
+		dispatchIndices({ type: 'SET_SELECTED_INDICES', payload: []});
 		dispatchTask({ type: 'REMOVE_PATTERN_ENTITY', payload: { patternEntityName: props.entity.nameId }});
+		dispatchTask({ type: 'SELECT_PATTERN_ENTITY', payload: { patternEntityName: '', patternArchetypeName: '' }});
 	}
 
-	const selectEntityHandler = () => {
-        dispatchTask({ type: 'SELECT_PATTERN_ENTITY', payload: { patternEntityName: props.entity.nameId, patternArchetypeName: props.archetypeName }});
-    }
-
-	const onClick = () => {
-		selectEntityHandler();
+	const onClick = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+		dispatchTask({ type: 'SELECT_PATTERN_ENTITY', payload: { patternEntityName: props.entity.nameId, patternArchetypeName: props.archetypeName }});
+		dispatchIndices({ type: 'SET_SELECTED_INDICES', payload: props.entity.faceIds});
 	}
 
 	useEffect(() => {
@@ -43,8 +46,8 @@ export default function EntityItem(props: EntityItemProps) {
 	}, [properties]);
 
     return (
-		<div className={selected ? 'entity-item-selected' : 'entity-item'} onClick={onClick}>
-			<div className='entity-item-info'>
+		<div className={selected ? 'entity-item-selected' : 'entity-item'}>
+			<div className='entity-item-info' onClick={onClick}>
 				<div>
 					{props.entity.nameId}
 				</div>

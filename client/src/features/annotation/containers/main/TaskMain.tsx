@@ -66,20 +66,20 @@ export default function TaskMain(props: TaskMainProps) {
 
 	return (
 		<div className='task-main'>
-			<div className='task-sidebar-container'> 
-				<TaskSidebar>
-					<ArchetypesList />
-					<button onClick={uploadTask}> Upload </button>
-					<TaskList projectId={props.projectId} type={'task-list'} />
-				</TaskSidebar>
-			</div>
-			<ProxyMeshContextProvider>
-				<IndicesContextProvider>
+			<IndicesContextProvider>
+				<div className='task-sidebar-container'> 
+					<TaskSidebar>
+						<ArchetypesList />
+						<button onClick={uploadTask}> Upload </button>
+						<TaskList projectId={props.projectId} type={'task-list'} />
+					</TaskSidebar>
+				</div>
+				<ProxyMeshContextProvider>
 					<div className='task-content'>
 						<AnnotationManager />
 					</div>
-				</IndicesContextProvider>
-			</ProxyMeshContextProvider>
+				</ProxyMeshContextProvider>
+			</IndicesContextProvider>
 		</div>
 	)
 }

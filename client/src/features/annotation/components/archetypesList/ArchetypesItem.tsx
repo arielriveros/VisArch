@@ -3,6 +3,7 @@ import { PatternArchetype } from '../../../../api/ModelTypes';
 import { useTaskContext } from '../../hooks/useTask';
 import EntitiesList from '../entitiesList/EntitiesList';
 import './ArchetypesItem.css'
+import { useIndicesContext } from '../../hooks/useIndices';
 
 type ArchetypesItemProps = {
 	archetype: PatternArchetype;
@@ -11,6 +12,7 @@ type ArchetypesItemProps = {
 export default function ArchetypesItem(props: ArchetypesItemProps) {
 
     const { task, selectedArchetype, dispatch: dispatchTask } = useTaskContext();
+    const { dispatch: dispatchIndices } = useIndicesContext();
     const [selected, setSelected] = useState<boolean>(false);
 
     const onChangeColor = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -31,6 +33,7 @@ export default function ArchetypesItem(props: ArchetypesItemProps) {
 
     const deleteArchetypeHandler = (name: string) => {
         dispatchTask({ type: 'REMOVE_PATTERN_ARCHETYPE', payload: { patternArchetypeName: name }});
+        dispatchIndices({ type: 'SET_SELECTED_INDICES', payload: []});
     }
 
     const changeColorHandler = (name: string, color: string) => {
