@@ -3,7 +3,6 @@ import { Canvas } from '@react-three/fiber';
 import { Group, Material, Mesh } from 'three';
 import { useProxyMeshContext } from '../../../hooks/useProxyMesh';
 import { useTaskContext } from '../../../hooks/useTask';
-import { useIndicesContext } from '../../../hooks/useIndices';
 import { calculateBoundingBox } from '../../../utils/boundingBox';
 import CameraController from './CameraController';
 import HoverIndex from './HoverIndex';
@@ -17,9 +16,8 @@ import './AnnotationController.css';
 const DEBUG = false;
 
 export default function AnnotationController() {
-    const { task, selectedArchetype, loading, dispatch: dispatchTask } = useTaskContext();
+    const { task, selectedArchetype, loading, selectedIndices, dispatch: dispatchTask } = useTaskContext();
     const { proxyGeometry, proxyMaterial, unwrappedGeometry } = useProxyMeshContext();
-    const { selectedIndices, dispatch: dispatchIndices } = useIndicesContext();
     const [unwrappedMesh, setUnwrappedMesh] = useState<Mesh>(new Mesh());
     const [showConfirmation, setShowConfirmation] = useState<boolean>(false);
     
@@ -59,18 +57,18 @@ export default function AnnotationController() {
                 box: bb.boundingBox
             }
         });
-        dispatchIndices({ type: 'SET_SELECTED_INDICES', payload: [] });
+        dispatchTask({ type: 'SET_SELECTED_INDICES', payload: [] });
     }
 
     const onCancel = () => {
         setShowConfirmation(false);
-        dispatchIndices({ type: 'SET_SELECTED_INDICES', payload: [] });
+        dispatchTask({ type: 'SET_SELECTED_INDICES', payload: [] });
     }
         
     const indicesSelectHandler = (indices: number[]) => {
         if (indices.length < 3) return;
         setShowConfirmation(true);
-        dispatchIndices({ type: 'SET_SELECTED_INDICES', payload: indices });
+        dispatchTask({ type: 'SET_SELECTED_INDICES', payload: indices });
     }
 
     useEffect(() => {

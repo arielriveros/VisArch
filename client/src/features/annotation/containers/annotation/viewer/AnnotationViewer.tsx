@@ -1,14 +1,13 @@
 import { Canvas } from '@react-three/fiber';
 import { useEffect, useRef, useState } from 'react';
-import { Group, Mesh, MeshBasicMaterial } from 'three';
+import { Group, Mesh } from 'three';
 import { useProxyMeshContext } from '../../../hooks/useProxyMesh';
-import { useIndicesContext } from '../../../hooks/useIndices';
 import { useTaskContext } from '../../../hooks/useTask';
 import CrossHairs from './CrossHairs';
 import LookAtIndex from './LookAtIndex';
-import './AnnotationViewer.css';
 import SelectionHighlightMesh from '../highlightMesh/SelectionHighlightMesh';
 import HighlightMesh from '../highlightMesh/HighlightMesh';
+import './AnnotationViewer.css';
 
 export default function AnnotationViewer() {
 	const { task } = useTaskContext();

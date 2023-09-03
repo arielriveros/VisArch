@@ -1,13 +1,13 @@
 import { useThree } from "@react-three/fiber";
 import { useEffect } from "react";
 import { Vector3 } from "three";
-import { useIndicesContext } from "../../../hooks/useIndices";
+import { useTaskContext } from "../../../hooks/useTask";
 import { useProxyMeshContext } from "../../../hooks/useProxyMesh";
 
 export default function LookAtIndex() {
 	const { camera } = useThree();
 	const { proxyGeometry } = useProxyMeshContext();
-	const { indexPosition } = useIndicesContext();
+	const { indexPosition } = useTaskContext();
 
 	const getPosition = (face: {a: number, b: number, c: number, normal: Vector3}) => {
 		const { a, b, c } = face;

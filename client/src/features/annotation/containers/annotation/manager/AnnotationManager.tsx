@@ -1,6 +1,5 @@
 import { useState, useEffect, useRef } from 'react'
 import { useTaskContext } from '../../../hooks/useTask';
-import { useIndicesContext } from '../../../hooks/useIndices';
 import { config } from '../../../../../utils/config';
 import { Mesh, Group, Vector3, BufferGeometry, NormalBufferAttributes, Material, BufferAttribute } from 'three';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
@@ -19,8 +18,7 @@ export type IntersectionPayload = {
 }
 
 export default function AnnotationManager() {
-    const { task, loading: loadingTask } = useTaskContext();
-    const { dispatch: dispatchIndices } = useIndicesContext();
+    const { task, loading: loadingTask, dispatch: dispatchTask } = useTaskContext();
     const { loading: loadingMesh, dispatch: dispatchProxyMesh } = useProxyMeshContext();
     const { user } = useAuthContext();
     const [ready, setReady] = useState<boolean>(false);
@@ -105,12 +103,12 @@ export default function AnnotationManager() {
 
 
             dispatchProxyMesh({ type: 'SET_LOADING', payload: false });
-            dispatchIndices({ type: 'SET_SELECTED_INDICES', payload: [] });
+            dispatchTask({ type: 'SET_SELECTED_INDICES', payload: [] });
 
         } catch (error) {
             console.error(error);
             dispatchProxyMesh({ type: 'SET_LOADING', payload: false });
-            dispatchIndices({ type: 'SET_SELECTED_INDICES', payload: [] });
+            dispatchTask({ type: 'SET_SELECTED_INDICES', payload: [] });
         }
     };
 

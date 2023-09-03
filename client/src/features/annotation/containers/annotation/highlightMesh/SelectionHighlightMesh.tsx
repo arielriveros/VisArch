@@ -1,6 +1,6 @@
 import { useRef, useEffect } from "react";
 import { BufferGeometry, NormalBufferAttributes } from "three";
-import { useIndicesContext } from "../../../hooks/useIndices";
+import { useTaskContext } from "../../../hooks/useTask";
 
 type SelectionHighlightMeshProps = {
     geometry: BufferGeometry<NormalBufferAttributes>;
@@ -8,7 +8,7 @@ type SelectionHighlightMeshProps = {
     wireframe: boolean;
 }
 export default function SelectionHighlightMesh(props: SelectionHighlightMeshProps) {
-    const { selectedIndices } = useIndicesContext();
+    const { selectedIndices } = useTaskContext();
     const geometryRef = useRef<BufferGeometry<NormalBufferAttributes>>(new BufferGeometry());
 
     const highlightIndices = (indicesToHighlight: number[]) => {

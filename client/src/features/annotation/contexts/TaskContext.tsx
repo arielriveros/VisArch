@@ -1,10 +1,13 @@
 import { createContext, useReducer } from "react";
 import { PatternArchetype, PatternEntity, Task } from "../../../api/ModelTypes";
+import { Vector3 } from "three";
 
 interface TaskState {
     task: Task | null;
     selectedArchetype: PatternArchetype | null;
     selectedEntity: PatternEntity | null;
+    indexPosition: IntersectionPayload | null;
+    selectedIndices: number[];
     loading: boolean;
 }
 
@@ -24,6 +27,11 @@ interface UpdatePatternEntityPropertiesPayload {
     };
 }
 
+interface IntersectionPayload {
+	face: {a: number, b: number, c: number, normal: Vector3} | null,
+	faceIndex: number | null
+}
+
 interface TaskAction {
     type: 
         'SET_TASK' |
@@ -35,6 +43,8 @@ interface TaskAction {
         'SELECT_PATTERN_ENTITY' |
         'UPDATE_PATTERN_ENTITY_PROPERTIES' |
         'UPDATE_SELECTED_PATTERN_ARCHETYPE' |
+        'SET_INDEX_POSITION' |
+        'SET_SELECTED_INDICES' |
         'SET_LOADING';
     payload?: 
         Task |
@@ -44,6 +54,8 @@ interface TaskAction {
         { patternArchetypeName: string, patternEntityName: string} |
         AddPatternEntityPayload |
         UpdatePatternEntityPropertiesPayload |
+        IntersectionPayload |
+        number[] |
         boolean |
         null;
 }
@@ -57,6 +69,8 @@ export const TaskContext = createContext<TaskContextProps>(
         task: null,
         selectedArchetype: null,
         selectedEntity: null,
+        indexPosition: null,
+        selectedIndices: [],
         loading: false,
         dispatch: () => {}
     }
@@ -209,6 +223,15 @@ function taskReducer(state: TaskState, action: TaskAction): TaskState {
 
             return { ...state, task: { ...state.task, annotations: updatedEntityProperties } };	
 
+        case 'SET_INDEX_POSITION':
+            if (!action.payload)
+                return { ...state, indexPosition: null };
+
+            return { ...state, indexPosition: action.payload as IntersectionPayload };
+
+        case 'SET_SELECTED_INDICES':
+            return { ...state, selectedIndices: (action.payload as number[]) || [] };
+
         case 'SET_LOADING':
             return { ...state, loading: (action.payload as boolean) };
 
@@ -220,7 +243,7 @@ function taskReducer(state: TaskState, action: TaskAction): TaskState {
 
 export default function TaskContextProvider({ children }: { children: React.ReactNode}) {
 
-    const [state, dispatch] = useReducer(taskReducer, { task: null, loading: false, selectedArchetype: null, selectedEntity: null });
+    const [state, dispatch] = useReducer(taskReducer, { task: null, loading: false, selectedArchetype: null, selectedEntity: null, indexPosition: null, selectedIndices: [] });
     return (
         <TaskContext.Provider value={{ ...state, dispatch }}>
             {children}

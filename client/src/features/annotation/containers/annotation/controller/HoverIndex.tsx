@@ -2,7 +2,7 @@ import { useEffect } from "react";
 import { Mesh } from "three";
 import { useThree } from "@react-three/fiber";
 import { IntersectionPayload } from "../manager/AnnotationManager";
-import { useIndicesContext } from "../../../hooks/useIndices";
+import { useTaskContext } from "../../../hooks/useTask";
 
 type HoverIndexProps = {
     rate?: number
@@ -11,7 +11,7 @@ type HoverIndexProps = {
 
 export default function HoverIndex(props: HoverIndexProps) {
     const { raycaster, scene, gl } = useThree();
-    const { dispatch } = useIndicesContext();
+    const { dispatch } = useTaskContext();
     let isThrottled = false;
 
     const raycast = () => {

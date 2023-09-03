@@ -2,8 +2,6 @@ import { useEffect, useState } from 'react';
 import { PatternEntity } from '../../../../api/ModelTypes'
 import { useTaskContext } from '../../hooks/useTask';
 import './EntityItem.css'
-import { useIndicesContext } from '../../hooks/useIndices';
-import { Vector3 } from 'three';
 
 type EntityItemProps = {
     entity: PatternEntity;
@@ -13,7 +11,6 @@ type EntityItemProps = {
 export default function EntityItem(props: EntityItemProps) {
 
 	const { selectedEntity, dispatch: dispatchTask} = useTaskContext();
-	const { dispatch: dispatchIndices } = useIndicesContext();
 	const [selected, setSelected] = useState<boolean>(false);
 	const [properties, setProperties] = useState<{orientation: number, scale: number, reflection: boolean}>({
 		orientation: props.entity.orientation,
@@ -23,14 +20,14 @@ export default function EntityItem(props: EntityItemProps) {
 
 	const onClickDelete = (e: React.MouseEvent<HTMLButtonElement>) => {
 		e.stopPropagation();
-		dispatchIndices({ type: 'SET_SELECTED_INDICES', payload: []});
+		dispatchTask({ type: 'SET_SELECTED_INDICES', payload: []});
 		dispatchTask({ type: 'REMOVE_PATTERN_ENTITY', payload: { patternEntityName: props.entity.nameId }});
 		dispatchTask({ type: 'SELECT_PATTERN_ENTITY', payload: { patternEntityName: '', patternArchetypeName: '' }});
 	}
 
 	const onClick = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
 		dispatchTask({ type: 'SELECT_PATTERN_ENTITY', payload: { patternEntityName: props.entity.nameId, patternArchetypeName: props.archetypeName }});
-		dispatchIndices({ type: 'SET_SELECTED_INDICES', payload: props.entity.faceIds});
+		dispatchTask({ type: 'SET_SELECTED_INDICES', payload: props.entity.faceIds});
 	}
 
 	useEffect(() => {
