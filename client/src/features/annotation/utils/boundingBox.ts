@@ -1,8 +1,6 @@
 import { BufferGeometry, NormalBufferAttributes, Vector3 } from "three";
 
-export function calculateBoundingBox(faces: number[], geometry: BufferGeometry<NormalBufferAttributes> | null) {
-    if(!geometry ) return;
-
+export function calculateBoundingBox(faces: number[], geometry: BufferGeometry<NormalBufferAttributes>) {
     const indexAttr = geometry.index;
     const positionAttrib = geometry.attributes.position.array;
     const positionVectors = []
@@ -51,23 +49,5 @@ export function calculateBoundingBox(faces: number[], geometry: BufferGeometry<N
         max: new Vector3(maxX, maxY, maxZ)
     }
 
-    return {
-        centroid: {
-            x: centroid.x,
-            y: centroid.y,
-            z: centroid.z
-        },
-        boundingBox: {
-            min: {
-                x: boundingBox.min.x,
-                y: boundingBox.min.y,
-                z: boundingBox.min.z
-            },
-            max: {
-                x: boundingBox.max.x,
-                y: boundingBox.max.y,
-                z: boundingBox.max.z
-            }
-        }
-    };
+    return { centroid, boundingBox };
 }

@@ -13,8 +13,6 @@ interface TaskState {
 
 interface AddPatternEntityPayload { 
         patternIndices: number[];
-        centroid: {x: number, y: number, z: number};
-        box: {min: {x: number, y: number, z: number}, max: {x: number, y: number, z: number}};
 }
 
 interface UpdatePatternEntityPropertiesPayload {
@@ -143,9 +141,7 @@ function taskReducer(state: TaskState, action: TaskAction): TaskState {
                 orientation: 0,
                 scale: 1,
                 reflection: false,
-                faceIds: addEntityPayload.patternIndices,
-                centroid: addEntityPayload.centroid,
-                box: addEntityPayload.box,
+                faceIds: addEntityPayload.patternIndices
             }
 
             const updatedArchetypes = state.task.annotations?.map(archetype => {

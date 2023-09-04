@@ -3,17 +3,15 @@ import { Canvas } from '@react-three/fiber';
 import { Group, Material, Mesh } from 'three';
 import { useProxyMeshContext } from '../../../hooks/useProxyMesh';
 import { useTaskContext } from '../../../hooks/useTask';
-import { calculateBoundingBox } from '../../../utils/boundingBox';
+import { config } from '../../../../../utils/config';
 import CameraController from './CameraController';
 import HoverIndex from './HoverIndex';
 import LassoSelector from './LassoSelector';
-import Confirmation from '../../../components/confirmation/Confirmation';
 import HighlightMesh from '../highlightMesh/HighlightMesh';
 import SelectionHighlightMesh from '../highlightMesh/SelectionHighlightMesh';
 import DebugGroup from './debugGroup/DebugGroup';
+import PropertyController from '../propertyController/PropertyController';
 import './AnnotationController.css';
-
-const DEBUG = false;
 
 export default function AnnotationController() {
     const { task, selectedArchetype, loading, selectedIndices, dispatch: dispatchTask } = useTaskContext();
@@ -21,7 +19,7 @@ export default function AnnotationController() {
     const [unwrappedMesh, setUnwrappedMesh] = useState<Mesh>(new Mesh());
     const [showConfirmation, setShowConfirmation] = useState<boolean>(false);
     
-    const groupRef = useRef<Group | null>(null);
+    const groupRef = useRef<Group | null>(null)
 
     const init = () => {
         groupRef.current = new Group();
@@ -47,14 +45,10 @@ export default function AnnotationController() {
 
     const onConfirm = () => {
         setShowConfirmation(false);
-        let bb = calculateBoundingBox(selectedIndices, unwrappedGeometry);
-        if (!bb) return;
         dispatchTask({
             type: 'ADD_PATTERN_ENTITY',
             payload: {
-                patternIndices: selectedIndices,
-                centroid: bb.centroid,
-                box: bb.boundingBox
+                patternIndices: selectedIndices
             }
         });
         dispatchTask({ type: 'SET_SELECTED_INDICES', payload: [] });
@@ -99,17 +93,22 @@ export default function AnnotationController() {
                 {groupRef.current && <primitive object={groupRef.current} />}
                 {unwrappedGeometry &&
                     <>
-                        <SelectionHighlightMesh geometry={unwrappedGeometry} color={'red'} wireframe={DEBUG}/>
+                        <SelectionHighlightMesh geometry={unwrappedGeometry} color={'red'} wireframe={config.DEBUG}/>
                         { 
                         task?.annotations?.map(archetype => 
                             <HighlightMesh key={archetype.nameId} name={archetype.nameId} geometry={unwrappedGeometry} color={archetype.color} />
                         )}
                     </>
                 }
-                <DebugGroup debug={DEBUG} bvhMesh={unwrappedMesh} showMonitor={true}/>
+                <DebugGroup debug={config.DEBUG} bvhMesh={unwrappedMesh} showMonitor={config.DEBUG}/>
                 
 			</Canvas>
-            {showConfirmation && <Confirmation label={"Add Pattern?"} onConfirm={onConfirm} onCancel={onCancel} />}
+            { showConfirmation && unwrappedGeometry &&
+                <PropertyController 
+                    mesh={unwrappedMesh as Mesh}
+                    onConfirm={onConfirm}
+                    onCancel={onCancel} />
+                }
 		</div>
 	);
 }
