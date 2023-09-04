@@ -1,12 +1,37 @@
 import { useRef, useEffect } from "react";
-import { BufferGeometry, NormalBufferAttributes } from "three";
+import { BufferGeometry, MeshBasicMaterial, NormalBufferAttributes } from "three";
 import { useTaskContext } from "../../../hooks/useTask";
+import { useFrame, useThree } from "@react-three/fiber";
 
 type SelectionHighlightMeshProps = {
     geometry: BufferGeometry<NormalBufferAttributes>;
     color: string;
     wireframe: boolean;
 }
+
+function PulseMaterial(props: {color: string}) {
+    const { color } = props;
+
+    const pulseMaterial = useRef<MeshBasicMaterial>(new MeshBasicMaterial({ color, transparent: true, opacity: 0.5, side: 0 }));
+
+    useFrame((state, delta) => {
+        let alpha = state.clock.getElapsedTime();
+        let opacity = Math.sin(alpha * 3) + 0.5;
+        pulseMaterial.current.opacity = opacity;
+        pulseMaterial.current.needsUpdate = true;
+    });
+
+    return(
+        <meshBasicMaterial
+            ref={pulseMaterial}
+            color={color}
+            transparent={true}
+            opacity={0.5}
+            side={0}
+        />
+    )
+}
+
 export default function SelectionHighlightMesh(props: SelectionHighlightMeshProps) {
     const { selectedIndices } = useTaskContext();
     const geometryRef = useRef<BufferGeometry<NormalBufferAttributes>>(new BufferGeometry());
@@ -47,13 +72,9 @@ export default function SelectionHighlightMesh(props: SelectionHighlightMeshProp
     }, [selectedIndices]);
 
     return (
-        <group>
-            <mesh geometry={geometryRef.current}>
-                <meshBasicMaterial
-                    color={props.color}
-                    transparent={true}
-                    opacity={0.5}
-                    side={0}/>
+        <group renderOrder={10}>
+            <mesh geometry={geometryRef.current} >
+                <PulseMaterial color={props.color}/>
             </mesh>
             { props.wireframe &&
                 <mesh geometry={geometryRef.current}>

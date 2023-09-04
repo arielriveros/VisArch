@@ -52,7 +52,7 @@ export default function HighlightMesh(props: HighlightMeshProps) {
     }, [task?.annotations]);
 
     return (
-        <mesh geometry={geometryRef.current}>
+        <mesh geometry={geometryRef.current} renderOrder={0}>
             <meshBasicMaterial
                 color={props.color}
                 transparent={true}

@@ -43,8 +43,8 @@ export default function EntityItem(props: EntityItemProps) {
 	}, [properties]);
 
     return (
-		<div className={selected ? 'entity-item-selected' : 'entity-item'}>
-			<div className='entity-item-info' onClick={onClick}>
+		<div className={selected ? 'entity-item-selected' : 'entity-item'} onClick={onClick}>
+			<div className='entity-item-info'>
 				<div>
 					{props.entity.nameId}
 				</div>

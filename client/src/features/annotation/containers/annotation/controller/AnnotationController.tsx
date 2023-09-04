@@ -58,6 +58,7 @@ export default function AnnotationController() {
             }
         });
         dispatchTask({ type: 'SET_SELECTED_INDICES', payload: [] });
+        dispatchTask({ type: 'SELECT_PATTERN_ENTITY', payload: null });
     }
 
     const onCancel = () => {
@@ -82,7 +83,7 @@ export default function AnnotationController() {
 
 	return (
 		<div className="annotation-viewer-container">
-			<Canvas camera={{ position: [0, 0, 2] }}>
+			<Canvas camera={{ position: [0, 0, 2] }} frameloop={'always'}>
 				<CameraController />
                 <HoverIndex 
                     rate={0} 
