@@ -22,7 +22,7 @@ export default function EntityItem(props: EntityItemProps) {
 		e.stopPropagation();
 		dispatchTask({ type: 'SET_SELECTED_INDICES', payload: []});
 		dispatchTask({ type: 'REMOVE_PATTERN_ENTITY', payload: { patternEntityName: props.entity.nameId }});
-		dispatchTask({ type: 'SELECT_PATTERN_ENTITY', payload: { patternEntityName: '', patternArchetypeName: '' }});
+		dispatchTask({ type: 'SELECT_PATTERN_ENTITY', payload: null});
 	}
 
 	const onClick = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {

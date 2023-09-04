@@ -193,6 +193,8 @@ function taskReducer(state: TaskState, action: TaskAction): TaskState {
         case 'SELECT_PATTERN_ENTITY':
             if (!state.task || !state.selectedArchetype) return state;
 
+            if (!action.payload) return { ...state, selectedEntity: null };
+
             const selectEntityPayload = action.payload as { patternArchetypeName: string, patternEntityName: string };
 
             const selectedEntity = state.task.annotations?.find(archetype => archetype.nameId === selectEntityPayload.patternArchetypeName)?.entities.find(entity => entity.nameId === selectEntityPayload.patternEntityName);
