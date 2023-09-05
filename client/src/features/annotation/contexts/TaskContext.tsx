@@ -7,7 +7,6 @@ interface TaskState {
     selectedArchetype: PatternArchetype | null;
     selectedEntity: PatternEntity | null;
     indexPosition: IntersectionPayload | null;
-    selectedIndices: number[];
     loading: boolean;
 }
 
@@ -42,7 +41,6 @@ interface TaskAction {
         'UPDATE_PATTERN_ENTITY_PROPERTIES' |
         'UPDATE_SELECTED_PATTERN_ARCHETYPE' |
         'SET_INDEX_POSITION' |
-        'SET_SELECTED_INDICES' |
         'SET_LOADING';
     payload?: 
         Task |
@@ -68,7 +66,6 @@ export const TaskContext = createContext<TaskContextProps>(
         selectedArchetype: null,
         selectedEntity: null,
         indexPosition: null,
-        selectedIndices: [],
         loading: false,
         dispatch: () => {}
     }
@@ -86,8 +83,7 @@ function taskReducer(state: TaskState, action: TaskAction): TaskState {
     
     switch (action.type) {
         case 'SET_TASK':
-            state.selectedArchetype = null;    
-            return { ...state, task: (action.payload as Task) };
+            return { ...state, task: (action.payload as Task), selectedArchetype: null, selectedEntity: null };
 
         case 'ADD_PATTERN_ARCHETYPE':
             if (!state.task) return state;
@@ -129,7 +125,7 @@ function taskReducer(state: TaskState, action: TaskAction): TaskState {
             const filteredArchetypes = state.task.annotations?.filter(archetype => archetype.nameId !== (action.payload as { patternArchetypeName: string }).patternArchetypeName);
             state.selectedArchetype = null;
 
-            return { ...state, task: { ...state.task, annotations: filteredArchetypes } };
+            return { ...state, task: { ...state.task, annotations: filteredArchetypes }, selectedEntity: null };
 
         case 'ADD_PATTERN_ENTITY':
             if (!state.task || !state.selectedArchetype) return state;
@@ -153,7 +149,7 @@ function taskReducer(state: TaskState, action: TaskAction): TaskState {
                 }
             });
 
-            return { ...state, task: { ...state.task, annotations: updatedArchetypes } };
+            return { ...state, task: { ...state.task, annotations: updatedArchetypes }, selectedEntity: newEntity };
 
         case 'REMOVE_PATTERN_ENTITY':
             if (!state.task || !state.selectedArchetype) return state;
@@ -170,7 +166,7 @@ function taskReducer(state: TaskState, action: TaskAction): TaskState {
                 }
             });
 
-            return { ...state, task: { ...state.task, annotations: updatedEntities } };
+            return { ...state, task: { ...state.task, annotations: updatedEntities }, selectedEntity: null };
 
         case 'UPDATE_SELECTED_PATTERN_ARCHETYPE':
             if (!state.task || !state.selectedArchetype) return state;
@@ -227,9 +223,6 @@ function taskReducer(state: TaskState, action: TaskAction): TaskState {
 
             return { ...state, indexPosition: action.payload as IntersectionPayload };
 
-        case 'SET_SELECTED_INDICES':
-            return { ...state, selectedIndices: (action.payload as number[]) || [] };
-
         case 'SET_LOADING':
             return { ...state, loading: (action.payload as boolean) };
 
@@ -241,7 +234,7 @@ function taskReducer(state: TaskState, action: TaskAction): TaskState {
 
 export default function TaskContextProvider({ children }: { children: React.ReactNode}) {
 
-    const [state, dispatch] = useReducer(taskReducer, { task: null, loading: false, selectedArchetype: null, selectedEntity: null, indexPosition: null, selectedIndices: [] });
+    const [state, dispatch] = useReducer(taskReducer, { task: null, loading: false, selectedArchetype: null, selectedEntity: null, indexPosition: null });
     return (
         <TaskContext.Provider value={{ ...state, dispatch }}>
             {children}

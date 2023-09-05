@@ -31,7 +31,6 @@ export default function ArchetypesItem(props: ArchetypesItemProps) {
 
     const deleteArchetypeHandler = (name: string) => {
         dispatchTask({ type: 'REMOVE_PATTERN_ARCHETYPE', payload: { patternArchetypeName: name }});
-        dispatchTask({ type: 'SET_SELECTED_INDICES', payload: []});
     }
 
     const changeColorHandler = (name: string, color: string) => {

@@ -103,12 +103,10 @@ export default function AnnotationManager() {
 
 
             dispatchProxyMesh({ type: 'SET_LOADING', payload: false });
-            dispatchTask({ type: 'SET_SELECTED_INDICES', payload: [] });
 
         } catch (error) {
             console.error(error);
             dispatchProxyMesh({ type: 'SET_LOADING', payload: false });
-            dispatchTask({ type: 'SET_SELECTED_INDICES', payload: [] });
         }
     };
 

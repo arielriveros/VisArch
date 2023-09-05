@@ -14,7 +14,7 @@ import PropertyController from '../propertyController/PropertyController';
 import './AnnotationController.css';
 
 export default function AnnotationController() {
-    const { task, selectedArchetype, loading, selectedIndices, dispatch: dispatchTask } = useTaskContext();
+    const { task, selectedArchetype, loading, selectedEntity, dispatch: dispatchTask } = useTaskContext();
     const { proxyGeometry, proxyMaterial, unwrappedGeometry } = useProxyMeshContext();
     const [unwrappedMesh, setUnwrappedMesh] = useState<Mesh>(new Mesh());
     const [showConfirmation, setShowConfirmation] = useState<boolean>(false);
@@ -45,25 +45,24 @@ export default function AnnotationController() {
 
     const onConfirm = () => {
         setShowConfirmation(false);
-        dispatchTask({
-            type: 'ADD_PATTERN_ENTITY',
-            payload: {
-                patternIndices: selectedIndices
-            }
-        });
-        dispatchTask({ type: 'SET_SELECTED_INDICES', payload: [] });
         dispatchTask({ type: 'SELECT_PATTERN_ENTITY', payload: null });
     }
 
     const onCancel = () => {
         setShowConfirmation(false);
-        dispatchTask({ type: 'SET_SELECTED_INDICES', payload: [] });
+        if (!selectedEntity) return;
+        dispatchTask({ type: 'REMOVE_PATTERN_ENTITY', payload: { patternEntityName: selectedEntity.nameId }});
     }
         
     const indicesSelectHandler = (indices: number[]) => {
         if (indices.length < 3) return;
         setShowConfirmation(true);
-        dispatchTask({ type: 'SET_SELECTED_INDICES', payload: indices });
+        dispatchTask({
+            type: 'ADD_PATTERN_ENTITY',
+            payload: {
+                patternIndices: indices
+            }
+        });
     }
 
     useEffect(() => {

@@ -1,7 +1,7 @@
 import { useRef, useEffect } from "react";
 import { BufferGeometry, MeshBasicMaterial, NormalBufferAttributes } from "three";
 import { useTaskContext } from "../../../hooks/useTask";
-import { useFrame, useThree } from "@react-three/fiber";
+import { useFrame } from "@react-three/fiber";
 
 type SelectionHighlightMeshProps = {
     geometry: BufferGeometry<NormalBufferAttributes>;
@@ -33,7 +33,7 @@ function PulseMaterial(props: {color: string}) {
 }
 
 export default function SelectionHighlightMesh(props: SelectionHighlightMeshProps) {
-    const { selectedIndices } = useTaskContext();
+    const { selectedEntity } = useTaskContext();
     const geometryRef = useRef<BufferGeometry<NormalBufferAttributes>>(new BufferGeometry());
 
     const highlightIndices = (indicesToHighlight: number[]) => {
@@ -66,10 +66,9 @@ export default function SelectionHighlightMesh(props: SelectionHighlightMeshProp
     }, []);
 
     useEffect(() => {
-        if (!selectedIndices) return;
-        highlightIndices(selectedIndices);
+        highlightIndices(selectedEntity?.faceIds || []);
 
-    }, [selectedIndices]);
+    }, [selectedEntity]);
 
     return (
         <group renderOrder={10}>

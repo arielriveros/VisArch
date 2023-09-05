@@ -20,14 +20,11 @@ export default function EntityItem(props: EntityItemProps) {
 
 	const onClickDelete = (e: React.MouseEvent<HTMLButtonElement>) => {
 		e.stopPropagation();
-		dispatchTask({ type: 'SET_SELECTED_INDICES', payload: []});
 		dispatchTask({ type: 'REMOVE_PATTERN_ENTITY', payload: { patternEntityName: props.entity.nameId }});
-		dispatchTask({ type: 'SELECT_PATTERN_ENTITY', payload: null});
 	}
 
 	const onClick = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
 		dispatchTask({ type: 'SELECT_PATTERN_ENTITY', payload: { patternEntityName: props.entity.nameId, patternArchetypeName: props.archetypeName }});
-		dispatchTask({ type: 'SET_SELECTED_INDICES', payload: props.entity.faceIds});
 	}
 
 	useEffect(() => {
