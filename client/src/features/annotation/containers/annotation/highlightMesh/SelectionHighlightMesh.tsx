@@ -16,7 +16,7 @@ function PulseMaterial(props: {color: string}) {
 
     useFrame((state, delta) => {
         let alpha = state.clock.getElapsedTime();
-        let opacity = Math.sin(alpha * 3) + 0.5;
+        let opacity = Math.sin(alpha * 3) / 2 + 1;
         pulseMaterial.current.opacity = opacity;
         pulseMaterial.current.needsUpdate = true;
     });
@@ -26,9 +26,7 @@ function PulseMaterial(props: {color: string}) {
             ref={pulseMaterial}
             color={color}
             transparent={true}
-            opacity={0.5}
-            side={0}
-        />
+            side={0} />
     )
 }
 

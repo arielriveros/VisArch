@@ -10,20 +10,17 @@ type EntityItemProps = {
 
 export default function EntityItem(props: EntityItemProps) {
 
-	const { selectedEntity, dispatch: dispatchTask} = useTaskContext();
+	const { selectedEntity, showPropertyController, dispatch: dispatchTask} = useTaskContext();
 	const [selected, setSelected] = useState<boolean>(false);
-	const [properties, setProperties] = useState<{orientation: number, scale: number, reflection: boolean}>({
-		orientation: props.entity.orientation,
-		scale: props.entity.scale,
-		reflection: props.entity.reflection
-	});
 
-	const onClickDelete = (e: React.MouseEvent<HTMLButtonElement>) => {
-		e.stopPropagation();
-		dispatchTask({ type: 'REMOVE_PATTERN_ENTITY', payload: { patternEntityName: props.entity.nameId }});
+	const onClickEdit = (e: React.MouseEvent<HTMLButtonElement>) => {
+		/* e.stopPropagation(); */
+		dispatchTask({ type: 'SELECT_PATTERN_ENTITY', payload: { patternEntityName: props.entity.nameId, patternArchetypeName: props.archetypeName }});
+		dispatchTask({ type: 'SET_SHOW_PROPERTY_CONTROLLER', payload: true });
 	}
 
-	const onClick = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+	const onMouseOver = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+		if (showPropertyController) return;
 		dispatchTask({ type: 'SELECT_PATTERN_ENTITY', payload: { patternEntityName: props.entity.nameId, patternArchetypeName: props.archetypeName }});
 	}
 
@@ -31,33 +28,18 @@ export default function EntityItem(props: EntityItemProps) {
 		setSelected(selectedEntity ? selectedEntity.nameId === props.entity.nameId : false);
 	}, [selectedEntity]);
 
-	useEffect(() => {
-		dispatchTask({ type: 'UPDATE_PATTERN_ENTITY_PROPERTIES', payload: {
-			patternArchetypeName: props.archetypeName,
-			patternEntityName: props.entity.nameId,
-			entityProperties: properties
-		}});
-	}, [properties]);
-
     return (
-		<div className={selected ? 'entity-item-selected' : 'entity-item'} onClick={onClick}>
+		<div className={selected ? 'entity-item-selected' : 'entity-item'} onMouseOver={onMouseOver}>
 			<div className='entity-item-info'>
 				<div>
 					{props.entity.nameId}
 				</div>
 				<div>
-					<button className='delete-entity' onClick={onClickDelete}>
-						X
+					<button className='edit-entity' onClick={onClickEdit}>
+						Edit
 					</button>
 				</div>
 			</div>
-			{ selected &&
-			<div>
-				<input type="range" min="0" max="360" value={properties.orientation} onChange={(e) => setProperties({...properties, orientation: parseInt(e.target.value)})}/>
-				<input type="range" min="0" max="1" step="0.01" value={properties.scale} onChange={(e) => setProperties({...properties, scale: parseFloat(e.target.value)})}/>
-				<input type="checkbox" checked={properties.reflection} onChange={(e) => setProperties({...properties, reflection: e.target.checked})}/>
-			</div>
-			}
 		</div>
     )
 }

@@ -14,10 +14,9 @@ import PropertyController from '../propertyController/PropertyController';
 import './AnnotationController.css';
 
 export default function AnnotationController() {
-    const { task, selectedArchetype, loading, selectedEntity, dispatch: dispatchTask } = useTaskContext();
+    const { task, selectedArchetype, loading, selectedEntity, showPropertyController, dispatch: dispatchTask } = useTaskContext();
     const { proxyGeometry, proxyMaterial, unwrappedGeometry } = useProxyMeshContext();
     const [unwrappedMesh, setUnwrappedMesh] = useState<Mesh>(new Mesh());
-    const [showConfirmation, setShowConfirmation] = useState<boolean>(false);
     
     const groupRef = useRef<Group | null>(null)
 
@@ -42,21 +41,9 @@ export default function AnnotationController() {
             }
         });
     }
-
-    const onConfirm = () => {
-        setShowConfirmation(false);
-        dispatchTask({ type: 'SELECT_PATTERN_ENTITY', payload: null });
-    }
-
-    const onCancel = () => {
-        setShowConfirmation(false);
-        if (!selectedEntity) return;
-        dispatchTask({ type: 'REMOVE_PATTERN_ENTITY', payload: { patternEntityName: selectedEntity.nameId }});
-    }
         
     const indicesSelectHandler = (indices: number[]) => {
         if (indices.length < 3) return;
-        setShowConfirmation(true);
         dispatchTask({
             type: 'ADD_PATTERN_ENTITY',
             payload: {
@@ -68,7 +55,6 @@ export default function AnnotationController() {
     useEffect(() => {
         if(loading) return;
         init();
-        setShowConfirmation(false);
         return () => {
             disposeMesh()
         };
@@ -84,7 +70,7 @@ export default function AnnotationController() {
                 />
                 <LassoSelector
                     mesh={unwrappedMesh as Mesh}
-                    handleOnSelect={ (!showConfirmation) && selectedArchetype ? indicesSelectHandler : ()=>{}}
+                    handleOnSelect={ (!showPropertyController) && selectedArchetype ? indicesSelectHandler : ()=>{}}
                 />
 				<ambientLight />
 				<color attach="background" args={['gray']} />
@@ -102,12 +88,9 @@ export default function AnnotationController() {
                 <DebugGroup debug={config.DEBUG} bvhMesh={unwrappedMesh} showMonitor={config.DEBUG}/>
                 
 			</Canvas>
-            { showConfirmation && unwrappedGeometry &&
-                <PropertyController 
-                    mesh={unwrappedMesh as Mesh}
-                    onConfirm={onConfirm}
-                    onCancel={onCancel} />
-                }
+            { showPropertyController && unwrappedGeometry && selectedEntity && selectedArchetype &&
+                <PropertyController mesh={unwrappedMesh as Mesh} />
+            }
 		</div>
 	);
 }

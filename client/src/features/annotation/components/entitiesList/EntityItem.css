@@ -20,20 +20,15 @@
 
 .entity-item:hover {
     background-color: #f5f5f5;
-    cursor: pointer;
 }
 
-.entity-item:hover .delete-entity {
+.entity-item-selected .edit-entity {
     display: block;
 }
 
-.entity-item-selected .delete-entity {
-    display: block;
-}
-
-.delete-entity {
+.edit-entity {
     display: none;
-    color: #ff0000;
     font-size: 15px;
     margin-left: 10px;
+    cursor: pointer;
 }

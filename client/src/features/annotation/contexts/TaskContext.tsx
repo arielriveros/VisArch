@@ -7,6 +7,7 @@ interface TaskState {
     selectedArchetype: PatternArchetype | null;
     selectedEntity: PatternEntity | null;
     indexPosition: IntersectionPayload | null;
+    showPropertyController: boolean;
     loading: boolean;
 }
 
@@ -41,6 +42,7 @@ interface TaskAction {
         'UPDATE_PATTERN_ENTITY_PROPERTIES' |
         'UPDATE_SELECTED_PATTERN_ARCHETYPE' |
         'SET_INDEX_POSITION' |
+        'SET_SHOW_PROPERTY_CONTROLLER' |
         'SET_LOADING';
     payload?: 
         Task |
@@ -66,6 +68,7 @@ export const TaskContext = createContext<TaskContextProps>(
         selectedArchetype: null,
         selectedEntity: null,
         indexPosition: null,
+        showPropertyController: false,
         loading: false,
         dispatch: () => {}
     }
@@ -223,6 +226,12 @@ function taskReducer(state: TaskState, action: TaskAction): TaskState {
 
             return { ...state, indexPosition: action.payload as IntersectionPayload };
 
+        case 'SET_SHOW_PROPERTY_CONTROLLER':
+            if (!action.payload)
+                return { ...state, showPropertyController: false };
+
+            return { ...state, showPropertyController: action.payload as boolean };
+
         case 'SET_LOADING':
             return { ...state, loading: (action.payload as boolean) };
 
@@ -234,7 +243,14 @@ function taskReducer(state: TaskState, action: TaskAction): TaskState {
 
 export default function TaskContextProvider({ children }: { children: React.ReactNode}) {
 
-    const [state, dispatch] = useReducer(taskReducer, { task: null, loading: false, selectedArchetype: null, selectedEntity: null, indexPosition: null });
+    const [state, dispatch] = useReducer(taskReducer, { 
+        task: null,
+        selectedArchetype: null,
+        selectedEntity: null,
+        indexPosition: null,
+        showPropertyController: false,
+        loading: false
+    });
     return (
         <TaskContext.Provider value={{ ...state, dispatch }}>
             {children}

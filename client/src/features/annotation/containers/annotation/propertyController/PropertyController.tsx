@@ -9,16 +9,28 @@ import './PropertyController.css';
 
 type PropertyControllerProps = {
 	mesh: Mesh;
-    onConfirm: () => void;
-    onCancel: () => void;
 }
 
 export default function PropertyController(props: PropertyControllerProps) {
-	const { selectedEntity } = useTaskContext();
+	const { selectedArchetype, selectedEntity, dispatch: dispatchTask } = useTaskContext();
 	const { proxyGeometry, unwrappedGeometry } = useProxyMeshContext();
 	const [cameraPosition, setCameraPosition] = useState<{pos: Vector3, lookAt: Vector3}>(
-			{pos: new Vector3(0, 0, 0), lookAt: new Vector3(0, 0, 0)}
-		);
+		{pos: new Vector3(0, 0, 0), lookAt: new Vector3(0, 0, 0)}
+	);
+	const [properties, setProperties] = useState<{orientation: number, scale: number, reflection: boolean}>({
+		orientation: selectedEntity!.orientation,
+		scale: selectedEntity!.scale,
+		reflection: selectedEntity!.reflection
+	});
+
+	useEffect(() => {
+		dispatchTask({ type: 'UPDATE_PATTERN_ENTITY_PROPERTIES', payload: {
+			patternArchetypeName: selectedArchetype!.nameId,
+			patternEntityName: selectedEntity!.nameId,
+			entityProperties: properties
+		}});
+	}, [properties, selectedEntity]);
+		
 
 	useEffect(() => {
 		if(!proxyGeometry || !unwrappedGeometry || !selectedEntity) return;
@@ -35,7 +47,16 @@ export default function PropertyController(props: PropertyControllerProps) {
 			lookAt: calcBox.centroid
 		});
 
-	}, [proxyGeometry, unwrappedGeometry]);
+	}, [proxyGeometry, unwrappedGeometry, selectedEntity]);
+
+	const onDelete = () => {
+		dispatchTask({ type: 'REMOVE_PATTERN_ENTITY', payload: { patternEntityName: selectedEntity!.nameId }});
+		onClose();
+	}
+
+	const onClose = () => {
+		dispatchTask({ type: 'SET_SHOW_PROPERTY_CONTROLLER', payload: false });
+	}
 
   	return (
 		<div className='property-container'>
@@ -46,7 +67,6 @@ export default function PropertyController(props: PropertyControllerProps) {
 							lookAt: () => cameraPosition.lookAt,
 							near: 0.001
 						}}
-						frameloop={'demand'}
 					>
 						<ambientLight />
 						<pointLight position={[10, 10, 10]} />
@@ -54,7 +74,18 @@ export default function PropertyController(props: PropertyControllerProps) {
 						<mesh geometry={props.mesh.geometry} material={props.mesh.material} />
 					</Canvas>
 				</div>
-				<Confirmation label={"Add Pattern?"} onConfirm={props.onConfirm} onCancel={props.onCancel} />
+				<div className='property-editor'>
+					<label>Orientation</label>
+					<input type="range" min="0" max="360" value={properties.orientation} onChange={(e) => setProperties({...properties, orientation: parseInt(e.target.value)})}/>
+					<label>Scale</label>
+					<input type="range" min="0" max="1" step="0.01" value={properties.scale} onChange={(e) => setProperties({...properties, scale: parseFloat(e.target.value)})}/>
+					<label>Reflection</label>
+					<input type="checkbox" checked={properties.reflection} onChange={(e) => setProperties({...properties, reflection: e.target.checked})}/>
+					<div>
+						<button onClick={onDelete}>Delete</button>
+						<button onClick={onClose}>Close</button>
+					</div>
+				</div>
 			</div>
 		</div>
 	)
