@@ -64,14 +64,18 @@ export default function AnnotationController() {
 		<div className="annotation-viewer-container">
 			<Canvas camera={{ position: [0, 0, 2] }} frameloop={'always'}>
 				<CameraController />
-                <HoverIndex 
-                    rate={0} 
-                    mesh={unwrappedMesh as Mesh}
-                />
-                <LassoSelector
-                    mesh={unwrappedMesh as Mesh}
-                    handleOnSelect={ (!showPropertyController) && selectedArchetype ? indicesSelectHandler : ()=>{}}
-                />
+                { !showPropertyController &&
+                    <>
+                        <HoverIndex 
+                            rate={0} 
+                            mesh={unwrappedMesh as Mesh}
+                        />
+                        <LassoSelector
+                            mesh={unwrappedMesh as Mesh}
+                            handleOnSelect={ indicesSelectHandler }
+                        />
+                    </>
+                }
 				<ambientLight />
 				<color attach="background" args={['gray']} />
 				<pointLight position={[10, 10, 10]} />

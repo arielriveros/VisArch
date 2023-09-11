@@ -1,5 +1,5 @@
-import { useThree } from "@react-three/fiber";
-import { useEffect } from "react";
+import { useFrame, useThree } from "@react-three/fiber";
+import { useEffect, useState } from "react";
 import { Vector3 } from "three";
 import { useTaskContext } from "../../../hooks/useTask";
 import { useProxyMeshContext } from "../../../hooks/useProxyMesh";
@@ -8,6 +8,7 @@ export default function LookAtIndex() {
 	const { camera } = useThree();
 	const { proxyGeometry } = useProxyMeshContext();
 	const { indexPosition } = useTaskContext();
+	const [target, setTarget] = useState<Vector3>(new Vector3());
 
 	const getPosition = (face: {a: number, b: number, c: number, normal: Vector3}) => {
 		const { a, b, c } = face;
@@ -21,10 +22,15 @@ export default function LookAtIndex() {
 		return new Vector3(x, y, z);
 	}
 
-	const changeView = (newPosition: Vector3) => {
-		camera.position.set(newPosition.x, newPosition.y, newPosition.z);
-		camera.position.multiplyScalar(2);
+	useFrame(({ camera }, delta) => {
+		camera.position.lerp(target, delta * 5)
 		camera.lookAt(0, 0, 0);
+	})
+
+	const changeView = (newPosition: Vector3) => {
+		const newTarget = new Vector3(newPosition.x, newPosition.y, newPosition.z);
+		newTarget.multiplyScalar(2);
+		setTarget(newTarget);
 	}
 
 	useEffect(() => {

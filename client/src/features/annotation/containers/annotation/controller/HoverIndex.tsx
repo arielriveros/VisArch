@@ -3,6 +3,7 @@ import { Mesh } from "three";
 import { useThree } from "@react-three/fiber";
 import { IntersectionPayload } from "../manager/AnnotationManager";
 import { useTaskContext } from "../../../hooks/useTask";
+import { calculateBoundingBox } from "../../../utils/boundingBox";
 
 type HoverIndexProps = {
     rate?: number
@@ -11,7 +12,7 @@ type HoverIndexProps = {
 
 export default function HoverIndex(props: HoverIndexProps) {
     const { raycaster, scene, gl } = useThree();
-    const { dispatch } = useTaskContext();
+    const { selectedEntity, dispatch } = useTaskContext();
     let isThrottled = false;
 
     const raycast = () => {
@@ -34,6 +35,17 @@ export default function HoverIndex(props: HoverIndexProps) {
             return null;
         }
     }
+
+    useEffect(() => {
+        if(!selectedEntity) return;
+
+        const centroid = calculateBoundingBox(selectedEntity.faceIds, props.mesh.geometry).centroid;
+        raycaster.ray.origin.set(centroid.x, centroid.y, centroid.z + 5);
+        raycaster.ray.direction.set(0, 0, -1);
+        const intersection = raycast();
+
+        dispatch({ type: 'SET_INDEX_POSITION', payload: intersection });
+    }, [selectedEntity]);
 
     const handleMouseMove = (e: MouseEvent) => {
         e.preventDefault();
