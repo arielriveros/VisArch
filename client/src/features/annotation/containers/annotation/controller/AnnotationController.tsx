@@ -89,7 +89,7 @@ export default function AnnotationController() {
                 
 			</Canvas>
             { showPropertyController && unwrappedGeometry && selectedEntity && selectedArchetype &&
-                <PropertyController mesh={unwrappedMesh as Mesh} />
+                <PropertyController />
             }
 		</div>
 	);

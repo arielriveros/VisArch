@@ -1,53 +1,65 @@
 import { Canvas } from '@react-three/fiber';
-import { Mesh, Vector3 } from 'three';
-import Confirmation from '../../../components/confirmation/Confirmation'
+import { Group, Matrix4, Mesh, Vector3 } from 'three';
 import { useProxyMeshContext } from '../../../hooks/useProxyMesh';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { calculateBoundingBox } from '../../../utils/boundingBox';
 import { useTaskContext } from '../../../hooks/useTask';
 import './PropertyController.css';
 
 type PropertyControllerProps = {
-	mesh: Mesh;
 }
 
 export default function PropertyController(props: PropertyControllerProps) {
 	const { selectedArchetype, selectedEntity, dispatch: dispatchTask } = useTaskContext();
-	const { proxyGeometry, unwrappedGeometry } = useProxyMeshContext();
-	const [cameraPosition, setCameraPosition] = useState<{pos: Vector3, lookAt: Vector3}>(
-		{pos: new Vector3(0, 0, 0), lookAt: new Vector3(0, 0, 0)}
-	);
+	const { proxyGeometry, unwrappedGeometry, proxyMaterial } = useProxyMeshContext();
+	const [centroid, setCentroid] = useState<Vector3>(new Vector3());
 	const [properties, setProperties] = useState<{orientation: number, scale: number, reflection: boolean}>({
 		orientation: selectedEntity!.orientation,
 		scale: selectedEntity!.scale,
 		reflection: selectedEntity!.reflection
 	});
+	const pivot = useRef<Group | null>(null)
 
 	useEffect(() => {
+		pivot.current = new Group();
+        if(!proxyMaterial || !unwrappedGeometry) return;
+
+        const material = proxyMaterial.clone();
+        if (material) material.side = 0;
+        const unwrappedProxyMesh = new Mesh(unwrappedGeometry.clone(), material);
+		unwrappedProxyMesh.name = 'unwrappedProxyMesh';
+
+        pivot.current?.add(unwrappedProxyMesh);
+
+	}, [proxyMaterial, unwrappedGeometry]);
+
+	useEffect(() => {
+		if(!unwrappedGeometry || !selectedEntity) return;
+
 		dispatchTask({ type: 'UPDATE_PATTERN_ENTITY_PROPERTIES', payload: {
 			patternArchetypeName: selectedArchetype!.nameId,
 			patternEntityName: selectedEntity!.nameId,
 			entityProperties: properties
 		}});
-	}, [properties, selectedEntity]);
-		
-
-	useEffect(() => {
-		if(!proxyGeometry || !unwrappedGeometry || !selectedEntity) return;
 
 		const calcBox = calculateBoundingBox(selectedEntity?.faceIds, unwrappedGeometry);
 		const meanDistance = (
 			calcBox.boundingBox.max.x - calcBox.boundingBox.min.x + 
-			calcBox.boundingBox.max.y - calcBox.boundingBox.min.y +
-			calcBox.boundingBox.max.z
+			calcBox.boundingBox.max.y - calcBox.boundingBox.min.y
 			) / 2;
 
-		setCameraPosition({
-			pos: new Vector3(calcBox.centroid.x, calcBox.centroid.y, meanDistance),
-			lookAt: calcBox.centroid
-		});
+		setCentroid(new Vector3(calcBox.centroid.x, calcBox.centroid.y, calcBox.centroid.z + meanDistance));
 
-	}, [proxyGeometry, unwrappedGeometry, selectedEntity]);
+		// Make the pivot point the centroid of the unwrapped geometry
+		pivot.current?.getObjectByName('unwrappedProxyMesh')?.position.set(-calcBox.centroid.x, -calcBox.centroid.y, 0);
+
+		// Rotate the pivot point
+		pivot.current?.rotation.set(0, 0, properties.orientation * Math.PI / 180);
+
+		// Scale the pivot point
+		pivot.current?.scale.set(properties.scale * (properties.reflection ? -1 : 1), properties.scale, properties.scale);
+
+	}, [selectedEntity, properties]);
 
 	const onDelete = () => {
 		dispatchTask({ type: 'REMOVE_PATTERN_ENTITY', payload: { patternEntityName: selectedEntity!.nameId }});
@@ -63,15 +75,12 @@ export default function PropertyController(props: PropertyControllerProps) {
 			<div className='property-window'>
 				<div className='property-canvas'>
 					<Canvas camera={{
-							position: cameraPosition.pos,
-							lookAt: () => cameraPosition.lookAt,
-							near: 0.001
-						}}
-					>
+						position: [0, 0, centroid.z],
+						near: 0.001,
+						fov: 90 }}>
 						<ambientLight />
-						<pointLight position={[10, 10, 10]} />
 						<directionalLight position={[0, 10, 0]} intensity={1} />
-						<mesh geometry={props.mesh.geometry} material={props.mesh.material} />
+						{pivot.current && <primitive object={pivot.current}/>}
 					</Canvas>
 				</div>
 				<div className='property-editor'>
