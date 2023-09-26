@@ -7,6 +7,7 @@ import TaskSidebar from '../../components/sidebar/TaskSidebar';
 import ArchetypesList from '../../components/archetypesList/ArchetypesList';
 import AnnotationManager from '../annotation/manager/AnnotationManager';
 import ProxyMeshContextProvider from '../../contexts/ProxyMeshContext';
+import SocketContextProvider from '../../../socket/contexts/SocketContext';
 import './TaskMain.css';
 
 type TaskMainProps = {
@@ -65,18 +66,20 @@ export default function TaskMain(props: TaskMainProps) {
 
 	return (
 		<div className='task-main'>
-			<div className='task-sidebar-container'> 
-				<TaskSidebar>
-					<ArchetypesList />
-					<button onClick={uploadTask}> Upload </button>
-					<TaskList projectId={props.projectId} type={'task-list'} />
-				</TaskSidebar>
-			</div>
-			<ProxyMeshContextProvider>
-				<div className='task-content'>
-					<AnnotationManager />
+			<SocketContextProvider>
+				<div className='task-sidebar-container'> 
+					<TaskSidebar>
+						<ArchetypesList />
+						<button onClick={uploadTask}> Upload </button>
+						<TaskList projectId={props.projectId} type={'task-list'} />
+					</TaskSidebar>
 				</div>
-			</ProxyMeshContextProvider>
+				<ProxyMeshContextProvider>
+					<div className='task-content'>
+						<AnnotationManager />
+					</div>
+				</ProxyMeshContextProvider>
+			</SocketContextProvider>
 		</div>
 	)
 }

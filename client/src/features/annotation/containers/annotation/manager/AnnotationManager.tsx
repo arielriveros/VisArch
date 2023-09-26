@@ -5,9 +5,9 @@ import { Mesh, Group, Vector3, BufferGeometry, NormalBufferAttributes, Material,
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
 import { useAuthContext } from '../../../../../hooks/useAuthContext';
 import { useProxyMeshContext } from '../../../hooks/useProxyMesh';
+import { useSocket } from '../../../../socket/hooks/useSocket';
 import { radialUnwrap } from '../../../utils/radialUnwrap';
 import { flattenAxis } from '../../../utils/flattenAxis';
-import { Socket, io, } from 'socket.io-client';
 import AnnotationController from '../controller/AnnotationController';
 import AnnotationViewer from '../viewer/AnnotationViewer';
 import './AnnotationManager.css';
@@ -18,11 +18,11 @@ export type IntersectionPayload = {
 }
 
 export default function AnnotationManager() {
-    const { task, loading: loadingTask, dispatch: dispatchTask } = useTaskContext();
+    const { task, loading: loadingTask, dispatch: dispatchTask, selectedEntity } = useTaskContext();
     const { loading: loadingMesh, dispatch: dispatchProxyMesh } = useProxyMeshContext();
+    const { emit } = useSocket();
     const { user } = useAuthContext();
     const [ready, setReady] = useState<boolean>(false);
-    const socket = useRef<Socket<any> | null>(null);
 
     const getGeometry = (group: Group) => {
         const mesh = group.children[0].children[0] as Mesh;
@@ -40,7 +40,6 @@ export default function AnnotationManager() {
                 resolve(null);
                 return;
             }
-
 
             const unwrappedGeometry = geometry.clone();
             const unwrappedPositionsNotFlattened = radialUnwrap(
@@ -119,12 +118,10 @@ export default function AnnotationManager() {
     }, [loadingTask, loadingMesh]);
 
     useEffect(() => {
-        socket.current = io(config.SOCKET_URL, { transports: ['websocket'] });
+        if (!task ) return;
+        emit('update_annotations', selectedEntity);
 
-        return () => {
-            socket.current?.disconnect();
-        }
-    }, []);
+    }, [task?.annotations]);
 
     return (
         <div className='annotation-manager-container'>
