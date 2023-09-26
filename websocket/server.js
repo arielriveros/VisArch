@@ -17,6 +17,10 @@ const io = socketIO(server);
 
 // Listen for new connections
 io.on('connection', (socket) => {
-    console.log(`New client ${socket.id} connected`);
-    socket.on('disconnect', () => console.log('Client disconnected'));
+    console.log(`Socket: New client ${socket.id} connected`);
+    socket.on('disconnect', () => console.log('Socket: Client disconnected'));
+    socket.on('update_annotations', (data) => {
+        console.log('Received message', data);
+        socket.broadcast.emit('updated_annotations', data);
+    });
 });
