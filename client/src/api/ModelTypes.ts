@@ -29,6 +29,7 @@ export type PatternEntity = {
     orientation: number;
     scale: number;
     reflection: boolean;
+    isArchetype: boolean;
 }
 
 export type PatternArchetype = {

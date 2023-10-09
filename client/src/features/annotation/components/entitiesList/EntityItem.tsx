@@ -32,7 +32,7 @@ export default function EntityItem(props: EntityItemProps) {
 		<div className={selected ? 'entity-item-selected' : 'entity-item'} onMouseOver={onMouseOver}>
 			<div className='entity-item-info'>
 				<div>
-					{props.entity.nameId}
+					{props.entity.isArchetype ? 'Archetype' : 'Instance'}
 				</div>
 				<div>
 					<button className='edit-entity' onClick={onClickEdit}>

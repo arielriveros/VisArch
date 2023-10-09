@@ -22,6 +22,7 @@ interface UpdatePatternEntityPropertiesPayload {
         orientation: number;
         scale: number;
         reflection: boolean;
+        isArchetype: boolean;
     };
 }
 
@@ -140,7 +141,8 @@ function taskReducer(state: TaskState, action: TaskAction): TaskState {
                 orientation: 0,
                 scale: 1,
                 reflection: false,
-                faceIds: addEntityPayload.patternIndices
+                faceIds: addEntityPayload.patternIndices,
+                isArchetype: state.selectedArchetype.entities.length === 0 || false
             }
 
             const updatedArchetypes = state.task.annotations?.map(archetype => {
@@ -154,22 +156,29 @@ function taskReducer(state: TaskState, action: TaskAction): TaskState {
 
             return { ...state, task: { ...state.task, annotations: updatedArchetypes }, selectedEntity: newEntity };
 
-        case 'REMOVE_PATTERN_ENTITY':
-            if (!state.task || !state.selectedArchetype) return state;
-
-            const updatedEntities = state.task.annotations?.map(archetype => {
-                if (archetype.nameId === state.selectedArchetype?.nameId) {
-                    return { 
-                        ...archetype,
-                        entities: archetype.entities.filter(entity => entity.nameId !== (action.payload as { patternEntityName: string }).patternEntityName)
-                    };
-                }
-                else {
+            case 'REMOVE_PATTERN_ENTITY':
+                if (!state.task || !state.selectedArchetype) return state;
+              
+                const updatedEntities = state.task.annotations?.map(archetype => {
+                  if (archetype.nameId === state.selectedArchetype?.nameId) {
+                    const entities = archetype.entities.map((entity, index) => {
+                      if (entity.nameId === (action.payload as { patternEntityName: string }).patternEntityName) {
+                        if (entity.isArchetype && index < archetype.entities.length - 1) {
+                          archetype.entities[index + 1].isArchetype = true;
+                        }
+                        return null;
+                      } else {
+                        return entity;
+                      }
+                    }).filter(Boolean) as PatternEntity[];
+              
+                    return { ...archetype, entities };
+                  } else {
                     return archetype;
-                }
-            });
-
-            return { ...state, task: { ...state.task, annotations: updatedEntities }, selectedEntity: null };
+                  }
+                });
+              
+                return { ...state, task: { ...state.task, annotations: updatedEntities }, selectedEntity: null };
 
         case 'UPDATE_SELECTED_PATTERN_ARCHETYPE':
             if (!state.task || !state.selectedArchetype) return state;

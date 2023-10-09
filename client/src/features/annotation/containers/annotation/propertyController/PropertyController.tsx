@@ -13,10 +13,11 @@ export default function PropertyController(props: PropertyControllerProps) {
 	const { selectedArchetype, selectedEntity, dispatch: dispatchTask } = useTaskContext();
 	const { proxyGeometry, unwrappedGeometry, proxyMaterial } = useProxyMeshContext();
 	const [centroid, setCentroid] = useState<Vector3>(new Vector3());
-	const [properties, setProperties] = useState<{orientation: number, scale: number, reflection: boolean}>({
+	const [properties, setProperties] = useState<{orientation: number, scale: number, reflection: boolean, isArchetype: boolean}>({
 		orientation: selectedEntity!.orientation,
 		scale: selectedEntity!.scale,
-		reflection: selectedEntity!.reflection
+		reflection: selectedEntity!.reflection,
+		isArchetype: selectedEntity!.isArchetype
 	});
 	const pivot = useRef<Group | null>(null)
 
@@ -84,12 +85,17 @@ export default function PropertyController(props: PropertyControllerProps) {
 					</Canvas>
 				</div>
 				<div className='property-editor'>
-					<label>Orientation</label>
-					<input type="range" min="0" max="360" value={properties.orientation} onChange={(e) => setProperties({...properties, orientation: parseInt(e.target.value)})}/>
-					<label>Scale</label>
-					<input type="range" min="0" max="1" step="0.01" value={properties.scale} onChange={(e) => setProperties({...properties, scale: parseFloat(e.target.value)})}/>
-					<label>Reflection</label>
-					<input type="checkbox" checked={properties.reflection} onChange={(e) => setProperties({...properties, reflection: e.target.checked})}/>
+					{
+						!properties.isArchetype && // Only edit properties if the entity is not an archetype
+						<>
+						<label>Orientation</label>
+						<input type="range" min="0" max="360" value={properties.orientation} onChange={(e) => setProperties({...properties, orientation: parseInt(e.target.value)})}/>
+						<label>Scale</label>
+						<input type="range" min="0" max="1" step="0.01" value={properties.scale} onChange={(e) => setProperties({...properties, scale: parseFloat(e.target.value)})}/>
+						<label>Reflection</label>
+						<input type="checkbox" checked={properties.reflection} onChange={(e) => setProperties({...properties, reflection: e.target.checked})}/>
+						</>
+					}
 					<div>
 						<button onClick={onDelete}>Delete</button>
 						<button onClick={onClose}>Close</button>
