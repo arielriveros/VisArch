@@ -13,6 +13,7 @@ export default function PropertyController(props: PropertyControllerProps) {
 	const { selectedArchetype, selectedEntity, dispatch: dispatchTask } = useTaskContext();
 	const { proxyGeometry, unwrappedGeometry, proxyMaterial } = useProxyMeshContext();
 	const [centroid, setCentroid] = useState<Vector3>(new Vector3());
+	const [archetypeCentroid, setArchetypeCentroid] = useState<Vector3>(new Vector3());
 	const [properties, setProperties] = useState<{orientation: number, scale: number, reflection: boolean, isArchetype: boolean}>({
 		orientation: selectedEntity!.orientation,
 		scale: selectedEntity!.scale,
@@ -20,6 +21,7 @@ export default function PropertyController(props: PropertyControllerProps) {
 		isArchetype: selectedEntity!.isArchetype
 	});
 	const pivot = useRef<Group | null>(null)
+	const archetype = useRef<Group | null>(null)
 
 	useEffect(() => {
 		pivot.current = new Group();
@@ -27,11 +29,17 @@ export default function PropertyController(props: PropertyControllerProps) {
 
         const material = proxyMaterial.clone();
         if (material) material.side = 0;
-        const unwrappedProxyMesh = new Mesh(unwrappedGeometry.clone(), material);
-		unwrappedProxyMesh.name = 'unwrappedProxyMesh';
+	
+        const propertyEditMesh = new Mesh(unwrappedGeometry.clone(), material);
+		propertyEditMesh.name = 'propertyEditMesh';
 
-        pivot.current?.add(unwrappedProxyMesh);
+        pivot.current?.add(propertyEditMesh);
 
+		archetype.current = new Group();
+		const archetypeMesh = new Mesh(unwrappedGeometry.clone(), material.clone());
+		archetypeMesh.name = 'archetypeMesh';
+
+        archetype.current?.add(archetypeMesh);
 	}, [proxyMaterial, unwrappedGeometry]);
 
 	useEffect(() => {
@@ -52,7 +60,7 @@ export default function PropertyController(props: PropertyControllerProps) {
 		setCentroid(new Vector3(calcBox.centroid.x, calcBox.centroid.y, calcBox.centroid.z + meanDistance));
 
 		// Make the pivot point the centroid of the unwrapped geometry
-		pivot.current?.getObjectByName('unwrappedProxyMesh')?.position.set(-calcBox.centroid.x, -calcBox.centroid.y, 0);
+		pivot.current?.getObjectByName('propertyEditMesh')?.position.set(-calcBox.centroid.x, -calcBox.centroid.y, 0);
 
 		// Rotate the pivot point
 		pivot.current?.rotation.set(0, 0, properties.orientation * Math.PI / 180);
@@ -61,6 +69,25 @@ export default function PropertyController(props: PropertyControllerProps) {
 		pivot.current?.scale.set(properties.scale * (properties.reflection ? -1 : 1), properties.scale, properties.scale);
 
 	}, [selectedEntity, properties]);
+
+	useEffect(() => {
+		if(!unwrappedGeometry) return;
+		selectedArchetype?.entities.forEach(entity => {
+			// find the entity which isArchetype is true
+			if(entity.isArchetype) {
+				const calcBox = calculateBoundingBox(entity?.faceIds, unwrappedGeometry);
+				const meanDistance = (
+					calcBox.boundingBox.max.x - calcBox.boundingBox.min.x + 
+					calcBox.boundingBox.max.y - calcBox.boundingBox.min.y
+					) / 2;
+
+				setArchetypeCentroid(new Vector3(calcBox.centroid.x, calcBox.centroid.y, calcBox.centroid.z + meanDistance));
+				archetype.current?.position.set(-calcBox.centroid.x, -calcBox.centroid.y, 0);
+			}
+		}
+		);
+	}
+	, [selectedArchetype?.entities]);
 
 	const onDelete = () => {
 		dispatchTask({ type: 'REMOVE_PATTERN_ENTITY', payload: { patternEntityName: selectedEntity!.nameId }});
@@ -74,6 +101,20 @@ export default function PropertyController(props: PropertyControllerProps) {
   	return (
 		<div className='property-container'>
 			<div className='property-window'>
+				{
+				<div className='archetype-canvas'>
+				<Canvas camera={{
+					position: [0, 0, archetypeCentroid.z],
+					near: 0.001,
+					fov: 90 }}>
+					<ambientLight />
+					<directionalLight position={[0, 10, 0]} intensity={1} />
+					{archetype.current && <primitive object={archetype.current}/>}
+				</Canvas>
+				</div>
+				}
+				{!properties.isArchetype &&
+				<>
 				<div className='property-canvas'>
 					<Canvas camera={{
 						position: [0, 0, centroid.z],
@@ -84,6 +125,8 @@ export default function PropertyController(props: PropertyControllerProps) {
 						{pivot.current && <primitive object={pivot.current}/>}
 					</Canvas>
 				</div>
+				</>
+				}
 				<div className='property-editor'>
 					{
 						!properties.isArchetype && // Only edit properties if the entity is not an archetype
