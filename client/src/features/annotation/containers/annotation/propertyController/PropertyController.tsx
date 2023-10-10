@@ -4,6 +4,7 @@ import { useProxyMeshContext } from '../../../hooks/useProxyMesh';
 import { useEffect, useRef, useState } from 'react';
 import { calculateBoundingBox } from '../../../utils/boundingBox';
 import { useTaskContext } from '../../../hooks/useTask';
+import HighlightMesh from '../highlightMesh/HighlightMesh';
 import './PropertyController.css';
 
 type PropertyControllerProps = {
@@ -20,8 +21,9 @@ export default function PropertyController(props: PropertyControllerProps) {
 		reflection: selectedEntity!.reflection,
 		isArchetype: selectedEntity!.isArchetype
 	});
+	const [overlap, setOverlap] = useState<boolean>(false);
 	const pivot = useRef<Group | null>(null)
-	const archetype = useRef<Group | null>(null)
+	const archetypeGroup = useRef<Group | null>(null)
 
 	useEffect(() => {
 		pivot.current = new Group();
@@ -35,11 +37,11 @@ export default function PropertyController(props: PropertyControllerProps) {
 
         pivot.current?.add(propertyEditMesh);
 
-		archetype.current = new Group();
+		archetypeGroup.current = new Group();
 		const archetypeMesh = new Mesh(unwrappedGeometry.clone(), material.clone());
 		archetypeMesh.name = 'archetypeMesh';
 
-        archetype.current?.add(archetypeMesh);
+        archetypeGroup.current?.add(archetypeMesh);
 	}, [proxyMaterial, unwrappedGeometry]);
 
 	useEffect(() => {
@@ -82,7 +84,7 @@ export default function PropertyController(props: PropertyControllerProps) {
 					) / 2;
 
 				setArchetypeCentroid(new Vector3(calcBox.centroid.x, calcBox.centroid.y, calcBox.centroid.z + meanDistance));
-				archetype.current?.position.set(-calcBox.centroid.x, -calcBox.centroid.y, 0);
+				archetypeGroup.current?.position.set(-calcBox.centroid.x, -calcBox.centroid.y, 0);
 			}
 		}
 		);
@@ -101,32 +103,34 @@ export default function PropertyController(props: PropertyControllerProps) {
   	return (
 		<div className='property-container'>
 			<div className='property-window'>
-				{
-				<div className='archetype-canvas'>
-				<Canvas camera={{
-					position: [0, 0, archetypeCentroid.z],
-					near: 0.001,
-					fov: 90 }}>
-					<ambientLight />
-					<directionalLight position={[0, 10, 0]} intensity={1} />
-					{archetype.current && <primitive object={archetype.current}/>}
-				</Canvas>
+				<div className={overlap ? 'canvas-windows-overlapped' : 'canvas-windows'}>
+					<div className={'archetype-canvas'}>
+						<Canvas camera={{
+							position: [0, 0, archetypeCentroid.z],
+							near: 0.001,
+							fov: 90 }}>
+							<ambientLight />
+							<directionalLight position={[0, 10, 0]} intensity={1} />
+							{archetypeGroup.current && <primitive object={archetypeGroup.current}/>}
+						</Canvas>
+					</div>
+
+					{!properties.isArchetype &&
+					<>
+					<div className='property-canvas'>
+						<Canvas camera={{
+							position: [0, 0, centroid.z],
+							near: 0.001,
+							fov: 90 }}>
+							<ambientLight />
+							<directionalLight position={[0, 10, 0]} intensity={1} />
+							{pivot.current && <primitive object={pivot.current}/>}
+							{selectedEntity && <HighlightMesh name={selectedEntity.nameId} geometry={unwrappedGeometry!.clone()} color={'red'}/>}
+						</Canvas>
+					</div>
+					</>
+					}
 				</div>
-				}
-				{!properties.isArchetype &&
-				<>
-				<div className='property-canvas'>
-					<Canvas camera={{
-						position: [0, 0, centroid.z],
-						near: 0.001,
-						fov: 90 }}>
-						<ambientLight />
-						<directionalLight position={[0, 10, 0]} intensity={1} />
-						{pivot.current && <primitive object={pivot.current}/>}
-					</Canvas>
-				</div>
-				</>
-				}
 				<div className='property-editor'>
 					{
 						!properties.isArchetype && // Only edit properties if the entity is not an archetype
@@ -134,12 +138,14 @@ export default function PropertyController(props: PropertyControllerProps) {
 						<label>Orientation</label>
 						<input type="range" min="0" max="360" value={properties.orientation} onChange={(e) => setProperties({...properties, orientation: parseInt(e.target.value)})}/>
 						<label>Scale</label>
-						<input type="range" min="0" max="1" step="0.01" value={properties.scale} onChange={(e) => setProperties({...properties, scale: parseFloat(e.target.value)})}/>
+						<input type="range" min="0" max="1.5" step="0.01" value={properties.scale} onChange={(e) => setProperties({...properties, scale: parseFloat(e.target.value)})}/>
 						<label>Reflection</label>
 						<input type="checkbox" checked={properties.reflection} onChange={(e) => setProperties({...properties, reflection: e.target.checked})}/>
 						</>
 					}
 					<div>
+						<label>Overlap</label>
+						<input type="checkbox" checked={overlap} onChange={(e) => setOverlap(e.target.checked)}/>
 						<button onClick={onDelete}>Delete</button>
 						<button onClick={onClose}>Close</button>
 					</div>
