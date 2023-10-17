@@ -1,10 +1,10 @@
 import { Canvas } from '@react-three/fiber';
-import { Group, Matrix4, Mesh, Vector3 } from 'three';
+import { Group, Mesh, Vector3 } from 'three';
 import { useProxyMeshContext } from '../../../hooks/useProxyMesh';
 import { useEffect, useRef, useState } from 'react';
 import { calculateBoundingBox } from '../../../utils/boundingBox';
 import { useTaskContext } from '../../../hooks/useTask';
-import HighlightMesh from '../highlightMesh/HighlightMesh';
+import { EffectComposer, BrightnessContrast, Bloom, HueSaturation } from '@react-three/postprocessing'
 import './PropertyController.css';
 
 type PropertyControllerProps = {
@@ -34,6 +34,30 @@ export default function PropertyController(props: PropertyControllerProps) {
 	
         const propertyEditMesh = new Mesh(unwrappedGeometry.clone(), material);
 		propertyEditMesh.name = 'propertyEditMesh';
+
+		if (!selectedEntity) return;
+		const entityIndices = selectedEntity.faceIds;
+
+		let newIndices: number[] = [];
+        for (let i = 0; i < entityIndices.length; i++) {
+            const index = entityIndices[i] * 3;
+            const a = index + 0;
+            const b = index + 1;
+            const c = index + 2;
+            newIndices.push(a, b, c);
+        }
+
+		const indexAttr = unwrappedGeometry.index;
+		const newIndexAttr = propertyEditMesh.geometry.index;
+		// update the highlight mesh
+		for ( let i = 0, l = newIndices.length; i < l; i ++ ) {
+			const ix = indexAttr?.getX( newIndices[i] );
+			newIndexAttr?.setX( i, ix as number );
+		}
+
+		propertyEditMesh.geometry.drawRange.count = newIndices.length;
+		if (newIndexAttr)
+			newIndexAttr.needsUpdate = true;
 
         pivot.current?.add(propertyEditMesh);
 
@@ -112,6 +136,11 @@ export default function PropertyController(props: PropertyControllerProps) {
 							<ambientLight />
 							<directionalLight position={[0, 10, 0]} intensity={1} />
 							{archetypeGroup.current && <primitive object={archetypeGroup.current}/>}
+							{overlap && 
+							<EffectComposer>
+								<HueSaturation hue={0.2} saturation={0.15} />
+								<BrightnessContrast brightness={0.35} contrast={0.55} />
+							</EffectComposer>}
 						</Canvas>
 					</div>
 
@@ -125,7 +154,11 @@ export default function PropertyController(props: PropertyControllerProps) {
 							<ambientLight />
 							<directionalLight position={[0, 10, 0]} intensity={1} />
 							{pivot.current && <primitive object={pivot.current}/>}
-							{selectedEntity && <HighlightMesh name={selectedEntity.nameId} geometry={unwrappedGeometry!.clone()} color={'red'}/>}
+							{overlap &&
+							<EffectComposer>
+								<BrightnessContrast brightness={0.35} contrast={0.55} />
+							</EffectComposer>
+							}
 						</Canvas>
 					</div>
 					</>
