@@ -19,8 +19,14 @@ const io = socketIO(server);
 io.on('connection', (socket) => {
     console.log(`Socket: New client ${socket.id} connected`);
     socket.on('disconnect', () => console.log('Socket: Client disconnected'));
-    socket.on('update_annotations', (data) => {
-        console.log('Received message', data);
-        socket.broadcast.emit('updated_annotations', data);
-    });
+    
+    socket.on('EMIT::ADD_PATTERN_ARCHETYPE', (name) => {
+        console.log('EMIT::ADD_PATTERN_ARCHETYPE', name);
+        socket.broadcast.emit('BROADCAST::ADD_PATTERN_ARCHETYPE', name);
+    })
+
+    socket.on('EMIT::ADD_PATTERN_ENTITY', (payload) => {
+        socket.broadcast.emit('BROADCAST::ADD_PATTERN_ENTITY', payload);
+    })
+
 });

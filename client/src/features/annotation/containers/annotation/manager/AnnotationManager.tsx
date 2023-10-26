@@ -5,7 +5,6 @@ import { Mesh, Group, Vector3, BufferGeometry, NormalBufferAttributes, Material,
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
 import { useAuthContext } from '../../../../../hooks/useAuthContext';
 import { useProxyMeshContext } from '../../../hooks/useProxyMesh';
-import { useSocket } from '../../../../socket/hooks/useSocket';
 import { radialUnwrap } from '../../../utils/radialUnwrap';
 import { flattenAxis } from '../../../utils/flattenAxis';
 import AnnotationController from '../controller/AnnotationController';
@@ -18,9 +17,8 @@ export type IntersectionPayload = {
 }
 
 export default function AnnotationManager() {
-    const { task, loading: loadingTask, dispatch: dispatchTask, selectedEntity } = useTaskContext();
+    const { task, loading: loadingTask } = useTaskContext();
     const { loading: loadingMesh, dispatch: dispatchProxyMesh } = useProxyMeshContext();
-    const { emit } = useSocket();
     const { user } = useAuthContext();
     const [ready, setReady] = useState<boolean>(false);
 
@@ -116,12 +114,6 @@ export default function AnnotationManager() {
     useEffect(() => {
         setReady(!loadingTask && !loadingMesh);
     }, [loadingTask, loadingMesh]);
-
-    useEffect(() => {
-        if (!task ) return;
-        emit('update_annotations', selectedEntity);
-
-    }, [task?.annotations]);
 
     return (
         <div className='annotation-manager-container'>

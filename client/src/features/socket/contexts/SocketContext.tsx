@@ -1,41 +1,16 @@
-import { createContext, useReducer } from "react";
+import { createContext, Context } from "react";
+import { Socket, io } from 'socket.io-client';
+import { config } from '../../../utils/config';
 
-interface SocketState {
-    connected: boolean;
-}
-    
-interface SocketAction {
-    type: 
-		'SET_CONNECTED';
-    payload?: boolean | null;
-}
-
-interface SocketContextProps extends SocketState {
-    dispatch: React.Dispatch<SocketAction>;
-}
-
-export const SocketContext = createContext<SocketContextProps>(
-    {
-		connected: false,
-        dispatch: () => {}
-    }
-);
-
-function SocketReducer(state: SocketState, action: SocketAction): SocketState {
-    switch (action.type) {
-        case 'SET_CONNECTED':
-			return { ...state, connected: action.payload as boolean };
-        default:
-            return state;
-    }
-}
+export const socket: Socket<any> = io(config.SOCKET_URL, {autoConnect: false, reconnection: true, transports: ['websocket']});
+export const SocketContext: Context<Socket<any, any> | null> = createContext<Socket<any, any> | null>(null);
 
 export default function SocketContextProvider({ children }: { children: React.ReactNode}) {
 
-    const [state, dispatch] = useReducer(SocketReducer, { connected: false });
     return (
-        <SocketContext.Provider value={{ ...state, dispatch }}>
+        <SocketContext.Provider value={socket}>
             {children}
         </SocketContext.Provider>
     )
 }
+
