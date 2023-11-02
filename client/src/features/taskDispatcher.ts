@@ -12,7 +12,7 @@ export default function useTaskDispatcher() {
         return name;
     }
 
-    const ADD_PATTERN_ARCHETYPE = ( name: string | null = null, broadcast: boolean = false ) => {
+    const ADD_PATTERN_ARCHETYPE = (name: string | null = null, broadcast: boolean = false) => {
         const patName = name ? name : randomName('pat', 10000);
 
         taskDispatch({ type: 'ADD_PATTERN_ARCHETYPE', payload: { patternArchetypeName: patName}});
@@ -30,8 +30,19 @@ export default function useTaskDispatcher() {
         if(broadcast) emit('ADD_PATTERN_ENTITY', payload);
     }
 
+    const UPDATE_PATTERN_ENTITY_PROPERTIES = (archetypeName: string, entityName: string, properties: any, broadcast: boolean = false) => {
+        const payload = {
+            patternArchetypeName: archetypeName,
+            patternEntityName: entityName,
+            entityProperties: properties
+        }
+        taskDispatch({ type: 'UPDATE_PATTERN_ENTITY_PROPERTIES', payload});
+        if(broadcast) emit('UPDATE_PATTERN_ENTITY_PROPERTIES', payload);
+    }
+
     return {
         ADD_PATTERN_ARCHETYPE,
-        ADD_PATTERN_ENTITY
+        ADD_PATTERN_ENTITY,
+        UPDATE_PATTERN_ENTITY_PROPERTIES
     };
 }

@@ -205,7 +205,7 @@ function taskReducer(state: TaskState, action: TaskAction): TaskState {
             return { ...state, selectedEntity: selectedEntity };
 
         case 'UPDATE_PATTERN_ENTITY_PROPERTIES':
-            if (!state.task || !state.selectedArchetype) return state;
+            if (!state.task) return state;
 
             const { patternArchetypeName, patternEntityName, entityProperties } = action.payload as UpdatePatternEntityPropertiesPayload;
 

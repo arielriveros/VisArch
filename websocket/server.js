@@ -1,9 +1,10 @@
+require('dotenv').config()
 const express = require('express');
 const cors = require('cors');
 const socketIO = require('socket.io');
 
-const CLIENT_URL = 'http://localhost:3000';
-const PORT = 5001;
+const CLIENT_URL = process.env.CLIENT_URL;
+const PORT = process.env.PORT;
 
 // Create the Express app
 const app = express();
@@ -21,12 +22,22 @@ io.on('connection', (socket) => {
     socket.on('disconnect', () => console.log('Socket: Client disconnected'));
     
     socket.on('EMIT::ADD_PATTERN_ARCHETYPE', (name) => {
-        console.log('EMIT::ADD_PATTERN_ARCHETYPE', name);
         socket.broadcast.emit('BROADCAST::ADD_PATTERN_ARCHETYPE', name);
     })
 
     socket.on('EMIT::ADD_PATTERN_ENTITY', (payload) => {
         socket.broadcast.emit('BROADCAST::ADD_PATTERN_ENTITY', payload);
     })
+
+    socket.on('EMIT::ADD_PATTERN_ENTITY', (payload) => {
+        socket.broadcast.emit('BROADCAST::ADD_PATTERN_ENTITY', payload);
+    })
+
+    socket.on('EMIT::UPDATE_PATTERN_ENTITY_PROPERTIES', (payload) => {
+        console.log(payload)
+        socket.broadcast.emit('BROADCAST::UPDATE_PATTERN_ENTITY_PROPERTIES', payload);
+    })
+
+    
 
 });

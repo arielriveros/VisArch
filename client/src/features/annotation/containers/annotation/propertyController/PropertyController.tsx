@@ -1,18 +1,17 @@
 import { Canvas } from '@react-three/fiber';
 import { Group, Mesh, Vector3 } from 'three';
+import { EffectComposer, BrightnessContrast, HueSaturation } from '@react-three/postprocessing'
 import { useProxyMeshContext } from '../../../hooks/useProxyMesh';
 import { useEffect, useRef, useState } from 'react';
 import { calculateBoundingBox } from '../../../utils/boundingBox';
 import { useTaskContext } from '../../../hooks/useTask';
-import { EffectComposer, BrightnessContrast, Bloom, HueSaturation } from '@react-three/postprocessing'
+import useTaskDispatcher from '../../../../taskDispatcher';
 import './PropertyController.css';
 
-type PropertyControllerProps = {
-}
-
-export default function PropertyController(props: PropertyControllerProps) {
+export default function PropertyController() {
 	const { selectedArchetype, selectedEntity, dispatch: dispatchTask } = useTaskContext();
-	const { proxyGeometry, unwrappedGeometry, proxyMaterial } = useProxyMeshContext();
+	const { UPDATE_PATTERN_ENTITY_PROPERTIES } = useTaskDispatcher();
+	const { unwrappedGeometry, proxyMaterial } = useProxyMeshContext();
 	const [centroid, setCentroid] = useState<Vector3>(new Vector3());
 	const [archetypeCentroid, setArchetypeCentroid] = useState<Vector3>(new Vector3());
 	const [properties, setProperties] = useState<{orientation: number, scale: number, reflection: boolean, isArchetype: boolean}>({
@@ -71,11 +70,7 @@ export default function PropertyController(props: PropertyControllerProps) {
 	useEffect(() => {
 		if(!unwrappedGeometry || !selectedEntity) return;
 
-		dispatchTask({ type: 'UPDATE_PATTERN_ENTITY_PROPERTIES', payload: {
-			patternArchetypeName: selectedArchetype!.nameId,
-			patternEntityName: selectedEntity!.nameId,
-			entityProperties: properties
-		}});
+		UPDATE_PATTERN_ENTITY_PROPERTIES(selectedArchetype!.nameId, selectedEntity!.nameId, properties, true);
 
 		const calcBox = calculateBoundingBox(selectedEntity?.faceIds, unwrappedGeometry);
 		const meanDistance = (

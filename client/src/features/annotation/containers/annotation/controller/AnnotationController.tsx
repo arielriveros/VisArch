@@ -19,7 +19,7 @@ export default function AnnotationController() {
     const { task, selectedArchetype, loading, selectedEntity, showPropertyController, dispatch: dispatchTask } = useTaskContext();
     const { proxyGeometry, proxyMaterial, unwrappedGeometry } = useProxyMeshContext();
     const { socket } = useSocket();
-    const { ADD_PATTERN_ARCHETYPE, ADD_PATTERN_ENTITY } = useTaskDispatcher();
+    const { ADD_PATTERN_ARCHETYPE, ADD_PATTERN_ENTITY, UPDATE_PATTERN_ENTITY_PROPERTIES } = useTaskDispatcher();
     const [unwrappedMesh, setUnwrappedMesh] = useState<Mesh>(new Mesh());
     
     const groupRef = useRef<Group | null>(null)
@@ -59,6 +59,10 @@ export default function AnnotationController() {
 
         socket.on('BROADCAST::ADD_PATTERN_ENTITY', (data: any) => {
             ADD_PATTERN_ENTITY(data.archetypeName, data.patternIndices, data.name, false);
+        });
+
+        socket.on('BROADCAST::UPDATE_PATTERN_ENTITY_PROPERTIES', (data: any) => {
+            UPDATE_PATTERN_ENTITY_PROPERTIES(data.archetypeName, data.patternEntityName, data.properties, false);
         });
 
         return () => {

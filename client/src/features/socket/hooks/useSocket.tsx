@@ -20,7 +20,7 @@ export function useSocket() {
 	
 		// Clean up event listeners when the component unmounts
 		return () => {
-			//if (!socket) return;
+			if (!socket) return;
 			socket.disconnect();
 			socket.off('connect');
 			socket.off('disconnect');
