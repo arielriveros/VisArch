@@ -19,7 +19,7 @@ export default function AnnotationController() {
     const { task, selectedArchetype, loading, selectedEntity, showPropertyController, dispatch: dispatchTask } = useTaskContext();
     const { proxyGeometry, proxyMaterial, unwrappedGeometry } = useProxyMeshContext();
     const { socket } = useSocket();
-    const { ADD_PATTERN_ARCHETYPE, ADD_PATTERN_ENTITY, UPDATE_PATTERN_ENTITY_PROPERTIES } = useTaskDispatcher();
+    const DISPATCH = useTaskDispatcher();
     const [unwrappedMesh, setUnwrappedMesh] = useState<Mesh>(new Mesh());
     
     const groupRef = useRef<Group | null>(null)
@@ -48,21 +48,25 @@ export default function AnnotationController() {
         
     const indicesSelectHandler = (indices: number[]) => {
         if (indices.length < 3 || !selectedArchetype) return;
-        ADD_PATTERN_ENTITY(selectedArchetype.nameId, indices, null, true);        
+        DISPATCH.ADD_PATTERN_ENTITY(selectedArchetype.nameId, indices, null, true);        
     }
 
     useEffect(() => {
         if(!socket) return;
         socket.on('BROADCAST::ADD_PATTERN_ARCHETYPE', (name: any) => {
-            ADD_PATTERN_ARCHETYPE(name, false);
+            DISPATCH.ADD_PATTERN_ARCHETYPE(name, false);
+        });
+
+        socket.on('BROADCAST::REMOVE_PATTERN_ARCHETYPE', (name: any) => {
+            DISPATCH.REMOVE_PATTERN_ARCHETYPE(name, false);
         });
 
         socket.on('BROADCAST::ADD_PATTERN_ENTITY', (data: any) => {
-            ADD_PATTERN_ENTITY(data.archetypeName, data.patternIndices, data.name, false);
+            DISPATCH.ADD_PATTERN_ENTITY(data.archetypeName, data.patternIndices, data.name, false);
         });
 
         socket.on('BROADCAST::UPDATE_PATTERN_ENTITY_PROPERTIES', (data: any) => {
-            UPDATE_PATTERN_ENTITY_PROPERTIES(data.archetypeName, data.patternEntityName, data.properties, false);
+            DISPATCH.UPDATE_PATTERN_ENTITY_PROPERTIES(data.archetypeName, data.patternEntityName, data.properties, false);
         });
 
         return () => {

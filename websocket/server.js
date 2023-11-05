@@ -23,21 +23,19 @@ io.on('connection', (socket) => {
     
     socket.on('EMIT::ADD_PATTERN_ARCHETYPE', (name) => {
         socket.broadcast.emit('BROADCAST::ADD_PATTERN_ARCHETYPE', name);
-    })
+    });
+
+    socket.on('EMIT::REMOVE_PATTERN_ARCHETYPE', (payload) => {
+        socket.broadcast.emit('BROADCAST::REMOVE_PATTERN_ARCHETYPE', payload);
+    });
 
     socket.on('EMIT::ADD_PATTERN_ENTITY', (payload) => {
         socket.broadcast.emit('BROADCAST::ADD_PATTERN_ENTITY', payload);
-    })
-
-    socket.on('EMIT::ADD_PATTERN_ENTITY', (payload) => {
-        socket.broadcast.emit('BROADCAST::ADD_PATTERN_ENTITY', payload);
-    })
+    });
 
     socket.on('EMIT::UPDATE_PATTERN_ENTITY_PROPERTIES', (payload) => {
         console.log(payload)
         socket.broadcast.emit('BROADCAST::UPDATE_PATTERN_ENTITY_PROPERTIES', payload);
-    })
-
-    
+    });
 
 });

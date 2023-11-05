@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { PatternArchetype } from '../../../../api/ModelTypes';
 import { useTaskContext } from '../../hooks/useTask';
 import EntitiesList from '../entitiesList/EntitiesList';
+import useTaskDispatcher from '../../../taskDispatcher';
 import './ArchetypesItem.css'
 
 type ArchetypesItemProps = {
@@ -10,7 +11,8 @@ type ArchetypesItemProps = {
 
 export default function ArchetypesItem(props: ArchetypesItemProps) {
 
-    const { task, selectedArchetype, dispatch: dispatchTask } = useTaskContext();
+    const { selectedArchetype, dispatch: dispatchTask } = useTaskContext();
+    const { REMOVE_PATTERN_ARCHETYPE } = useTaskDispatcher();
     const [selected, setSelected] = useState<boolean>(false);
 
     const onChangeColor = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -22,16 +24,13 @@ export default function ArchetypesItem(props: ArchetypesItemProps) {
     }
 
     const onDelete = (name: string) => {
-        deleteArchetypeHandler(name);
+        REMOVE_PATTERN_ARCHETYPE(name, true);
     }
 
     const selectArchetypeHandler = (name: string) => {
         dispatchTask({ type: 'SELECT_PATTERN_ARCHETYPE', payload: { patternArchetypeName: name }});
     }
 
-    const deleteArchetypeHandler = (name: string) => {
-        dispatchTask({ type: 'REMOVE_PATTERN_ARCHETYPE', payload: { patternArchetypeName: name }});
-    }
 
     const changeColorHandler = (name: string, color: string) => {
         dispatchTask({ type: 'UPDATE_SELECTED_PATTERN_ARCHETYPE', payload: { patternArchetypeName: name, color }});
