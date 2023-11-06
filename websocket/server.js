@@ -30,10 +30,12 @@ io.on('connection', (socket) => {
     });
 
     socket.on('EMIT::ADD_PATTERN_ENTITY', (payload) => {
+        payload.client = false; // action is from server
         socket.broadcast.emit('BROADCAST::ADD_PATTERN_ENTITY', payload);
     });
 
     socket.on('EMIT::REMOVE_PATTERN_ENTITY', (payload) => {
+        payload.client = false; // action is from server
         socket.broadcast.emit('BROADCAST::REMOVE_PATTERN_ENTITY', payload);
     });
 

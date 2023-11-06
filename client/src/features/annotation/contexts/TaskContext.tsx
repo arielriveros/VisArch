@@ -1,4 +1,4 @@
-import { createContext, useReducer } from "react";
+import { createContext, useReducer, Dispatch } from "react";
 import { PatternArchetype, PatternEntity, Task } from "../../../api/ModelTypes";
 import { Vector3 } from "three";
 
@@ -12,9 +12,10 @@ interface TaskState {
 }
 
 interface AddPatternEntityPayload { 
-        name: string;
-        archetypeName: string;
-        patternIndices: number[];
+    name: string;
+    archetypeName: string;
+    patternIndices: number[];
+    client: boolean; // Checks if the action is from the client or from the server
 }
 
 interface UpdatePatternEntityPropertiesPayload {
@@ -33,36 +34,75 @@ interface IntersectionPayload {
 	faceIndex: number | null
 }
 
-export interface TaskAction {
-    type: 
-        'SET_TASK' |
-        'ADD_PATTERN_ARCHETYPE' |
-        'SELECT_PATTERN_ARCHETYPE' |
-        'REMOVE_PATTERN_ARCHETYPE' |
-        'ADD_PATTERN_ENTITY' |
-        'REMOVE_PATTERN_ENTITY' |
-        'SELECT_PATTERN_ENTITY' |
-        'UPDATE_PATTERN_ENTITY_PROPERTIES' |
-        'UPDATE_SELECTED_PATTERN_ARCHETYPE' |
-        'SET_INDEX_POSITION' |
-        'SET_SHOW_PROPERTY_CONTROLLER' |
-        'SET_LOADING';
-    payload?: 
-        Task |
-        PatternArchetype |
-        { patternArchetypeName: string } |
-        { patternEntityName: string } |
-        { patternArchetypeName: string, patternEntityName: string} |
-        AddPatternEntityPayload |
-        UpdatePatternEntityPropertiesPayload |
-        IntersectionPayload |
-        number[] |
-        boolean |
-        null;
+interface TaskActionBase {
+    type: string;
+    payload?: any;
 }
 
+interface SetTaskAction extends TaskActionBase {
+    type: 'SET_TASK';
+    payload: Task;
+}
+
+interface AddSelectRemovePatternArchetypeAction extends TaskActionBase {
+    type: 'ADD_PATTERN_ARCHETYPE' | 'SELECT_PATTERN_ARCHETYPE' | 'REMOVE_PATTERN_ARCHETYPE';
+    payload: { patternArchetypeName: string };
+}
+
+interface UpdateSelectedPatternArchetypeAction extends TaskActionBase {
+    type: 'UPDATE_SELECTED_PATTERN_ARCHETYPE';
+    payload: PatternArchetype;
+}
+
+interface AddPatternEntityAction extends TaskActionBase {
+    type: 'ADD_PATTERN_ENTITY';
+    payload: AddPatternEntityPayload;
+}
+
+interface RemovePatternEntityAction extends TaskActionBase {
+    type: 'REMOVE_PATTERN_ENTITY';
+    payload: { patternArchetypeName: string, patternEntityName: string, client: boolean };
+}
+
+interface SelectPatternEntityAction extends TaskActionBase {
+    type: 'SELECT_PATTERN_ENTITY';
+    payload: { patternArchetypeName: string, patternEntityName: string };
+}
+
+interface UpdatePatternEntityPropertiesAction extends TaskActionBase {
+    type: 'UPDATE_PATTERN_ENTITY_PROPERTIES';
+    payload: UpdatePatternEntityPropertiesPayload;
+}
+
+interface SetIndexPositionAction extends TaskActionBase {
+    type: 'SET_INDEX_POSITION';
+    payload: IntersectionPayload | null;
+}
+
+interface SetShowPropertyControllerAction extends TaskActionBase {
+    type: 'SET_SHOW_PROPERTY_CONTROLLER';
+    payload: boolean;
+}
+
+interface SetLoadingAction extends TaskActionBase {
+    type: 'SET_LOADING';
+    payload: boolean;
+}
+
+
+type TaskAction = SetTaskAction |
+                  AddSelectRemovePatternArchetypeAction |
+                  UpdateSelectedPatternArchetypeAction |
+                  AddPatternEntityAction |
+                  RemovePatternEntityAction |
+                  SelectPatternEntityAction |
+                  UpdatePatternEntityPropertiesAction |
+                  SetIndexPositionAction |
+                  SetShowPropertyControllerAction |
+                  SetLoadingAction;
+
 interface TaskContextProps extends TaskState {
-    dispatch: React.Dispatch<TaskAction>;
+    dispatch: Dispatch<TaskAction>;
 }
 
 export const TaskContext = createContext<TaskContextProps>(
@@ -152,14 +192,16 @@ function taskReducer(state: TaskState, action: TaskAction): TaskState {
                 }
             });
 
-            return { ...state, task: { ...state.task, annotations: updatedArchetypes }, selectedEntity: newEntity };
+            if (payload.client) {
+                return { ...state, task: { ...state.task, annotations: updatedArchetypes }, selectedEntity: newEntity };
+            }
+            return { ...state, task: { ...state.task, annotations: updatedArchetypes } };
         }
         case 'REMOVE_PATTERN_ENTITY':
         {
             if (!state.task ) return state;
 
-            const { patternArchetypeName, patternEntityName } = action.payload as { patternArchetypeName: string, patternEntityName: string};
-            console.log("Task context", patternArchetypeName, patternEntityName)
+            const { patternArchetypeName, patternEntityName } = action.payload as { patternArchetypeName: string, patternEntityName: string, client: boolean };
 
             const updatedArchetypes = state.task.annotations?.map(archetype => {
                 if (archetype.nameId !== patternArchetypeName) 
@@ -192,7 +234,11 @@ function taskReducer(state: TaskState, action: TaskAction): TaskState {
                 };
             });
 
-            return { ...state, task: { ...state.task, annotations: updatedArchetypes }, selectedEntity: null };
+            if (action.payload.client) {
+                return { ...state, task: { ...state.task, annotations: updatedArchetypes }, selectedEntity: null };
+            }
+
+            return { ...state, task: { ...state.task, annotations: updatedArchetypes } };
         }
 
         case 'UPDATE_SELECTED_PATTERN_ARCHETYPE':

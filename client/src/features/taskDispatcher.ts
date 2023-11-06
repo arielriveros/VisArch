@@ -30,7 +30,8 @@ export default function useTaskDispatcher() {
         const payload = {
             name: entName,
             archetypeName: archetypeName,
-            patternIndices: indices
+            patternIndices: indices,
+            client: broadcast
         }
         taskDispatch({ type: 'ADD_PATTERN_ENTITY', payload});
         if(broadcast) emit('ADD_PATTERN_ENTITY', payload);
@@ -39,9 +40,9 @@ export default function useTaskDispatcher() {
     const REMOVE_PATTERN_ENTITY = (archetypeName: string, entityName: string, broadcast: boolean = false) => {
         const payload = {
             patternArchetypeName: archetypeName,
-            patternEntityName: entityName
+            patternEntityName: entityName,
+            client: broadcast
         }
-        console.log("Dispatch", payload);
         taskDispatch({ type: 'REMOVE_PATTERN_ENTITY', payload});
         if(broadcast) emit('REMOVE_PATTERN_ENTITY', payload);
     }

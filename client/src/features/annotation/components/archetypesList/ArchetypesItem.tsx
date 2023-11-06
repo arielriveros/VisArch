@@ -33,7 +33,10 @@ export default function ArchetypesItem(props: ArchetypesItemProps) {
 
 
     const changeColorHandler = (name: string, color: string) => {
-        dispatchTask({ type: 'UPDATE_SELECTED_PATTERN_ARCHETYPE', payload: { patternArchetypeName: name, color }});
+        const patternArchetype = props.archetype;
+        patternArchetype.color = color;
+
+        dispatchTask({ type: 'UPDATE_SELECTED_PATTERN_ARCHETYPE', payload: patternArchetype});
     }
 
     useEffect(() => {

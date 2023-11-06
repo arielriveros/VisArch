@@ -16,7 +16,7 @@ import useTaskDispatcher from '../../../../taskDispatcher';
 import './AnnotationController.css';
 
 export default function AnnotationController() {
-    const { task, selectedArchetype, loading, selectedEntity, showPropertyController, dispatch: dispatchTask } = useTaskContext();
+    const { task, selectedArchetype, loading, selectedEntity, showPropertyController } = useTaskContext();
     const { proxyGeometry, proxyMaterial, unwrappedGeometry } = useProxyMeshContext();
     const { socket } = useSocket();
     const DISPATCH = useTaskDispatcher();
