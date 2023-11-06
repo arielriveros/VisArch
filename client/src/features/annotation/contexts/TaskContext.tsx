@@ -154,29 +154,46 @@ function taskReducer(state: TaskState, action: TaskAction): TaskState {
 
             return { ...state, task: { ...state.task, annotations: updatedArchetypes }, selectedEntity: newEntity };
         }
-            case 'REMOVE_PATTERN_ENTITY':
-                {
-                    if (!state.task || !state.selectedArchetype) return state;
-    
-                    const { patternEntityName } = action.payload as { patternEntityName: string };
-                    const updatedAnnotations = state.task.annotations?.map(archetype => {
-                        if (archetype.nameId !== state.selectedArchetype?.nameId) return archetype;
-    
-                        const updatedEntities = archetype.entities.map((entity, index) => {
-                        if (entity.nameId !== patternEntityName) return entity;
-    
-                        if (entity.isArchetype && index < archetype.entities.length - 1 && !archetype.entities[index + 1].isArchetype) {
-                            archetype.entities[index + 1].isArchetype = true;
-                        }
-    
-                        return null;
-                        }).filter(Boolean) as PatternEntity[];
-    
-                        return { ...archetype, entities: updatedEntities };
-                    });
-    
-                    return { ...state, task: { ...state.task, annotations: updatedAnnotations }, selectedEntity: null };
+        case 'REMOVE_PATTERN_ENTITY':
+        {
+            if (!state.task ) return state;
+
+            const { patternArchetypeName, patternEntityName } = action.payload as { patternArchetypeName: string, patternEntityName: string};
+            console.log("Task context", patternArchetypeName, patternEntityName)
+
+            const updatedArchetypes = state.task.annotations?.map(archetype => {
+                if (archetype.nameId !== patternArchetypeName) 
+                    return archetype;
+
+                // check if the entity is an archetype
+                const isArchetype = archetype.entities.find(entity => entity.nameId === patternEntityName)?.isArchetype;
+
+                // if it is an archetype, make the first entity in the list the new archetype
+                if (isArchetype) {
+                    const newArchetype = archetype.entities.find(entity => entity.nameId !== patternEntityName);
+                    if (!newArchetype) return archetype;
+
+                    return {
+                        ...archetype,
+                        entities: archetype.entities.filter(entity => entity.nameId !== patternEntityName).map(entity => {
+                            if (entity.nameId === newArchetype.nameId) {
+                                return { ...entity, isArchetype: true };
+                            }
+                            else {
+                                return entity;
+                            }
+                        })
+                    };
                 }
+
+                return {
+                    ...archetype,
+                    entities: archetype.entities.filter(entity => entity.nameId !== patternEntityName)
+                };
+            });
+
+            return { ...state, task: { ...state.task, annotations: updatedArchetypes }, selectedEntity: null };
+        }
 
         case 'UPDATE_SELECTED_PATTERN_ARCHETYPE':
             if (!state.task || !state.selectedArchetype) return state;

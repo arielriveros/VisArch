@@ -10,7 +10,7 @@ import './PropertyController.css';
 
 export default function PropertyController() {
 	const { selectedArchetype, selectedEntity, dispatch: dispatchTask } = useTaskContext();
-	const { UPDATE_PATTERN_ENTITY_PROPERTIES } = useTaskDispatcher();
+	const DISPATCH = useTaskDispatcher();
 	const { unwrappedGeometry, proxyMaterial } = useProxyMeshContext();
 	const [centroid, setCentroid] = useState<Vector3>(new Vector3());
 	const [archetypeCentroid, setArchetypeCentroid] = useState<Vector3>(new Vector3());
@@ -70,7 +70,8 @@ export default function PropertyController() {
 	useEffect(() => {
 		if(!unwrappedGeometry || !selectedEntity) return;
 
-		UPDATE_PATTERN_ENTITY_PROPERTIES(selectedArchetype!.nameId, selectedEntity!.nameId, properties, true);
+		// TODO: FIX THIS
+		DISPATCH.UPDATE_PATTERN_ENTITY_PROPERTIES(selectedArchetype!.nameId, selectedEntity!.nameId, properties, true);
 
 		const calcBox = calculateBoundingBox(selectedEntity?.faceIds, unwrappedGeometry);
 		const meanDistance = (
@@ -111,7 +112,8 @@ export default function PropertyController() {
 	, [selectedArchetype?.entities]);
 
 	const onDelete = () => {
-		dispatchTask({ type: 'REMOVE_PATTERN_ENTITY', payload: { patternEntityName: selectedEntity!.nameId }});
+		if (!selectedEntity || !selectedArchetype) return;
+		DISPATCH.REMOVE_PATTERN_ENTITY(selectedArchetype.nameId, selectedEntity.nameId, true);
 		onClose();
 	}
 

@@ -24,6 +24,8 @@ export default function AnnotationController() {
     
     const groupRef = useRef<Group | null>(null)
 
+    let showPropertyControllerWindow: boolean = showPropertyController && unwrappedGeometry !== null && selectedEntity !== null && selectedArchetype !== null;
+
     const init = () => {
         groupRef.current = new Group();
         if(!proxyGeometry || !proxyMaterial || !unwrappedGeometry) return;
@@ -53,6 +55,7 @@ export default function AnnotationController() {
 
     useEffect(() => {
         if(!socket) return;
+
         socket.on('BROADCAST::ADD_PATTERN_ARCHETYPE', (name: any) => {
             DISPATCH.ADD_PATTERN_ARCHETYPE(name, false);
         });
@@ -65,13 +68,19 @@ export default function AnnotationController() {
             DISPATCH.ADD_PATTERN_ENTITY(data.archetypeName, data.patternIndices, data.name, false);
         });
 
+        socket.on('BROADCAST::REMOVE_PATTERN_ENTITY', (data: any) => {
+            DISPATCH.REMOVE_PATTERN_ENTITY(data.patternArchetypeName, data.patternEntityName, false);
+        });
+
         socket.on('BROADCAST::UPDATE_PATTERN_ENTITY_PROPERTIES', (data: any) => {
             DISPATCH.UPDATE_PATTERN_ENTITY_PROPERTIES(data.archetypeName, data.patternEntityName, data.properties, false);
         });
 
         return () => {
             socket.off('BROADCAST::ADD_PATTERN_ARCHETYPE');
+            socket.off('BROADCAST::REMOVE_PATTERN_ARCHETYPE');
             socket.off('BROADCAST::ADD_PATTERN_ENTITY');
+            socket.off('BROADCAST::REMOVE_PATTERN_ENTITY');
         }
     }, [socket]);
 
@@ -115,8 +124,9 @@ export default function AnnotationController() {
                 <DebugGroup debug={config.DEBUG} bvhMesh={unwrappedMesh} showMonitor={config.DEBUG}/>
                 
 			</Canvas>
-            { showPropertyController && unwrappedGeometry && selectedEntity && selectedArchetype &&
-                <PropertyController />
+            { 
+                showPropertyControllerWindow && 
+                <PropertyController/>
             }
 		</div>
 	);

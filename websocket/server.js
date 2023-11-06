@@ -33,8 +33,11 @@ io.on('connection', (socket) => {
         socket.broadcast.emit('BROADCAST::ADD_PATTERN_ENTITY', payload);
     });
 
+    socket.on('EMIT::REMOVE_PATTERN_ENTITY', (payload) => {
+        socket.broadcast.emit('BROADCAST::REMOVE_PATTERN_ENTITY', payload);
+    });
+
     socket.on('EMIT::UPDATE_PATTERN_ENTITY_PROPERTIES', (payload) => {
-        console.log(payload)
         socket.broadcast.emit('BROADCAST::UPDATE_PATTERN_ENTITY_PROPERTIES', payload);
     });
 
