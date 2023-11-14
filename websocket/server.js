@@ -20,27 +20,36 @@ const io = socketIO(server);
 io.on('connection', (socket) => {
     console.log(`Socket: New client ${socket.id} connected`);
     socket.on('disconnect', () => console.log('Socket: Client disconnected'));
+
+    socket.on('JOIN', (room) => {
+        socket.join(room);
+        console.log(`Socket: Client ${socket.id} joined room ${room}`);
+    });
     
-    socket.on('EMIT::ADD_PATTERN_ARCHETYPE', (name) => {
-        socket.broadcast.emit('BROADCAST::ADD_PATTERN_ARCHETYPE', name);
+    socket.on('EMIT::ADD_PATTERN_ARCHETYPE', (name, roomId) => {
+        socket.broadcast.to(roomId).emit('BROADCAST::ADD_PATTERN_ARCHETYPE', name);
     });
 
-    socket.on('EMIT::REMOVE_PATTERN_ARCHETYPE', (payload) => {
-        socket.broadcast.emit('BROADCAST::REMOVE_PATTERN_ARCHETYPE', payload);
+    socket.on('EMIT::REMOVE_PATTERN_ARCHETYPE', (payload, roomId) => {
+        console.log(roomId);
+        socket.broadcast.to(roomId).emit('BROADCAST::REMOVE_PATTERN_ARCHETYPE', payload);
     });
 
-    socket.on('EMIT::ADD_PATTERN_ENTITY', (payload) => {
+    socket.on('EMIT::ADD_PATTERN_ENTITY', (payload, roomId) => {
+        console.log(roomId);
         payload.client = false; // action is from server
-        socket.broadcast.emit('BROADCAST::ADD_PATTERN_ENTITY', payload);
+        socket.broadcast.to(roomId).emit('BROADCAST::ADD_PATTERN_ENTITY', payload);
     });
 
-    socket.on('EMIT::REMOVE_PATTERN_ENTITY', (payload) => {
+    socket.on('EMIT::REMOVE_PATTERN_ENTITY', (payload, roomId) => {
+        console.log(roomId);
         payload.client = false; // action is from server
-        socket.broadcast.emit('BROADCAST::REMOVE_PATTERN_ENTITY', payload);
+        socket.broadcast.to(roomId).emit('BROADCAST::REMOVE_PATTERN_ENTITY', payload);
     });
 
-    socket.on('EMIT::UPDATE_PATTERN_ENTITY_PROPERTIES', (payload) => {
-        socket.broadcast.emit('BROADCAST::UPDATE_PATTERN_ENTITY_PROPERTIES', payload);
+    socket.on('EMIT::UPDATE_PATTERN_ENTITY_PROPERTIES', (payload, roomId) => {
+        console.log(roomId);
+        socket.broadcast.to(roomId).emit('BROADCAST::UPDATE_PATTERN_ENTITY_PROPERTIES', payload);
     });
 
 });

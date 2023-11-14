@@ -9,6 +9,7 @@ import AnnotationManager from '../annotation/manager/AnnotationManager';
 import ProxyMeshContextProvider from '../../contexts/ProxyMeshContext';
 import SocketContextProvider from '../../../socket/contexts/SocketContext';
 import './TaskMain.css';
+import { useSocket } from '../../../socket/hooks/useSocket';
 
 type TaskMainProps = {
 	taskId: string;
@@ -18,6 +19,7 @@ type TaskMainProps = {
 export default function TaskMain(props: TaskMainProps) {
 	const { user } = useAuthContext();
 	const { task, dispatch } = useTaskContext();
+	const { join } = useSocket();
 
 	const getTask = async () => {
 		try {
@@ -62,24 +64,24 @@ export default function TaskMain(props: TaskMainProps) {
 			
 	useEffect(() => {
 		getTask();
+		const room = `${props.projectId}:${props.taskId}`
+		join(room);
 	}, [props.taskId]);
 
 	return (
 		<div className='task-main'>
-			<SocketContextProvider>
-				<div className='task-sidebar-container'> 
-					<TaskSidebar>
-						<ArchetypesList />
-						<button onClick={uploadTask}> Upload </button>
-						<TaskList projectId={props.projectId} type={'task-list'} />
-					</TaskSidebar>
+			<div className='task-sidebar-container'> 
+				<TaskSidebar>
+					<ArchetypesList />
+					<button onClick={uploadTask}> Upload </button>
+					<TaskList projectId={props.projectId} type={'task-list'} />
+				</TaskSidebar>
+			</div>
+			<ProxyMeshContextProvider>
+				<div className='task-content'>
+					<AnnotationManager />
 				</div>
-				<ProxyMeshContextProvider>
-					<div className='task-content'>
-						<AnnotationManager />
-					</div>
-				</ProxyMeshContextProvider>
-			</SocketContextProvider>
+			</ProxyMeshContextProvider>
 		</div>
 	)
 }

@@ -1,8 +1,11 @@
-import { useContext, useEffect, useRef, useState } from 'react'
+import { useContext, useEffect, useRef } from 'react'
 import { SocketContext } from '../contexts/SocketContext';
 
 export function useSocket() {
-	const socket = useContext(SocketContext);
+	const socketContext = useContext(SocketContext);
+	const socket = socketContext.socket;
+	const roomId = socketContext.roomId;
+	const dispatch = socketContext.dispatch;
 
 	useEffect(() => {
 		if (!socket) return;
@@ -26,9 +29,9 @@ export function useSocket() {
 	  }, []);
 
 
-	async function emit(event: string, data: any) {
+	function emit(event: string, data: any) {
 		if (!socket) return;
-		socket.emit(`EMIT::${event}`, data);
+		socket.emit(`EMIT::${event}`, data, roomId);
 	}
 
 	function disconnect() {
@@ -36,5 +39,11 @@ export function useSocket() {
 		socket.disconnect();
 	}
 
-	return { socket, emit, disconnect }
+	function join(roomId: string) {
+		if (!socket) return;
+		dispatch({ type: 'SET_ROOM_ID', payload: roomId });
+		socket.emit('JOIN', roomId);
+	}
+
+	return { socket, emit, disconnect, join };
 }
