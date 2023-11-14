@@ -53,6 +53,7 @@ export default function useTaskDispatcher() {
             patternEntityName: entityName,
             entityProperties: properties
         }
+        console.log(payload);
         taskDispatch({ type: 'UPDATE_PATTERN_ENTITY_PROPERTIES', payload});
         if(broadcast) emit('UPDATE_PATTERN_ENTITY_PROPERTIES', payload);
     }

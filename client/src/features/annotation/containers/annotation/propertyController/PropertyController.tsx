@@ -5,12 +5,14 @@ import { useProxyMeshContext } from '../../../hooks/useProxyMesh';
 import { useEffect, useRef, useState } from 'react';
 import { calculateBoundingBox } from '../../../utils/boundingBox';
 import { useTaskContext } from '../../../hooks/useTask';
+import { useSocket } from '../../../../socket/hooks/useSocket';
 import useTaskDispatcher from '../../../../taskDispatcher';
 import './PropertyController.css';
 
 export default function PropertyController() {
 	const { selectedArchetype, selectedEntity, dispatch: dispatchTask } = useTaskContext();
 	const DISPATCH = useTaskDispatcher();
+	const { socket } = useSocket();
 	const { unwrappedGeometry, proxyMaterial } = useProxyMeshContext();
 	const [centroid, setCentroid] = useState<Vector3>(new Vector3());
 	const [archetypeCentroid, setArchetypeCentroid] = useState<Vector3>(new Vector3());
@@ -68,10 +70,17 @@ export default function PropertyController() {
 	}, [proxyMaterial, unwrappedGeometry]);
 
 	useEffect(() => {
-		if(!unwrappedGeometry || !selectedEntity) return;
+		console.log(selectedEntity)
+		setProperties({
+			orientation: selectedEntity!.orientation,
+			scale: selectedEntity!.scale,
+			reflection: selectedEntity!.reflection,
+			isArchetype: selectedEntity!.isArchetype
+		});
+	}, [selectedEntity?.orientation, selectedEntity?.scale, selectedEntity?.reflection, selectedEntity?.isArchetype]);
 
-		// TODO: FIX THIS
-		DISPATCH.UPDATE_PATTERN_ENTITY_PROPERTIES(selectedArchetype!.nameId, selectedEntity!.nameId, properties, true);
+	useEffect(() => {
+		if(!unwrappedGeometry || !selectedEntity) return;
 
 		const calcBox = calculateBoundingBox(selectedEntity?.faceIds, unwrappedGeometry);
 		const meanDistance = (
@@ -93,6 +102,19 @@ export default function PropertyController() {
 	}, [selectedEntity, properties]);
 
 	useEffect(() => {
+		socket?.on('BROADCAST::UPDATE_PATTERN_ENTITY_PROPERTIES', (data: any) => {
+			if(!selectedEntity || !selectedArchetype) return;
+
+			setProperties({
+				orientation: data.entityProperties.orientation,
+				scale: data.entityProperties.scale,
+				reflection: data.entityProperties.reflection,
+				isArchetype: data.entityProperties.isArchetype
+			});
+		});
+	}, [socket]);
+
+	useEffect(() => {
 		if(!unwrappedGeometry) return;
 		selectedArchetype?.entities.forEach(entity => {
 			// find the entity which isArchetype is true
@@ -110,6 +132,11 @@ export default function PropertyController() {
 		);
 	}
 	, [selectedArchetype?.entities]);
+
+	const onSave = () => {
+		if (!selectedEntity || !selectedArchetype) return;
+		DISPATCH.UPDATE_PATTERN_ENTITY_PROPERTIES(selectedArchetype.nameId, selectedEntity.nameId, properties, true);
+	}
 
 	const onDelete = () => {
 		if (!selectedEntity || !selectedArchetype) return;
@@ -176,6 +203,7 @@ export default function PropertyController() {
 					<div>
 						<label>Overlap</label>
 						<input type="checkbox" checked={overlap} onChange={(e) => setOverlap(e.target.checked)}/>
+						<button onClick={onSave}>Save</button>
 						<button onClick={onDelete}>Delete</button>
 						<button onClick={onClose}>Close</button>
 					</div>

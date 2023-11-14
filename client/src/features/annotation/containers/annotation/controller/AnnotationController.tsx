@@ -73,7 +73,7 @@ export default function AnnotationController() {
         });
 
         socket.on('BROADCAST::UPDATE_PATTERN_ENTITY_PROPERTIES', (data: any) => {
-            DISPATCH.UPDATE_PATTERN_ENTITY_PROPERTIES(data.archetypeName, data.patternEntityName, data.properties, false);
+            DISPATCH.UPDATE_PATTERN_ENTITY_PROPERTIES(data.patternArchetypeName, data.patternEntityName, data.entityProperties, false);
         });
 
         return () => {
@@ -81,6 +81,7 @@ export default function AnnotationController() {
             socket.off('BROADCAST::REMOVE_PATTERN_ARCHETYPE');
             socket.off('BROADCAST::ADD_PATTERN_ENTITY');
             socket.off('BROADCAST::REMOVE_PATTERN_ENTITY');
+            socket.off('BROADCAST::UPDATE_PATTERN_ENTITY_PROPERTIES');
         }
     }, [socket]);
 
