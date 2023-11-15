@@ -15,6 +15,10 @@ const AnnotationSchema = new Schema({
         type: Number,
         default: 0
     },
+    label: {
+        type: String,
+        default: ''
+    },
     /* 
         Annotation Entity has the following structure:
         {

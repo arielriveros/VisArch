@@ -76,12 +76,17 @@ export default function AnnotationController() {
             DISPATCH.UPDATE_PATTERN_ENTITY_PROPERTIES(data.patternArchetypeName, data.patternEntityName, data.entityProperties, false);
         });
 
+        socket.on('BROADCAST::UPDATE_PATTERN_ARCHETYPE_LABEL', (data: any) => {
+            DISPATCH.UPDATE_PATTERN_ARCHETYPE_LABEL(data.patternArchetypeName, data.label, false);
+        });
+
         return () => {
             socket.off('BROADCAST::ADD_PATTERN_ARCHETYPE');
             socket.off('BROADCAST::REMOVE_PATTERN_ARCHETYPE');
             socket.off('BROADCAST::ADD_PATTERN_ENTITY');
             socket.off('BROADCAST::REMOVE_PATTERN_ENTITY');
             socket.off('BROADCAST::UPDATE_PATTERN_ENTITY_PROPERTIES');
+            socket.off('BROADCAST::UPDATE_PATTERN_ARCHETYPE_LABEL');
         }
     }, [socket]);
 

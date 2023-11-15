@@ -45,6 +45,8 @@ export default function TaskMain(props: TaskMainProps) {
         try {
             if (!task) return;
 
+			console.log(task);
+
             const response = await fetch(`${config.API_URL}/tasks/${task._id}`, {
                 method: 'PUT',
                 headers: {

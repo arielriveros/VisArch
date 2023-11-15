@@ -31,24 +31,24 @@ io.on('connection', (socket) => {
     });
 
     socket.on('EMIT::REMOVE_PATTERN_ARCHETYPE', (payload, roomId) => {
-        console.log(roomId);
         socket.broadcast.to(roomId).emit('BROADCAST::REMOVE_PATTERN_ARCHETYPE', payload);
     });
 
+    socket.on('EMIT::UPDATE_PATTERN_ARCHETYPE_LABEL', (payload, roomId) => {
+        socket.broadcast.to(roomId).emit('BROADCAST::UPDATE_PATTERN_ARCHETYPE_LABEL', payload);
+    });
+
     socket.on('EMIT::ADD_PATTERN_ENTITY', (payload, roomId) => {
-        console.log(roomId);
         payload.client = false; // action is from server
         socket.broadcast.to(roomId).emit('BROADCAST::ADD_PATTERN_ENTITY', payload);
     });
 
     socket.on('EMIT::REMOVE_PATTERN_ENTITY', (payload, roomId) => {
-        console.log(roomId);
         payload.client = false; // action is from server
         socket.broadcast.to(roomId).emit('BROADCAST::REMOVE_PATTERN_ENTITY', payload);
     });
 
     socket.on('EMIT::UPDATE_PATTERN_ENTITY_PROPERTIES', (payload, roomId) => {
-        console.log(roomId);
         socket.broadcast.to(roomId).emit('BROADCAST::UPDATE_PATTERN_ENTITY_PROPERTIES', payload);
     });
 

@@ -37,6 +37,7 @@ export type PatternArchetype = {
     fold_symmetry: number;
     entities: PatternEntity[];
     color: string;
+    label: string;
 }
 
 export type Task = {

@@ -54,6 +54,11 @@ interface UpdateSelectedPatternArchetypeAction extends TaskActionBase {
     payload: PatternArchetype;
 }
 
+interface UpdatePatternArchetypeLabelAction extends TaskActionBase {
+    type: 'UPDATE_PATTERN_ARCHETYPE_LABEL';
+    payload: { patternArchetypeName: string, label: string };
+}
+
 interface AddPatternEntityAction extends TaskActionBase {
     type: 'ADD_PATTERN_ENTITY';
     payload: AddPatternEntityPayload;
@@ -93,6 +98,7 @@ interface SetLoadingAction extends TaskActionBase {
 type TaskAction = SetTaskAction |
                   AddSelectRemovePatternArchetypeAction |
                   UpdateSelectedPatternArchetypeAction |
+                  UpdatePatternArchetypeLabelAction |
                   AddPatternEntityAction |
                   RemovePatternEntityAction |
                   SelectPatternEntityAction |
@@ -130,7 +136,8 @@ function taskReducer(state: TaskState, action: TaskAction): TaskState {
                 nameId: payload.patternArchetypeName,
                 fold_symmetry: 0,
                 entities: [],
-                color: "#ffffff"
+                color: "#ffffff",
+                label: ""
             };
 
             if (!state.task.annotations) {
@@ -254,6 +261,24 @@ function taskReducer(state: TaskState, action: TaskAction): TaskState {
             });
 
             return { ...state, task: { ...state.task, annotations: updatedSelectedArchetypes } };
+
+        case 'UPDATE_PATTERN_ARCHETYPE_LABEL':
+        {
+            if (!state.task) return state;
+
+            const { patternArchetypeName, label } = action.payload as { patternArchetypeName: string, label: string };
+
+            const updatedArchetypes = state.task.annotations?.map(archetype => {
+                if (archetype.nameId === patternArchetypeName) {
+                    return { ...archetype, label: label };
+                }
+                else {
+                    return archetype;
+                }
+            });
+
+            return { ...state, task: { ...state.task, annotations: updatedArchetypes } };
+        }
 
         case 'SELECT_PATTERN_ENTITY':
             if (!state.task || !state.selectedArchetype) return state;

@@ -109,22 +109,6 @@ async function updateTask(req, res) {
         updatedTask.annotations = task.annotations;
         
         for (let a of req.body.annotations) {
-            /* 
-            {
-                nameId: 'pat-3042',
-                fold_symmetry: 0,
-                entities: [
-                  {
-                    nameId: 'ent-7563',
-                    orientation: 0,
-                    scale: 1,
-                    reflection: false,
-                    faceIds: [Array]
-                  }
-                ],
-                color: '#c52020',
-            }
-             */
             // Check if annotation of nameId already exists
             let annotation = await AnnotationModel.findOne({nameId: a.nameId, task: task._id});
 
@@ -133,11 +117,13 @@ async function updateTask(req, res) {
                     nameId: a.nameId,
                     foldSymmetry: a.fold_symmetry,
                     task: task._id,
+                    label: a.label,
                     entities: a.entities
                 });
                 updatedTask.annotations.push(annotation._id);
             }
 
+            annotation.label = a.label;
             annotation.foldSymmetry = a.fold_symmetry;
             annotation.entities = a.entities;
             await annotation.save();

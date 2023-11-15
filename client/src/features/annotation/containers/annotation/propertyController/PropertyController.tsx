@@ -16,6 +16,7 @@ export default function PropertyController() {
 	const { unwrappedGeometry, proxyMaterial } = useProxyMeshContext();
 	const [centroid, setCentroid] = useState<Vector3>(new Vector3());
 	const [archetypeCentroid, setArchetypeCentroid] = useState<Vector3>(new Vector3());
+	const [label, setLabel] = useState<string>(selectedArchetype!.label);
 	const [properties, setProperties] = useState<{orientation: number, scale: number, reflection: boolean, isArchetype: boolean}>({
 		orientation: selectedEntity!.orientation,
 		scale: selectedEntity!.scale,
@@ -102,6 +103,11 @@ export default function PropertyController() {
 	}, [selectedEntity, properties]);
 
 	useEffect(() => {
+		if(!selectedArchetype) return;
+		setLabel(selectedArchetype.label);
+	}, [selectedArchetype]);
+
+	useEffect(() => {
 		socket?.on('BROADCAST::UPDATE_PATTERN_ENTITY_PROPERTIES', (data: any) => {
 			if(!selectedEntity || !selectedArchetype) return;
 
@@ -112,6 +118,11 @@ export default function PropertyController() {
 				isArchetype: data.entityProperties.isArchetype
 			});
 		});
+
+		socket?.on('BROADCAST::UPDATE_PATTERN_ARCHETYPE_LABEL', (data: any) => {
+			if(!selectedArchetype) return;
+			setLabel(data.label);
+        });
 	}, [socket]);
 
 	useEffect(() => {
@@ -135,6 +146,12 @@ export default function PropertyController() {
 
 	const onSave = () => {
 		if (!selectedEntity || !selectedArchetype) return;
+
+		if (properties.isArchetype) {
+			DISPATCH.UPDATE_PATTERN_ARCHETYPE_LABEL(selectedArchetype.nameId, label, true);
+			return;
+			
+		}
 		DISPATCH.UPDATE_PATTERN_ENTITY_PROPERTIES(selectedArchetype.nameId, selectedEntity.nameId, properties, true);
 	}
 
@@ -190,7 +207,7 @@ export default function PropertyController() {
 				</div>
 				<div className='property-editor'>
 					{
-						!properties.isArchetype && // Only edit properties if the entity is not an archetype
+						!properties.isArchetype ? // Only edit properties if the entity is not an archetype
 						<>
 						<label>Orientation</label>
 						<input type="range" min="0" max="360" value={properties.orientation} onChange={(e) => setProperties({...properties, orientation: parseInt(e.target.value)})}/>
@@ -198,11 +215,19 @@ export default function PropertyController() {
 						<input type="range" min="0" max="1.5" step="0.01" value={properties.scale} onChange={(e) => setProperties({...properties, scale: parseFloat(e.target.value)})}/>
 						<label>Reflection</label>
 						<input type="checkbox" checked={properties.reflection} onChange={(e) => setProperties({...properties, reflection: e.target.checked})}/>
+						<label>Overlap</label>
+						<input type="checkbox" checked={overlap} onChange={(e) => setOverlap(e.target.checked)}/>
+						</>
+						: // If the entity is an archetype, edit the label
+						<>
+						<label>Label</label>
+						<input type="text" value={label} onChange={(e) => {
+							if (!selectedArchetype) return;
+							setLabel(e.target.value);
+						}}/>
 						</>
 					}
 					<div>
-						<label>Overlap</label>
-						<input type="checkbox" checked={overlap} onChange={(e) => setOverlap(e.target.checked)}/>
 						<button onClick={onSave}>Save</button>
 						<button onClick={onDelete}>Delete</button>
 						<button onClick={onClose}>Close</button>

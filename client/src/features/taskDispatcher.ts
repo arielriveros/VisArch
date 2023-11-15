@@ -24,6 +24,16 @@ export default function useTaskDispatcher() {
         if (broadcast) emit('REMOVE_PATTERN_ARCHETYPE', name);
     }
 
+    const UPDATE_PATTERN_ARCHETYPE_LABEL = (archetypeName: string, label: string, broadcast: boolean = false) => {
+        const payload = {
+            patternArchetypeName: archetypeName,
+            label: label
+        }
+
+        taskDispatch({ type: 'UPDATE_PATTERN_ARCHETYPE_LABEL', payload});
+        if(broadcast) emit('UPDATE_PATTERN_ARCHETYPE_LABEL', payload);
+    }
+
     const ADD_PATTERN_ENTITY = (archetypeName: string, indices: number[], name: string | null = null, broadcast: boolean = false) => {
         const entName = name && !broadcast ? name : randomName('ent', 10000);
 
@@ -53,7 +63,6 @@ export default function useTaskDispatcher() {
             patternEntityName: entityName,
             entityProperties: properties
         }
-        console.log(payload);
         taskDispatch({ type: 'UPDATE_PATTERN_ENTITY_PROPERTIES', payload});
         if(broadcast) emit('UPDATE_PATTERN_ENTITY_PROPERTIES', payload);
     }
@@ -63,6 +72,7 @@ export default function useTaskDispatcher() {
         REMOVE_PATTERN_ARCHETYPE,
         ADD_PATTERN_ENTITY,
         REMOVE_PATTERN_ENTITY,
-        UPDATE_PATTERN_ENTITY_PROPERTIES
+        UPDATE_PATTERN_ENTITY_PROPERTIES,
+        UPDATE_PATTERN_ARCHETYPE_LABEL
     };
 }
