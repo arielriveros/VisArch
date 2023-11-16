@@ -9,7 +9,7 @@ interface SocketState {
 
 interface SocketAction {
     type: 'SET_ROOM_ID';
-    payload: string;
+    payload: string | null;
 }
 
 interface SocketContextProps extends SocketState {

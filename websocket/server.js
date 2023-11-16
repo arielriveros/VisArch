@@ -25,6 +25,11 @@ io.on('connection', (socket) => {
         socket.join(room);
         console.log(`Socket: Client ${socket.id} joined room ${room}`);
     });
+
+    socket.on('LEAVE', (room) => {
+        socket.leave(room);
+        console.log(`Socket: Client ${socket.id} left room ${room}`);
+    });
     
     socket.on('EMIT::ADD_PATTERN_ARCHETYPE', (name, roomId) => {
         socket.broadcast.to(roomId).emit('BROADCAST::ADD_PATTERN_ARCHETYPE', name);

@@ -7,7 +7,6 @@ import TaskSidebar from '../../components/sidebar/TaskSidebar';
 import ArchetypesList from '../../components/archetypesList/ArchetypesList';
 import AnnotationManager from '../annotation/manager/AnnotationManager';
 import ProxyMeshContextProvider from '../../contexts/ProxyMeshContext';
-import SocketContextProvider from '../../../socket/contexts/SocketContext';
 import './TaskMain.css';
 import { useSocket } from '../../../socket/hooks/useSocket';
 
@@ -19,7 +18,7 @@ type TaskMainProps = {
 export default function TaskMain(props: TaskMainProps) {
 	const { user } = useAuthContext();
 	const { task, dispatch } = useTaskContext();
-	const { join } = useSocket();
+	const { join, leave } = useSocket();
 
 	const getTask = async () => {
 		try {
@@ -67,7 +66,12 @@ export default function TaskMain(props: TaskMainProps) {
 	useEffect(() => {
 		getTask();
 		const room = `${props.projectId}:${props.taskId}`
+		leave(); // Leave previous room
 		join(room);
+
+		return () => {
+			leave();
+		}
 	}, [props.taskId]);
 
 	return (

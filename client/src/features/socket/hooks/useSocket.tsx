@@ -45,5 +45,11 @@ export function useSocket() {
 		socket.emit('JOIN', roomId);
 	}
 
-	return { socket, emit, disconnect, join };
+	function leave() {
+		if (!socket) return;
+		socket.emit('LEAVE', roomId);
+		dispatch({ type: 'SET_ROOM_ID', payload: null });
+	}
+
+	return { socket, emit, disconnect, join, leave, roomId };
 }
