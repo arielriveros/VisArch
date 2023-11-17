@@ -5,11 +5,13 @@ import { Mesh, Group, Vector3, BufferGeometry, NormalBufferAttributes, Material,
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
 import { useAuthContext } from '../../../../../hooks/useAuthContext';
 import { useProxyMeshContext } from '../../../hooks/useProxyMesh';
+import { useSocket } from '../../../../socket/hooks/useSocket';
 import { radialUnwrap } from '../../../utils/radialUnwrap';
 import { flattenAxis } from '../../../utils/flattenAxis';
 import AnnotationController from '../controller/AnnotationController';
 import AnnotationViewer from '../viewer/AnnotationViewer';
 import './AnnotationManager.css';
+import useTaskDispatcher from '../../../../taskDispatcher';
 
 export type IntersectionPayload = {
 	face: {a: number, b: number, c: number, normal: Vector3} | null,
@@ -20,6 +22,8 @@ export default function AnnotationManager() {
     const { task, loading: loadingTask } = useTaskContext();
     const { loading: loadingMesh, dispatch: dispatchProxyMesh } = useProxyMeshContext();
     const { user } = useAuthContext();
+    const { socket } = useSocket();
+    const DISPATCH = useTaskDispatcher();
     const [ready, setReady] = useState<boolean>(false);
 
     const getGeometry = (group: Group) => {
@@ -114,6 +118,43 @@ export default function AnnotationManager() {
     useEffect(() => {
         setReady(!loadingTask && !loadingMesh);
     }, [loadingTask, loadingMesh]);
+
+    useEffect(() => {
+        if(!socket) return;
+
+        socket.on('BROADCAST::ADD_PATTERN_ARCHETYPE', (name: any) => {
+            DISPATCH.ADD_PATTERN_ARCHETYPE(name, false);
+        });
+
+        socket.on('BROADCAST::REMOVE_PATTERN_ARCHETYPE', (name: any) => {
+            DISPATCH.REMOVE_PATTERN_ARCHETYPE(name, false);
+        });
+
+        socket.on('BROADCAST::ADD_PATTERN_ENTITY', (data: any) => {
+            DISPATCH.ADD_PATTERN_ENTITY(data.archetypeName, data.patternIndices, data.name, false);
+        });
+
+        socket.on('BROADCAST::REMOVE_PATTERN_ENTITY', (data: any) => {
+            DISPATCH.REMOVE_PATTERN_ENTITY(data.patternArchetypeName, data.patternEntityName, false);
+        });
+
+        socket.on('BROADCAST::UPDATE_PATTERN_ENTITY_PROPERTIES', (data: any) => {
+            DISPATCH.UPDATE_PATTERN_ENTITY_PROPERTIES(data.patternArchetypeName, data.patternEntityName, data.entityProperties, false);
+        });
+
+        socket.on('BROADCAST::UPDATE_PATTERN_ARCHETYPE_LABEL', (data: any) => {
+            DISPATCH.UPDATE_PATTERN_ARCHETYPE_LABEL(data.patternArchetypeName, data.label, false);
+        });
+
+        return () => {
+            socket.off('BROADCAST::ADD_PATTERN_ARCHETYPE');
+            socket.off('BROADCAST::REMOVE_PATTERN_ARCHETYPE');
+            socket.off('BROADCAST::ADD_PATTERN_ENTITY');
+            socket.off('BROADCAST::REMOVE_PATTERN_ENTITY');
+            socket.off('BROADCAST::UPDATE_PATTERN_ENTITY_PROPERTIES');
+            socket.off('BROADCAST::UPDATE_PATTERN_ARCHETYPE_LABEL');
+        }
+    }, [socket]);
 
     return (
         <div className='annotation-manager-container'>
