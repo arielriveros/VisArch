@@ -24,6 +24,7 @@ io.on('connection', (socket) => {
     socket.on('JOIN', (room) => {
         socket.join(room);
         console.log(`Socket: Client ${socket.id} joined room ${room}`);
+        socket.broadcast.to(room).emit('BROADCAST::JOIN');
     });
 
     socket.on('LEAVE', (room) => {
@@ -55,6 +56,10 @@ io.on('connection', (socket) => {
 
     socket.on('EMIT::UPDATE_PATTERN_ENTITY_PROPERTIES', (payload, roomId) => {
         socket.broadcast.to(roomId).emit('BROADCAST::UPDATE_PATTERN_ENTITY_PROPERTIES', payload);
+    });
+
+    socket.on('EMIT::UPLOAD_TASK_ON_JOIN', (payload, roomId) => {
+        console.log('EMIT::UPLOAD_TASK_ON_JOIN', payload);
     });
 
 });

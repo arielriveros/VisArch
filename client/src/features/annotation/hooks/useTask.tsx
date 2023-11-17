@@ -1,5 +1,7 @@
 import { useContext } from "react";
 import { TaskContext } from "../contexts/TaskContext";
+import { Task } from "../../../api/ModelTypes";
+import { config } from "../../../utils/config";
 
 export function useTaskContext() {
     const context = useContext(TaskContext);
@@ -7,5 +9,29 @@ export function useTaskContext() {
     if (!context)
         throw new Error('useTaskContext must be used within a TaskContextProvider');
 
-    return context;
+    const uploadTask = async (task: Task, token: string, callback?: (cb: any)=>void) => {
+        try {
+            if (!task) return;
+
+            const response = await fetch(`${config.API_URL}/tasks/${task._id}`, {
+                method: 'PUT',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({...task})
+            });
+
+            if (!response.ok)
+                throw new Error('Failed to upload task');
+
+            if (callback)
+                callback(response);
+
+        } catch (error) {
+            console.error(error);
+        }
+    }
+
+    return {...context, uploadTask};
 }

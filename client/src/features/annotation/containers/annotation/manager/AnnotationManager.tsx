@@ -19,7 +19,7 @@ export type IntersectionPayload = {
 }
 
 export default function AnnotationManager() {
-    const { task, loading: loadingTask } = useTaskContext();
+    const { task, loading: loadingTask, uploadTask } = useTaskContext();
     const { loading: loadingMesh, dispatch: dispatchProxyMesh } = useProxyMeshContext();
     const { user } = useAuthContext();
     const { socket } = useSocket();
@@ -146,6 +146,15 @@ export default function AnnotationManager() {
             DISPATCH.UPDATE_PATTERN_ARCHETYPE_LABEL(data.patternArchetypeName, data.label, false);
         });
 
+        socket.on('BROADCAST::JOIN', () => {
+            console.log('joined');
+
+            if (task && user)
+                uploadTask(task, user.token, (response: any) => {
+                    socket.emit('EMIT::UPLOAD_TASK_ON_JOIN', { taskId: task._id });
+                });
+        });
+
         return () => {
             socket.off('BROADCAST::ADD_PATTERN_ARCHETYPE');
             socket.off('BROADCAST::REMOVE_PATTERN_ARCHETYPE');
@@ -153,8 +162,9 @@ export default function AnnotationManager() {
             socket.off('BROADCAST::REMOVE_PATTERN_ENTITY');
             socket.off('BROADCAST::UPDATE_PATTERN_ENTITY_PROPERTIES');
             socket.off('BROADCAST::UPDATE_PATTERN_ARCHETYPE_LABEL');
+            socket.off('BROADCAST::JOIN');
         }
-    }, [socket]);
+    }, [socket, task]);
 
     return (
         <div className='annotation-manager-container'>

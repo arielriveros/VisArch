@@ -2,13 +2,13 @@ import { useEffect } from 'react'
 import { config } from '../../../../utils/config';
 import { useAuthContext } from '../../../../hooks/useAuthContext';
 import { useTaskContext } from '../../hooks/useTask';
+import { useSocket } from '../../../socket/hooks/useSocket';
 import TaskList from '../../../../containers/taskContainers/tasksGrid/TaskList';
 import TaskSidebar from '../../components/sidebar/TaskSidebar';
 import ArchetypesList from '../../components/archetypesList/ArchetypesList';
 import AnnotationManager from '../annotation/manager/AnnotationManager';
 import ProxyMeshContextProvider from '../../contexts/ProxyMeshContext';
 import './TaskMain.css';
-import { useSocket } from '../../../socket/hooks/useSocket';
 
 type TaskMainProps = {
 	taskId: string;
@@ -17,7 +17,7 @@ type TaskMainProps = {
 
 export default function TaskMain(props: TaskMainProps) {
 	const { user } = useAuthContext();
-	const { task, dispatch } = useTaskContext();
+	const { task, dispatch, uploadTask } = useTaskContext();
 	const { join, leave } = useSocket();
 
 	const getTask = async () => {
@@ -40,28 +40,7 @@ export default function TaskMain(props: TaskMainProps) {
 		}
 	};
 
-	const uploadTask = async () => {
-        try {
-            if (!task) return;
-
-			console.log(task);
-
-            const response = await fetch(`${config.API_URL}/tasks/${task._id}`, {
-                method: 'PUT',
-                headers: {
-                    'Authorization': `Bearer ${user?.token}`,
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({...task})
-            });
-
-            if (!response.ok)
-                throw new Error('Failed to upload task');
-
-        } catch (error) {
-            console.error(error);
-        }
-    }
+	
 			
 	useEffect(() => {
 		getTask();
@@ -79,7 +58,12 @@ export default function TaskMain(props: TaskMainProps) {
 			<div className='task-sidebar-container'> 
 				<TaskSidebar>
 					<ArchetypesList />
-					<button onClick={uploadTask}> Upload </button>
+					<button onClick={()=>{
+						if (task && user)
+							uploadTask(task, user.token, (response: any) => {
+								console.log(response);
+							});
+					}}> Upload </button>
 					<TaskList projectId={props.projectId} type={'task-list'} />
 				</TaskSidebar>
 			</div>
