@@ -4,10 +4,12 @@ import { config } from '../../../utils/config';
 import { Project } from '../../../api/ModelTypes';
 import ProjectItem from './ProjectItem';
 import './ProjectsList.css'
+import NewProjectForm from '../createProject/NewProjectForm';
 
 export default function ProjectsList(): JSX.Element {
     const [projects, setProjects] = useState<Project[]>([]);
     const { user } = useAuthContext();
+    const [showNewProjectForm, setShowNewProjectForm] = useState(false);
 
     useEffect(() => {
         if (user) getProjects();
@@ -41,7 +43,7 @@ export default function ProjectsList(): JSX.Element {
     return (
     <div className='ProjectsContainer'>
         <div className='ProjectsList'>
-            <div className='NewProjectButton'>
+            <div className='NewProjectButton' onClick={()=>setShowNewProjectForm(true)}>
                 <h3>Create New Project</h3>
             </div>
             {projects.map((p: Project) => (
@@ -50,6 +52,7 @@ export default function ProjectsList(): JSX.Element {
             </div>
             ))}
         </div>
+        {showNewProjectForm && <NewProjectForm onExit={()=>setShowNewProjectForm(false)}/>}
     </div>
     )
 }

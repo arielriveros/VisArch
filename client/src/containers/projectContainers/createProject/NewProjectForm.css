@@ -1,8 +1,9 @@
 .project-form {
-    width: 100%;
-    max-width: 500px;
-    margin: 0 auto;
-    padding: 20px;
+    position: absolute;
+    display: flex;
+    flex-direction: column;
+    width: 30vw;
+    padding: 10px;
     border: 1px solid #ccc;
     border-radius: 5px;
     box-shadow: 2px 2px 2px #ccc;
@@ -14,8 +15,6 @@
     flex-direction: column;
     padding: 10px 0;
     margin: 5px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
     justify-content: center;
     align-items: center;
     
