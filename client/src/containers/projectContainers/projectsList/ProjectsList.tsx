@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { useAuthContext } from '../../../hooks/useAuthContext';
 import { config } from '../../../utils/config';
 import { Project } from '../../../api/ModelTypes';
-import ProjectItem from '../projectItem/ProjectItem';
+import ProjectItem from './ProjectItem';
 import './ProjectsList.css'
 
 export default function ProjectsList(): JSX.Element {
@@ -39,9 +39,18 @@ export default function ProjectsList(): JSX.Element {
     }
 
     return (
-        <div className='projects-list'>
-            {projects.map((p: Project) => <ProjectItem key={p._id} {...p} />)}
+    <div className='ProjectsContainer'>
+        <div className='ProjectsList'>
+            <div className='NewProjectButton'>
+                <h3>Create New Project</h3>
+            </div>
+            {projects.map((p: Project) => (
+            <div key={p._id}>
+                <ProjectItem {...p} />
+            </div>
+            ))}
         </div>
+    </div>
     )
 }
 

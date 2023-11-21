@@ -1,7 +1,86 @@
-.projects-list {
-    display: block;
+.ProjectsContainer {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    align-content: center;
+    justify-content: center;
+    width: 90%;
     margin: 0 auto;
-    max-width: 1200px;
-    padding: 0 20px;
+    height: 50%;
+    border: 1px solid black;
+    border-radius: 5px;
+}
+
+.ProjectsList {
+    display: flex;
+    flex-wrap: wrap; /* Allow flex items to wrap to the next line */
+    overflow-y: auto;
+    max-height: 60vh;
     width: 100%;
+    margin: 0 auto;
+    padding: 0.5rem;
+    
+    align-items: center;
+    justify-content: center;
+}
+
+.ProjectItem {
+    width: 200px; /* Set a fixed width for each ProjectItem */
+    height: 150px; /* Set a fixed height for each ProjectItem */
+    border: 1px solid black;
+    border-radius: 5px;
+    margin: 0.5rem;
+    padding: 0.5rem;
+
+    cursor: pointer;
+}
+
+.ProjectItem:hover {
+    background-color: #ccc;
+
+    transition: background-color 0.5s ease;
+}
+
+.ProjectItem .ProjectName {
+    font-size: 1.2rem;
+    font-weight: bold;
+    text-align: center;
+    margin: 0.5rem 0;
+}
+
+.ProjectItem .Ownership {
+    display: flex;
+    flex-direction: column;
+    font-size: 1rem;
+    text-align: left;
+    margin: 0.5rem 0;
+}
+
+.NewProjectButton {
+    width: 200px; /* Set a fixed width for each ProjectItem */
+    height: 150px; /* Set a fixed height for each ProjectItem */
+    border: 1px solid black;
+    border-radius: 5px;
+    margin: 0.5rem;
+    padding: 0.5rem;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+}
+
+.NewProjectButton:hover {
+    background-color: #ccc;
+
+    transition: background-color 0.5s ease;
+}
+
+.project-delete-btn {
+    align-self: flex-end;
+    margin-top: 1rem;
+    padding: 0.5rem 1rem;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    cursor: pointer;
 }
