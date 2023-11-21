@@ -44,6 +44,11 @@ interface SetTaskAction extends TaskActionBase {
     payload: Task;
 }
 
+interface SetAnnotationsAction extends TaskActionBase {
+    type: 'SET_ANNOTATIONS';
+    payload: PatternArchetype[];
+}
+
 interface AddSelectRemovePatternArchetypeAction extends TaskActionBase {
     type: 'ADD_PATTERN_ARCHETYPE' | 'SELECT_PATTERN_ARCHETYPE' | 'REMOVE_PATTERN_ARCHETYPE';
     payload: { patternArchetypeName: string };
@@ -96,6 +101,7 @@ interface SetLoadingAction extends TaskActionBase {
 
 
 type TaskAction = SetTaskAction |
+                  SetAnnotationsAction |
                   AddSelectRemovePatternArchetypeAction |
                   UpdateSelectedPatternArchetypeAction |
                   UpdatePatternArchetypeLabelAction |
@@ -127,6 +133,10 @@ function taskReducer(state: TaskState, action: TaskAction): TaskState {
     switch (action.type) {
         case 'SET_TASK':
             return { ...state, task: (action.payload as Task), selectedArchetype: null, selectedEntity: null };
+
+        case 'SET_ANNOTATIONS':
+            if (!state.task) return state;
+            return { ...state, task: { ...state.task, annotations: action.payload as PatternArchetype[] }};
 
         case 'ADD_PATTERN_ARCHETYPE':
             if (!state.task) return state;

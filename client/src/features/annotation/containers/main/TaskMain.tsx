@@ -17,7 +17,7 @@ type TaskMainProps = {
 
 export default function TaskMain(props: TaskMainProps) {
 	const { user } = useAuthContext();
-	const { task, dispatch, uploadTask } = useTaskContext();
+	const { task, dispatch, uploadTask, loading } = useTaskContext();
 	const { join, leave } = useSocket();
 
 	const getTask = async () => {
@@ -44,6 +44,13 @@ export default function TaskMain(props: TaskMainProps) {
 			
 	useEffect(() => {
 		getTask();
+		return () => {
+			leave();
+		}
+	}, [props.taskId]);
+
+	useEffect(() => {
+		if (loading) return;
 		const room = `${props.projectId}:${props.taskId}`
 		leave(); // Leave previous room
 		join(room);
@@ -51,7 +58,9 @@ export default function TaskMain(props: TaskMainProps) {
 		return () => {
 			leave();
 		}
-	}, [props.taskId]);
+	}
+	, [props.projectId, props.taskId, loading]);
+
 
 	return (
 		<div className='task-main'>

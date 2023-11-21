@@ -12,6 +12,7 @@ import AnnotationController from '../controller/AnnotationController';
 import AnnotationViewer from '../viewer/AnnotationViewer';
 import './AnnotationManager.css';
 import useTaskDispatcher from '../../../../taskDispatcher';
+import { PatternArchetype } from '../../../../../api/ModelTypes';
 
 export type IntersectionPayload = {
 	face: {a: number, b: number, c: number, normal: Vector3} | null,
@@ -19,10 +20,10 @@ export type IntersectionPayload = {
 }
 
 export default function AnnotationManager() {
-    const { task, loading: loadingTask, uploadTask } = useTaskContext();
+    const { task, dispatch, loading: loadingTask, uploadTask } = useTaskContext();
     const { loading: loadingMesh, dispatch: dispatchProxyMesh } = useProxyMeshContext();
     const { user } = useAuthContext();
-    const { socket } = useSocket();
+    const { socket, emit, roomId } = useSocket();
     const DISPATCH = useTaskDispatcher();
     const [ready, setReady] = useState<boolean>(false);
 
@@ -147,12 +148,12 @@ export default function AnnotationManager() {
         });
 
         socket.on('BROADCAST::JOIN', () => {
-            console.log('joined');
-
             if (task && user)
-                uploadTask(task, user.token, (response: any) => {
-                    socket.emit('EMIT::UPLOAD_TASK_ON_JOIN', { taskId: task._id });
-                });
+                emit('SHARE_ANNOTATIONS_ON_JOIN', { task, roomId });
+        });
+
+        socket.on('BROADCAST::SHARE_ANNOTATIONS_ON_JOIN', (data: any) => {
+            dispatch({ type: 'SET_ANNOTATIONS', payload: data.task.annotations });
         });
 
         return () => {
@@ -163,8 +164,9 @@ export default function AnnotationManager() {
             socket.off('BROADCAST::UPDATE_PATTERN_ENTITY_PROPERTIES');
             socket.off('BROADCAST::UPDATE_PATTERN_ARCHETYPE_LABEL');
             socket.off('BROADCAST::JOIN');
+            socket.off('BROADCAST::SHARE_ANNOTATIONS_ON_JOIN');
         }
-    }, [socket, task]);
+    }, [socket, task, ready]);
 
     return (
         <div className='annotation-manager-container'>

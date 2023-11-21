@@ -58,8 +58,8 @@ io.on('connection', (socket) => {
         socket.broadcast.to(roomId).emit('BROADCAST::UPDATE_PATTERN_ENTITY_PROPERTIES', payload);
     });
 
-    socket.on('EMIT::UPLOAD_TASK_ON_JOIN', (payload, roomId) => {
-        console.log('EMIT::UPLOAD_TASK_ON_JOIN', payload);
+    socket.on('EMIT::SHARE_ANNOTATIONS_ON_JOIN', (payload, roomId) => {
+        socket.broadcast.to(roomId).emit('BROADCAST::SHARE_ANNOTATIONS_ON_JOIN', payload);
     });
 
 });
