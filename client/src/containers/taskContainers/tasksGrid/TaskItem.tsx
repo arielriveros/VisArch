@@ -1,10 +1,10 @@
 import { useNavigate } from 'react-router-dom';
 import { Task } from '../../../api/ModelTypes'
-import './TaskItem.css'
+import './TaskList.css'
+import { GridItem } from '../../../components/grid/Grid';
 
 interface TaskItemProps extends Task {
     projectId: string;
-    minimal?: boolean;
 }
 
 export default function TaskItem(props: TaskItemProps) {
@@ -21,17 +21,9 @@ export default function TaskItem(props: TaskItemProps) {
 	}
 
     return (
-        <div className='task-item' onClick={handleGoToTask}>
-            {
-                props.minimal ? 
-                <p> {props.name} </p>
-                : 
-                <>
-                    <h4> {props.name} </h4>
-                    <p> Annotations: {props.annotations?.length} </p>
-                </>
-            }
-            
-        </div>
+        <GridItem onClick={handleGoToTask}>
+            <h4> {props.name} </h4>
+            <p> Annotations: {props.annotations?.length} </p>
+        </GridItem>
     )
 }

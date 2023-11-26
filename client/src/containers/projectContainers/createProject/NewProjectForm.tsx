@@ -10,7 +10,7 @@ type NewProjectFormData = {
     members: string[];
 }
 
-export default function NewProjectForm(props: {onExit: ()=>void}): JSX.Element {
+export default function NewProjectForm(props: {onAddProject:()=>void, onExit: ()=>void}): JSX.Element {
     const { user } = useAuthContext();
 
     const [formData, setFormData] = useState<NewProjectFormData>({
@@ -74,7 +74,7 @@ export default function NewProjectForm(props: {onExit: ()=>void}): JSX.Element {
         });
         const data = await res.json();
         console.log(data);
-        props.onExit();
+        props.onAddProject();
     }
 
     return (

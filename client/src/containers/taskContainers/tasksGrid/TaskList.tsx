@@ -2,18 +2,19 @@ import { useState, useEffect } from 'react';
 import { config } from '../../../utils/config';
 import { useAuthContext } from '../../../hooks/useAuthContext';
 import { Task } from '../../../api/ModelTypes';
-import TaskItem from '../taskItem/TaskItem';
+import TaskItem from './TaskItem';
+import NewTaskForm from '../createTask/NewTaskForm';
+import Grid, { GridItem } from '../../../components/grid/Grid';
 import './TaskList.css';
 
 type TaskListProps = {
   projectId: string;
-  tasksIds?: { _id: string }[];
-  type: 'task-list' | 'task-grid';
 };
 
 export default function TaskList(props: TaskListProps) {
 	const { user } = useAuthContext();
 	const [tasks, setTasks] = useState<Task[]>([]);
+	const [showNewTaskForm, setShowNewTaskForm] = useState(false);
 
 	const getTasks = async () => {
 		try {
@@ -31,17 +32,23 @@ export default function TaskList(props: TaskListProps) {
 
 	useEffect(() => {
 		getTasks();
-  	}, [props.tasksIds]);
+  	}, [props.projectId]);
 
+	// TODO: Show currently connected users to the task
 	return (
-		<div className='task-list-container'>
-			<div className={props.type}>
-				{tasks.map((t: Task) => (
-					<div key={t._id} className='task-grid-item'>
-						<TaskItem {...t} projectId={props.projectId} minimal={props.type === 'task-list'}/>
-					</div>
-				))}
-			</div>
-		</div>
+		<Grid>
+			<GridItem onClick={()=>setShowNewTaskForm(true)}>
+				<h4>Add New Task</h4>
+			</GridItem>
+			{tasks.map((t: Task) => (
+				<TaskItem key={t._id} {...t} projectId={props.projectId} />
+			))}
+			{ showNewTaskForm && 
+				<NewTaskForm 
+					projectId={props.projectId} 
+					handleNewTask={() => { setShowNewTaskForm(false); getTasks(); } }
+				/>
+			}
+		</Grid>
 	);
 }

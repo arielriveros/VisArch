@@ -73,7 +73,6 @@ export default function TaskMain(props: TaskMainProps) {
 								console.log(response);
 							});
 					}}> Upload </button>
-					<TaskList projectId={props.projectId} type={'task-list'} />
 				</TaskSidebar>
 			</div>
 			<ProxyMeshContextProvider>

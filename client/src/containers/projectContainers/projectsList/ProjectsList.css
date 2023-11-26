@@ -1,52 +1,24 @@
-.ProjectsContainer {
+.ProjectTitle {
     display: flex;
-    flex-direction: column;
-    align-items: center;
-    align-content: center;
-    justify-content: center;
-    width: 90%;
-    margin: 0 auto;
-    height: 50%;
+    flex-direction: row;
+    font-size: 1.2rem;
+    text-align: center;
+    margin: 0.5rem 0;
+    justify-content: space-between;
 }
 
-.ProjectsList {
-    display: flex;
-    flex-wrap: wrap; /* Allow flex items to wrap to the next line */
-    overflow-y: auto;
-    max-height: 60vh;
-    width: 100%;
-    margin: 0 auto;
-    padding: 0.5rem;
-    
-    align-items: center;
-    justify-content: center;
+.ProjectTitle p {
+    font-size: 0.8rem;
 }
 
-.ProjectItem {
-    width: 200px; /* Set a fixed width for each ProjectItem */
-    height: 150px; /* Set a fixed height for each ProjectItem */
-    border: 1px solid black;
-    border-radius: 5px;
-    margin: 0.5rem;
-    padding: 0.5rem;
-
-    cursor: pointer;
-}
-
-.ProjectItem:hover {
-    background-color: #ccc;
-
-    transition: background-color 0.5s ease;
-}
-
-.ProjectItem .ProjectName {
+.ProjectName {
     font-size: 1.2rem;
     font-weight: bold;
     text-align: center;
     margin: 0.5rem 0;
 }
 
-.ProjectItem .Ownership {
+.Ownership {
     display: flex;
     flex-direction: column;
     font-size: 1rem;
@@ -54,24 +26,15 @@
     margin: 0.5rem 0;
 }
 
-.NewProjectButton {
-    width: 200px; /* Set a fixed width for each ProjectItem */
-    height: 150px; /* Set a fixed height for each ProjectItem */
-    border: 1px solid black;
-    border-radius: 5px;
-    margin: 0.5rem;
-    padding: 0.5rem;
-
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    cursor: pointer;
+.ProjectMenu {
+    opacity: 0;
+    pointer-events: none;
+    transition: all 0.5s ease;
 }
 
-.NewProjectButton:hover {
-    background-color: #ccc;
-
-    transition: background-color 0.5s ease;
+.ProjectMenu.Selected{
+    pointer-events: all;
+    opacity: 1;
 }
 
 .project-delete-btn {

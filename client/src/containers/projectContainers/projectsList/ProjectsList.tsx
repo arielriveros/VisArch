@@ -3,13 +3,15 @@ import { useAuthContext } from '../../../hooks/useAuthContext';
 import { config } from '../../../utils/config';
 import { Project } from '../../../api/ModelTypes';
 import ProjectItem from './ProjectItem';
-import './ProjectsList.css'
 import NewProjectForm from '../createProject/NewProjectForm';
+import Grid, { GridItem } from '../../../components/grid/Grid';
+import './ProjectsList.css'
 
 export default function ProjectsList(): JSX.Element {
     const [projects, setProjects] = useState<Project[]>([]);
     const { user } = useAuthContext();
     const [showNewProjectForm, setShowNewProjectForm] = useState(false);
+    const [selectedProject, setSelectedProject] = useState<string | null>(null);
 
     useEffect(() => {
         if (user) getProjects();
@@ -40,20 +42,22 @@ export default function ProjectsList(): JSX.Element {
         .catch(error => console.error(error));
     }
 
+    async function addProject() {
+        setShowNewProjectForm(false);
+        setSelectedProject(null);
+        if (user) getProjects();
+    }
+
     return (
-    <div className='ProjectsContainer'>
-        <div className='ProjectsList'>
-            <div className='NewProjectButton' onClick={()=>setShowNewProjectForm(true)}>
+        <Grid>
+            <GridItem onClick={()=>{setSelectedProject(null); setShowNewProjectForm(true)}}>
                 <h3>Create New Project</h3>
-            </div>
+            </GridItem>
             {projects.map((p: Project) => (
-            <div key={p._id}>
-                <ProjectItem {...p} />
-            </div>
+                <ProjectItem key={p._id} project={p} selected={selectedProject === p._id} onClick={() => setSelectedProject(p._id)}/>
             ))}
-        </div>
-        {showNewProjectForm && <NewProjectForm onExit={()=>setShowNewProjectForm(false)}/>}
-    </div>
+            {showNewProjectForm && <NewProjectForm onAddProject={()=>addProject()} onExit={()=>setShowNewProjectForm(false)}/>}
+        </Grid>
     )
 }
 
