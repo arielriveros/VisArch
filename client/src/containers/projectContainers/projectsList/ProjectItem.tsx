@@ -15,7 +15,8 @@ export default function ProjectItem(props: ProjectItemProps): JSX.Element {
   	const { user } = useAuthContext();
 	const navigate = useNavigate();
 
-	/* async function deleteProject(e: React.MouseEvent<HTMLButtonElement, MouseEvent>) {
+	/* 
+	async function deleteProject(e: React.MouseEvent<HTMLButtonElement, MouseEvent>) {
 		fetch(`${config.API_URL}/projects/${props._id}`, {
 			method: 'DELETE',
 			headers: {
@@ -26,7 +27,10 @@ export default function ProjectItem(props: ProjectItemProps): JSX.Element {
 		.then(data => {
 			console.log(data);
 		});
-	} */
+	}
+	
+	
+	*/
 
 	function handleGoToProject() {
 		// Navigate to the project details page and pass the project data as state
@@ -37,16 +41,8 @@ export default function ProjectItem(props: ProjectItemProps): JSX.Element {
 		});
 	}
 
-	function handleGoToProjectSettings() {
-		navigate(`/projects/${props.project._id}/settings`, {
-			state: {
-				project: props.project
-			}
-		});
-	}
-
 	return (
-	<GridItem onClick={props.onClick}>
+	<GridItem onClick={handleGoToProject}>
 		<div className="ProjectTitle"> 
 			<div className="ProjectName">{props.project.name}</div> 
 			<p>({props.project.status})</p>
@@ -56,12 +52,6 @@ export default function ProjectItem(props: ProjectItemProps): JSX.Element {
 		<div className='Ownership'>
 			<div className="Owner"> Owner: {props.project.owner.username === user?.username ? 'You' : props.project.owner.username} </div>
 			<div className="Members"> Members: {props.project.members.length} </div>
-		</div>
-		<div className={`ProjectMenu ${props.selected ? 'Selected' : ''}`}>
-			<button onClick={handleGoToProject}>Go to Project</button>
-			{user?.username === props.project.owner.username && (
-				<button onClick={handleGoToProjectSettings}>Configure</button>
-			)}
 		</div>
 	</GridItem>
 	);

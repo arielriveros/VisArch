@@ -31,17 +31,3 @@
     pointer-events: none;
     transition: all 0.5s ease;
 }
-
-.ProjectMenu.Selected{
-    pointer-events: all;
-    opacity: 1;
-}
-
-.project-delete-btn {
-    align-self: flex-end;
-    margin-top: 1rem;
-    padding: 0.5rem 1rem;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    cursor: pointer;
-}
