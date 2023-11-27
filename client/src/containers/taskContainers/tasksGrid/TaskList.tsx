@@ -9,11 +9,13 @@ import './TaskList.css';
 
 type TaskListProps = {
   projectId: string;
+  filter?: string
 };
 
 export default function TaskList(props: TaskListProps) {
 	const { user } = useAuthContext();
 	const [tasks, setTasks] = useState<Task[]>([]);
+	const [filteredTasks, setFilteredTasks] = useState<Task[]>([]);
 	const [showNewTaskForm, setShowNewTaskForm] = useState(false);
 
 	const getTasks = async () => {
@@ -25,6 +27,7 @@ export default function TaskList(props: TaskListProps) {
 		});
 		const data = await response.json();
 		setTasks(data.tasks);
+		setFilteredTasks(data.tasks);
 		} catch (error) {
 			console.error(error);
 		}
@@ -32,7 +35,15 @@ export default function TaskList(props: TaskListProps) {
 
 	useEffect(() => {
 		getTasks();
-  	}, [props.projectId]);
+	}, [props.projectId]);
+
+	useEffect(() => {
+		setFilteredTasks(tasks);
+		if (props.filter) {
+			const filteredTasks = tasks.filter(t => t.name.toLowerCase().includes(props.filter!.toLowerCase()));
+			setFilteredTasks(filteredTasks);
+		}
+	}, [props.filter]);
 
 	// TODO: Show currently connected users to the task
 	return (
@@ -40,7 +51,7 @@ export default function TaskList(props: TaskListProps) {
 			<GridItem onClick={()=>setShowNewTaskForm(true)}>
 				<h4>Add New Task</h4>
 			</GridItem>
-			{tasks.map((t: Task) => (
+			{filteredTasks.map((t: Task) => (
 				<TaskItem key={t._id} {...t} projectId={props.projectId} />
 			))}
 			{ showNewTaskForm && 

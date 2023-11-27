@@ -7,8 +7,13 @@ import NewProjectForm from '../createProject/NewProjectForm';
 import Grid, { GridItem } from '../../../components/grid/Grid';
 import './ProjectsList.css'
 
-export default function ProjectsList(): JSX.Element {
+interface ProjectsListProps {
+    filter?: string;
+}
+
+export default function ProjectsList(props: ProjectsListProps): JSX.Element {
     const [projects, setProjects] = useState<Project[]>([]);
+    const [filteredProjects, setFilteredProjects] = useState<Project[]>([]);
     const { user } = useAuthContext();
     const [showNewProjectForm, setShowNewProjectForm] = useState(false);
     const [selectedProject, setSelectedProject] = useState<string | null>(null);
@@ -38,6 +43,7 @@ export default function ProjectsList(): JSX.Element {
                 });
             }
             setProjects(projects);
+            setFilteredProjects(projects);
         })
         .catch(error => console.error(error));
     }
@@ -48,12 +54,20 @@ export default function ProjectsList(): JSX.Element {
         if (user) getProjects();
     }
 
+    useEffect(() => {
+        setFilteredProjects(projects);
+        if (props.filter) {
+            const filteredProjects = projects.filter(p => p.name.toLowerCase().includes(props.filter!.toLowerCase()));
+            setFilteredProjects(filteredProjects);
+        }
+    }, [props.filter]);
+
     return (
         <Grid>
             <GridItem onClick={()=>{setSelectedProject(null); setShowNewProjectForm(true)}}>
                 <h3>Create New Project</h3>
             </GridItem>
-            {projects.map((p: Project) => (
+            {filteredProjects.map((p: Project) => (
                 <ProjectItem key={p._id} project={p} selected={selectedProject === p._id} onClick={() => setSelectedProject(p._id)}/>
             ))}
             {showNewProjectForm && <NewProjectForm onAddProject={()=>addProject()} onExit={()=>setShowNewProjectForm(false)}/>}
