@@ -54,7 +54,7 @@ async function create(req, res) {
             for (let m of members) {
                 const member = await UserModel.findOne({ username: m });
                 if (!member)
-                    throw new Error('Member not found');
+                    throw new Error(`Member ${m} not found`);
 
                 // check if member is already in the array and skip if true
                 if (memberUsers.some(u => u.id === member.id))

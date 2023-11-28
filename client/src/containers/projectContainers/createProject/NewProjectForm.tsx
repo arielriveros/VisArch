@@ -1,13 +1,19 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import TextInput from '../../../components/inputs/text/TextInput';
 import { config } from '../../../utils/config';
-import './NewProjectForm.css'
 import { useAuthContext } from '../../../hooks/useAuthContext';
+import './NewProjectForm.css'
 
 type NewProjectFormData = {
     projectName: string;
     projectDescription: string;
     members: string[];
+}
+
+interface MinUser {
+    _id: string;
+    username: string;
+    email: string;
 }
 
 export default function NewProjectForm(props: {onAddProject:()=>void, onExit: ()=>void}): JSX.Element {
@@ -19,11 +25,26 @@ export default function NewProjectForm(props: {onAddProject:()=>void, onExit: ()
         members: []
     })
 
-    const [newMember, setNewMember] = useState<string>('');
+    const [searchMember, setSearchMember] = useState<string>('');
     const [members, setMembers] = useState<string[]>([]);
+    const [users, setUsers] = useState<MinUser[] | null>(null);
+    const [filteredMembers, setFilteredMembers] = useState<MinUser[]>([]);
     const [error, setError] = useState<string | null>(null);
 
-    function handleInput(e: React.ChangeEvent<HTMLInputElement>) {
+    useEffect(() => {
+        getUsers();
+    }, [])
+
+    useEffect(() => {
+        if (!users) return;
+
+        const filteredUsers = users.filter((u: MinUser) => {
+            return u.username.toLowerCase().includes(searchMember.toLowerCase());
+        })
+        setFilteredMembers(filteredUsers);
+    }, [members, searchMember])
+
+    const handleInput = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target
         setFormData(prevState => ({
             ...prevState,
@@ -31,23 +52,37 @@ export default function NewProjectForm(props: {onAddProject:()=>void, onExit: ()
         }));
     }
 
-    function handleNewMember(e: React.ChangeEvent<HTMLInputElement>) {
+    const handleNewMember = (e: React.ChangeEvent<HTMLInputElement>) => {
         // TODO: Validate if the user exists
         const { value } = e.target;
-        setNewMember(value);
+        setSearchMember(value);
     }
 
-    function addMember(e: React.MouseEvent<HTMLButtonElement, MouseEvent>) {
-        e.preventDefault();
-        setMembers(prevState => [...prevState, newMember]);
-        setNewMember(''); // Reset the value of the "newMember" state
+    const getUsers = async () => {
+        try {
+            const res = await fetch(`${config.API_URL}/user/`, {
+                headers: {
+                    'Authorization': `Bearer ${user?.token}`
+                }
+            });
+            const data = await res.json();
+            setUsers(data);
+            console.log(users);
+        }
+        catch (err) { console.error(err) }
+    }
+
+    const addMember = (username: string) => {
+        setMembers(prevState => [...prevState, username]);
+        setSearchMember(''); // Reset the value of the "newMember" state
+        setFilteredMembers([]); // Reset the filtered members
         setFormData(prevState => ({
             ...prevState,
-            members: [...prevState.members, newMember]
+            members: [...prevState.members, searchMember]
         }));
     }
 
-    async function submit(e: React.FormEvent<HTMLFormElement>) {
+    const submit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         setError(null);
 
@@ -64,40 +99,63 @@ export default function NewProjectForm(props: {onAddProject:()=>void, onExit: ()
                 members: formData.members
             }
         )
-        const res = await fetch(`${config.API_URL}/projects/`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${user?.token}`
-            },
-            body: body
-        });
-        const data = await res.json();
-        console.log(data);
-        props.onAddProject();
+
+        try {
+            const res = await fetch(`${config.API_URL}/projects/`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${user?.token}`
+                },
+                body: body
+            });
+            const data = await res.json();
+            console.log(data);
+            props.onAddProject();
+        }
+
+        catch (err) { console.error(err) }
     }
 
     return (
-        <div className='project-form'>
-            <h5> Create New Project</h5>
-            <form onSubmit={submit}>
-                <div className='form-group'>
-                    <TextInput targetName="projectName" type="text" label="Project Name"  handleInput={handleInput}/>
-                    <TextInput targetName="projectDescription" type="text" label="Project Description"  handleInput={handleInput}/>
-                    <div className='members'>
-                        <ul>
-                            {members.map((member, index) => <li key={index}>{member}</li>)}
-                        </ul>
+        <div className='ProjectFormContainer'>
+            <div className='ProjectForm'>
+                <h3> Create New Project</h3>
+                <form onSubmit={submit}>
+                    <div className='FormGroup'>
+                        <TextInput targetName="projectName" type="text" label="Project Name"  handleInput={handleInput}/>
+                        <br />
+                        <TextInput targetName="projectDescription" type="text" label="Project Description"  handleInput={handleInput}/>
+                        <br />
+                        <div className='MembersFinder'>
+                            <TextInput targetName="members" type="text" label="Add Member" text="Search User" handleInput={handleNewMember}/>
+                            {
+                                searchMember ?
+                                <select name="members" id="members" multiple>
+                                    {users && filteredMembers.map((m: MinUser) => (
+                                        <option value={m.username} onClick={(e)=>{addMember(m.username)}}>{m.username}</option>
+                                    ))}
+                                </select> 
+                                : null
+                            }
+                            <div>
+                                {members.map((m: string) => (
+                                    <div className='Member'>
+                                        <p>{m}</p>
+                                        <button onClick={(e)=>{setMembers(prevState => prevState.filter((member: string) => member !== m))}}>X</button>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
                     </div>
-                    <div className='add-member'>
-                        <TextInput targetName="members" type="text" label="Add Member"  handleInput={handleNewMember}/>
-                        <button className='add-member-btn' value={newMember} onClick={addMember}>Add</button>
-                    </div>
-                </div>
-                <button className='submit-btn' type='submit'>Create Project</button>
-                <button className='cancel-btn' onClick={props.onExit}>Cancel</button>
-            </form>
-            {error && <p className='error'>{error}</p>}
+                    <br />
+                    <div className='ButtonGroup'>
+                        <button className='submit-btn' type='submit'>Create Project</button>
+                        <button className='cancel-btn' onClick={props.onExit}>Cancel</button>
+                    </ div>
+                </form>
+                {error && <p className='error'>{error}</p>}
+            </div>
         </div>
     )
 }

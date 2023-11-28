@@ -12,7 +12,13 @@ function TextInput(props: TextInputProps) {
     return (
         <div className='text-input-container'>
             { props.label ? <label>{props.label}</label>: null}
-            <input className='text-input' name={props.targetName} type={props.type} defaultValue={props.text} onChange={props.handleInput}/>
+            <input 
+                className='text-input'
+                name={props.targetName}
+                type={props.type}
+                placeholder={props.text} 
+                onChange={props.handleInput}
+            />
         </div>
     )
 }

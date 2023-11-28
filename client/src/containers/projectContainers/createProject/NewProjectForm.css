@@ -1,8 +1,22 @@
-.project-form {
+.ProjectFormContainer {
+    position: fixed;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0,0,0,0.5);
+    z-index: 1;
+    left: 0;
+    bottom: 0;
+}
+
+.ProjectForm {
     position: absolute;
     display: flex;
     flex-direction: column;
-    width: 30vw;
+    width: 800px;
+    height: 60%;
     padding: 10px;
     border: 1px solid #ccc;
     border-radius: 5px;
@@ -10,29 +24,29 @@
     background-color: #fff;
 }
 
-.form-group {
+.FormGroup {
     display: flex;
     flex-direction: column;
     padding: 10px 0;
     margin: 5px;
     justify-content: center;
     align-items: center;
-    
 }
 
-.members {
+.ButtonGroup {
+    display: flex;
+    padding: 10px 0;
+    margin: 0 15px;
+    justify-content: end;
+}
+
+.MembersFinder {
     display: flex;
     flex-direction: column;
-    padding: 10px 0;
+    width: 100%;
 }
 
-.members ul {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-
-}
-
-.add-member {
+.Member {
     display: flex;
+    background-color: red;
 }

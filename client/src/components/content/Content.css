@@ -1,0 +1,10 @@
+@import url("../../global.css");
+
+.Content {
+    padding-top: var(--nav-bar-height);
+    position: fixed;
+    height: calc(100vh - var(--nav-bar-height));
+    width: 100vw;
+
+    background-color: rgba(178, 96, 255, 0.144);
+}

@@ -8,6 +8,7 @@ import Home from './pages/Home/Home';
 import Projects from './pages/Projects/Projects';
 import AnnotateTask from './pages/AnnotateTask/AnnotateTask';
 import ProjectDetails from './containers/projectContainers/projectDetails/ProjectDetails';
+import Content from './components/content/Content';
 
 export default function App(): JSX.Element {
 	const { user } = useAuthContext();
@@ -27,14 +28,14 @@ export default function App(): JSX.Element {
 		<div className="App">
 		<BrowserRouter>
 			<Navbar />
-			<div className="content">
-			<Routes>
-				<Route path="/" element={<Home />} />
-				<Route path="/projects" element={ user ? <Projects /> : <Navigate to="/" />} />
-				<Route path="/projects/:id" element={ user ? <ProjectDetails /> : <Navigate to="/" />} />
-				<Route path="/task/:id" element={ user ? <AnnotateTask /> : <Navigate to="/" />} />
-			</Routes>
-			</div>
+			<Content>
+				<Routes>
+					<Route path="/" element={<Home />} />
+					<Route path="/projects" element={ user ? <Projects /> : <Navigate to="/" />} />
+					<Route path="/projects/:id" element={ user ? <ProjectDetails /> : <Navigate to="/" />} />
+					<Route path="/task/:id" element={ user ? <AnnotateTask /> : <Navigate to="/" />} />
+				</Routes>
+			</Content>
 		</BrowserRouter>
 		</div>
 	);
