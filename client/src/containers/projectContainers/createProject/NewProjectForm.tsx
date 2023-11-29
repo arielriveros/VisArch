@@ -39,7 +39,11 @@ export default function NewProjectForm(props: {onAddProject:()=>void, onExit: ()
         if (!users) return;
 
         const filteredUsers = users.filter((u: MinUser) => {
-            return u.username.toLowerCase().includes(searchMember.toLowerCase());
+            return u.username.toLowerCase().includes(searchMember.toLowerCase()) || u.email.toLowerCase().includes(searchMember.toLowerCase());
+        })
+        // remove the users that are already members
+        .filter((u: MinUser) => {
+            return !members.includes(u.username);
         })
         setFilteredMembers(filteredUsers);
     }, [members, searchMember])
@@ -78,7 +82,7 @@ export default function NewProjectForm(props: {onAddProject:()=>void, onExit: ()
         setFilteredMembers([]); // Reset the filtered members
         setFormData(prevState => ({
             ...prevState,
-            members: [...prevState.members, searchMember]
+            members: [...prevState.members, username]
         }));
     }
 
@@ -131,14 +135,19 @@ export default function NewProjectForm(props: {onAddProject:()=>void, onExit: ()
                             <TextInput targetName="members" type="text" label="Add Member" text="Search User" handleInput={handleNewMember}/>
                             {
                                 searchMember ?
-                                <select name="members" id="members" multiple>
-                                    {users && filteredMembers.map((m: MinUser) => (
-                                        <option value={m.username} onClick={(e)=>{addMember(m.username)}}>{m.username}</option>
-                                    ))}
-                                </select> 
+                                <div className='UsersDropdownContainer' >
+                                    <div className='UsersDropdown'>
+                                        {users && filteredMembers.map((m: MinUser) => (
+                                            <div className='Item' onClick={(e)=>{addMember(m.username)}}>
+                                                <div className='Name'> {m.username} </div>
+                                                {m.email !== "" && <div className='Email'> {'\u200A'} ({m.email}) </div>}
+                                            </div>
+                                        ))}
+                                    </div> 
+                                </div>
                                 : null
                             }
-                            <div>
+                            <div className='MembersContainer'>
                                 {members.map((m: string) => (
                                     <div className='Member'>
                                         <p>{m}</p>

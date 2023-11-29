@@ -3,10 +3,11 @@ import './TextInput.css'
 
 interface TextInputProps {
     targetName: string;
+    type: 'text' | 'password';
+    handleInput: (e: React.ChangeEvent<HTMLInputElement>) => void;
     text?: string;
     label?: string;
-    handleInput: (e: React.ChangeEvent<HTMLInputElement>) => void;
-    type: 'text' | 'password';
+    hint?: string;
 }
 function TextInput(props: TextInputProps) {
     return (
@@ -17,6 +18,7 @@ function TextInput(props: TextInputProps) {
                 name={props.targetName}
                 type={props.type}
                 placeholder={props.text} 
+                autoComplete='off'
                 onChange={props.handleInput}
             />
         </div>
