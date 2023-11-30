@@ -3,7 +3,6 @@ import { config } from '../../../../utils/config';
 import { useAuthContext } from '../../../../hooks/useAuthContext';
 import { useTaskContext } from '../../hooks/useTask';
 import { useSocket } from '../../../socket/hooks/useSocket';
-import TaskList from '../../../../containers/taskContainers/tasksGrid/TaskList';
 import TaskSidebar from '../../components/sidebar/TaskSidebar';
 import ArchetypesList from '../../components/archetypesList/ArchetypesList';
 import AnnotationManager from '../annotation/manager/AnnotationManager';
@@ -18,7 +17,7 @@ type TaskMainProps = {
 export default function TaskMain(props: TaskMainProps) {
 	const { user } = useAuthContext();
 	const { task, dispatch, uploadTask, loading } = useTaskContext();
-	const { join, leave } = useSocket();
+	const { join, leave, roomId } = useSocket();
 
 	const getTask = async () => {
 		try {
@@ -44,20 +43,15 @@ export default function TaskMain(props: TaskMainProps) {
 			
 	useEffect(() => {
 		getTask();
-		return () => {
-			leave();
-		}
 	}, [props.taskId]);
 
 	useEffect(() => {
 		if (loading) return;
-		const room = `${props.projectId}:${props.taskId}`
-		leave(); // Leave previous room
-		join(room);
+		if (roomId) leave(); // Leave previous room
+		const newRoomId = `${props.projectId}:${props.taskId}`
+		join(newRoomId);
 
-		return () => {
-			leave();
-		}
+		return () => { if (roomId) leave(); }
 	}
 	, [props.projectId, props.taskId, loading]);
 
