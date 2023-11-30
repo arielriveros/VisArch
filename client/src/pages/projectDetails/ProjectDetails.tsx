@@ -1,10 +1,10 @@
 import { useState, useEffect } from 'react'
 import { useNavigate, useLocation } from 'react-router-dom'
-import { useAuthContext } from '../../../hooks/useAuthContext';
-import { Project } from '../../../api/ModelTypes';
-import TaskList from '../../../containers/taskContainers/tasksGrid/TaskList';
+import { useAuthContext } from '../../hooks/useAuthContext';
+import { Project } from '../../api/ModelTypes';
+import TaskList from '../../containers/taskContainers/tasksGrid/TaskList';
 import './ProjectDetails.css'
-import TextInput from '../../../components/inputs/text/TextInput';
+import TextInput from '../../components/inputs/text/TextInput';
 
 export default function ProjectDetails() {
 	const location = useLocation();
@@ -20,9 +20,7 @@ export default function ProjectDetails() {
 	function handleGoToProjectSettings() {
 		if (!project) return;
 		navigate(`/projects/${project._id}/settings`, {
-			state: {
-				project: project
-			}
+			state: { project }
 		});
 	} 
 	
