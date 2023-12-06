@@ -165,7 +165,6 @@ async function updateById(req, res) {
         project.members = project.members.filter(m => !membersToDelete.includes(m.toString()));
         project.tasks = project.tasks.filter(t => !tasksToDelete.includes(t.toString()));
 
-        console.log(project);
         await project.save();
 
         return res.status(200).json(project);

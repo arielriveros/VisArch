@@ -36,7 +36,7 @@ export default function EditProjectForm(props: {project: Project}) {
         projectName: props.project.name,
         projectDescription: props.project.description ?? '',
         members: props.project.members,
-        taskIds: props.project.tasks
+        taskIds: []
     })
 
     const [membersToRemove, setMembersToRemove] = useState<{ readonly _id: string; username: string; }[]>([]);
@@ -67,6 +67,9 @@ export default function EditProjectForm(props: {project: Project}) {
         }
 
 		setTasks(data.tasks);
+        const taskIds = data.tasks.map((t: {_id: string}) => ({_id: t._id}));
+        setFormData({...formData, taskIds: taskIds});
+        
 		} catch (error) {
 			console.error(error);
 		}
@@ -128,7 +131,6 @@ export default function EditProjectForm(props: {project: Project}) {
             });
 
             const data = await response.json();
-            console.log(data);
 
             if (!response.ok) throw new Error(data.message);
 
@@ -155,7 +157,8 @@ export default function EditProjectForm(props: {project: Project}) {
 		});
 
         const data = await response.json();
-        console.log(data);
+
+        if (!response.ok) throw new Error(data.message);
 	}
     
     return (
@@ -218,7 +221,6 @@ export default function EditProjectForm(props: {project: Project}) {
             </thead>
             <tbody>
                 {tasks.map((t, i) =>
-                t && t.annotations &&
                 <tr key={i}>
                     <td>
                         <input 
