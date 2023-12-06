@@ -1,14 +1,115 @@
 .EditProjectForm {
     display: flex;
     flex-direction: column;
-    width: 80%;
-    height: 80%;
+    width: 60%;
+    height: 90%;
 
     border: 1px solid black;
     border-radius: 0.5rem;
 
     padding: 1rem;
 
+    overflow-x: hidden;
     overflow-y: auto;
+}
+
+.EditProject {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    height: 100%;
+    padding: 0.2rem;
+}
+
+.EditProject h3 {
+    text-align: center;
+    justify-content: center;
+}
+
+.EditProject .Members {
+    display: flex;
+    width: 100%;
+    height: 100%;
+    height: max-content;
+    justify-content: space-evenly;
+}
+
+.OptionCard {
+    margin: 0.5rem;
+    padding: 0.5rem;
+    width: max-content;
+    height: max-content;
+    border: 1px solid black;
+    border-radius: 0.5rem;    
+}
+
+.OptionCard .Upper {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1rem;
+}
+
+.OptionCard button {
+    width: 50%;
+    height: 50%;
+    background-color: rgb(255, 120, 120);
+    border-radius: 1rem;
+    border: 1px solid black;
+    cursor: pointer;
+}
+
+table {
+    border-collapse: collapse;
+    width: 100%;
+}
+
+td, th {
+    border: 1px solid #dddddd;
+    text-align: left;
+    padding: 8px;
+}
+
+tr:nth-child(even) {
+    background-color: #dddddd;
+}
+
+.ActionButtons {
+    display: flex;
+    justify-content: space-evenly;
+    margin-top: 1rem;
+}
+
+.ActionButtons .Save {
+    width: 8rem;
+    height: 2rem;
+    background-color: rgb(120, 255, 120);
+    border-radius: 0.2rem;
+    border: 1px solid black;
+    cursor: pointer;
+}
+
+.ActionButtons .Archive {
+    width: 8rem;
+    height: 2rem;
+    background-color: rgb(255, 255, 120);
+    border-radius: 0.2rem;
+    border: 1px solid black;
+    cursor: pointer;
+}
+
+.ActionButtons .Delete {
+    width: 8rem;
+    height: 2rem;
+    background-color: rgb(255, 120, 120);
+    border-radius: 0.2rem;
+    border: 1px solid black;
+    cursor: pointer;
+}
+
+.ActionButtons .Delete:hover {
+    background-color: rgb(255, 0, 0);
+    color: white;
+    font-weight: bold;
 
 }
