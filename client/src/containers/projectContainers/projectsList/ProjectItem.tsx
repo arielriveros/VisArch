@@ -15,23 +15,6 @@ export default function ProjectItem(props: ProjectItemProps): JSX.Element {
   	const { user } = useAuthContext();
 	const navigate = useNavigate();
 
-	/* 
-	async function deleteProject(e: React.MouseEvent<HTMLButtonElement, MouseEvent>) {
-		fetch(`${config.API_URL}/projects/${props._id}`, {
-			method: 'DELETE',
-			headers: {
-			'Authorization': `Bearer ${user?.token}`
-			}
-		})
-		.then(response => response.json())
-		.then(data => {
-			console.log(data);
-		});
-	}
-	
-	
-	*/
-
 	function handleGoToProject() {
 		// Navigate to the project details page and pass the project data as state
 		navigate(`/projects/${props.project._id}`, {

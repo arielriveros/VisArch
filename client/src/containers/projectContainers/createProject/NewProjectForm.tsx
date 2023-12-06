@@ -45,6 +45,11 @@ export default function NewProjectForm(props: {onAddProject:()=>void, onExit: ()
         .filter((u: MinUser) => {
             return !members.includes(u.username);
         })
+
+        // remove self from the list
+        .filter((u: MinUser) => {
+            return u.username !== user?.username;
+        })
         setFilteredMembers(filteredUsers);
     }, [members, searchMember])
 
@@ -71,7 +76,6 @@ export default function NewProjectForm(props: {onAddProject:()=>void, onExit: ()
             });
             const data = await res.json();
             setUsers(data);
-            console.log(users);
         }
         catch (err) { console.error(err) }
     }
@@ -113,8 +117,6 @@ export default function NewProjectForm(props: {onAddProject:()=>void, onExit: ()
                 },
                 body: body
             });
-            const data = await res.json();
-            console.log(data);
             props.onAddProject();
         }
 
