@@ -49,7 +49,6 @@ async function create(req, res) {
             name: req.body.name,
             meshPath: filterPublicFolder(req.files.model[0].path),
             members: project.members,
-            status: 'active',
             project: project,
             annotations: []
         });
@@ -105,7 +104,6 @@ async function updateTask(req, res) {
         let updatedTask = {}
 
         updatedTask.name = req.body.name ?? task.name;
-        updatedTask.status = req.body.status ?? task.status;
         updatedTask.annotations = task.annotations;
         
         for (let a of req.body.annotations) {

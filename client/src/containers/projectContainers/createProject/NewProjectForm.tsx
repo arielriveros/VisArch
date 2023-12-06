@@ -8,6 +8,7 @@ type NewProjectFormData = {
     projectName: string;
     projectDescription: string;
     members: string[];
+    class: 'object' | 'terrain';
 }
 
 interface MinUser {
@@ -22,6 +23,7 @@ export default function NewProjectForm(props: {onAddProject:()=>void, onExit: ()
     const [formData, setFormData] = useState<NewProjectFormData>({
         projectName: '',
         projectDescription: '',
+        class: 'object',
         members: []
     })
 
@@ -104,12 +106,13 @@ export default function NewProjectForm(props: {onAddProject:()=>void, onExit: ()
                 name: formData.projectName,
                 description: formData.projectDescription,
                 owner: user?.username,
-                members: formData.members
+                members: formData.members,
+                class: formData.class
             }
         )
 
         try {
-            const res = await fetch(`${config.API_URL}/projects/`, {
+            await fetch(`${config.API_URL}/projects/`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -130,6 +133,16 @@ export default function NewProjectForm(props: {onAddProject:()=>void, onExit: ()
                 <form onSubmit={submit}>
                     <div className='FormGroup'>
                         <TextInput targetName="projectName" type="text" label="Project Name"  handleInput={handleInput}/>
+                        <br />
+                        <div className='ClassSelector'>
+                            <div>
+                                Class:
+                            </div>    
+                            <div>
+                                Object <input type="radio" name="class" value="object" checked={formData.class === 'object'} onChange={handleInput}/>
+                                Terrain <input type="radio" name="class" value="terrain" checked={formData.class === 'terrain'} onChange={handleInput}/>
+                            </div> 
+                        </div>
                         <br />
                         <TextInput targetName="projectDescription" type="text" label="Project Description"  handleInput={handleInput}/>
                         <br />

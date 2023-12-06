@@ -79,7 +79,8 @@ async function create(req, res) {
             tasks: [],
             owner: owner,
             members: memberUsers,
-            status: 'active'
+            status: 'active',
+            class: req.body.class
         });
 
         // add project to members

@@ -39,7 +39,8 @@ export default function ProjectsList(props: ProjectsListProps): JSX.Element {
                     tasks: p.tasks,
                     members: p.members,
                     owner: p.owner,
-                    status: p.status
+                    status: p.status,
+                    class: p.class
                 });
             }
             setProjects(projects);

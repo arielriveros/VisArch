@@ -30,11 +30,12 @@ export default function ProjectItem(props: ProjectItemProps): JSX.Element {
 			<div className="ProjectName">{props.project.name}</div> 
 			<p>({props.project.status})</p>
 		</div>
+		<div className='ProjectClass'> {props.project.class[0].toUpperCase() + props.project.class.slice(1)} </div>
 		<div className='ProjectDescription'> {props.project.description} </div>
-		<div className='ProjectTasks'> Tasks: {props.project.tasks.length} </div>
+		<div className='ProjectTasks'> <b>Tasks: </b> {props.project.tasks.length} </div>
 		<div className='Ownership'>
-			<div className="Owner"> Owner: {props.project.owner.username === user?.username ? 'You' : props.project.owner.username} </div>
-			<div className="Members"> Members: {props.project.members.length} </div>
+			<div className="Owner"> <b>Owner: </b> {props.project.owner.username === user?.username ? 'You' : props.project.owner.username} </div>
+			<div className="Members"> <b>Members: </b> {props.project.members.length} </div>
 		</div>
 	</GridItem>
 	);

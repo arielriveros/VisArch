@@ -21,6 +21,7 @@ export type Project = {
         username: string;
     };
     status: 'active' | 'archived';
+    class: 'object' | 'terrain';
 }
 
 export type PatternEntity = {
@@ -44,6 +45,5 @@ export type Task = {
     readonly _id: string,
 	name: string,
 	meshPath: string,
-	status: 'active' | 'archived',
     annotations: PatternArchetype[],
 }
