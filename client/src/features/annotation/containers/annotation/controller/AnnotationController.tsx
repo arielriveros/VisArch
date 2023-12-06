@@ -15,7 +15,7 @@ import useTaskDispatcher from '../../../../taskDispatcher';
 import './AnnotationController.css';
 
 export default function AnnotationController() {
-    const { task, selectedArchetype, loading, selectedEntity, showPropertyController } = useTaskContext();
+    const { task, selectedArchetype, loading, selectedEntity, showPropertyController, class: projectClass } = useTaskContext();
     const { proxyGeometry, proxyMaterial, unwrappedGeometry } = useProxyMeshContext();
     const DISPATCH = useTaskDispatcher();
     const [unwrappedMesh, setUnwrappedMesh] = useState<Mesh>(new Mesh());

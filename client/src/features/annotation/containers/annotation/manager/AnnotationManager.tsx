@@ -19,7 +19,7 @@ export type IntersectionPayload = {
 }
 
 export default function AnnotationManager() {
-    const { task, dispatch, loading: loadingTask } = useTaskContext();
+    const { task, dispatch, loading: loadingTask, class: projectClass } = useTaskContext();
     const { loading: loadingMesh, dispatch: dispatchProxyMesh } = useProxyMeshContext();
     const { user } = useAuthContext();
     const { socket, emit, roomId } = useSocket();
@@ -94,7 +94,10 @@ export default function AnnotationManager() {
             dispatchProxyMesh({ type: 'SET_PROXY_MATERIAL', payload: material as Material });
 
             if (!shouldUnwrap) {
-                dispatchProxyMesh({ type: 'SET_UNWRAPPED_GEOMETRY', payload: geometry.clone() });
+                const originalGeometry = geometry.clone();
+                originalGeometry.computeBoundsTree();
+
+                dispatchProxyMesh({ type: 'SET_UNWRAPPED_GEOMETRY', payload: originalGeometry });
             }
 
             else {
@@ -112,7 +115,7 @@ export default function AnnotationManager() {
     };
 
     useEffect(() => {
-        loadMesh(true);
+        loadMesh(projectClass === 'object');
     }, [task?.meshPath]);
 
     useEffect(() => {
@@ -172,7 +175,7 @@ export default function AnnotationManager() {
             { !ready ? <div className='loading-container'> Loading... </div> :
                 <>
                     <AnnotationController />
-                    <AnnotationViewer />
+                    {projectClass === 'object' && <AnnotationViewer />}
                 </>
             }
         </div>
