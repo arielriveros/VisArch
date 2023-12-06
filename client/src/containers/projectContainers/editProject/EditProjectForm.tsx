@@ -2,8 +2,8 @@ import  { useEffect, useState } from 'react'
 import { Project, Task } from '../../../api/ModelTypes';
 import { config } from '../../../utils/config';
 import { useAuthContext } from '../../../hooks/useAuthContext';
+import Grid from '../../../components/grid/Grid';
 import './EditProjectForm.css';
-import Grid, { GridItem } from '../../../components/grid/Grid';
 
 interface ProjectFormData {
     projectName: string;
@@ -46,6 +46,10 @@ export default function EditProjectForm(props: {project: Project}) {
     useEffect(() => {
         getTasks();
     }, []);
+
+    useEffect(()=>{
+        setMembersToRemove([]);
+    }, [tasks])
 
     const getTasks = async () => {
 		try {
@@ -101,6 +105,58 @@ export default function EditProjectForm(props: {project: Project}) {
         a.download = path;
         a.click();
     };
+
+    const onSave = async () => {
+        try {
+            const body = JSON.stringify(
+                {
+                    name: formData.projectName,
+                    description: formData.projectDescription,
+                    membersToDelete: membersToRemove.map(m => m._id),
+                    tasksToDelete: tasks.filter(
+                            t => !formData.taskIds.some(id => id._id === t._id)
+                        ).map(t => t._id)
+                }
+            )
+            const response = await fetch(`${config.API_URL}/projects/${props.project._id}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${user?.token}`
+                },
+                body: body
+            });
+
+            const data = await response.json();
+            console.log(data);
+
+            if (!response.ok) throw new Error(data.message);
+
+            props.project.name = formData.projectName;
+            props.project.description = formData.projectDescription;
+            props.project.members = formData.members;
+            props.project.tasks = formData.taskIds;
+
+            const updatedTasks = tasks.filter(
+                t => formData.taskIds.some(id => id._id === t._id)
+            );
+
+            setTasks(updatedTasks);
+        }
+        catch (error) { console.error(error); }
+    };
+
+    const onDelete = async ()  => {
+		const response = await fetch(`${config.API_URL}/projects/${props.project._id}`, {
+			method: 'DELETE',
+			headers: {
+			'Authorization': `Bearer ${user?.token}`
+			}
+		});
+
+        const data = await response.json();
+        console.log(data);
+	}
     
     return (
     <div className='EditProjectForm'>
@@ -125,7 +181,7 @@ export default function EditProjectForm(props: {project: Project}) {
                 <h5>Members:</h5>
                 <Grid >
                     {formData.members.map((m, i) => 
-                        <OptionCard text={m.username} onClick={
+                        <OptionCard key={i} text={m.username} onClick={
                             () => {
                                 if (m._id === props.project.owner._id) return;
                                 setMembersToRemove([...membersToRemove, m]);
@@ -137,7 +193,7 @@ export default function EditProjectForm(props: {project: Project}) {
                 <h5>Members to Remove:</h5>
                 <Grid>
                     { membersToRemove.map((m, i) => 
-                        <OptionCard text={m.username} toRemove={true} onClick={
+                        <OptionCard key={i} text={m.username} toRemove={true} onClick={
                             () => {
                                 setMembersToRemove(membersToRemove.filter((m2) => m2._id !== m._id));
                                 setFormData({...formData, members: [...formData.members, m]})
@@ -151,46 +207,51 @@ export default function EditProjectForm(props: {project: Project}) {
         <div className='EditProject'>
             <h3>Tasks</h3>
             <table>
-            <tr>
-                <th>Keep</th>
-                <th>Name</th>
-                <th>Archetypes</th>
-                <th>Annotations</th>
-                <th>Model</th>
-            </tr>
-            {tasks.map((t, i) =>
-            <tr>
-                <td>
-                    <input 
-                        type="checkbox" 
-                        checked={formData.taskIds.some((id) => id._id === t._id)}
-                        onChange={(e) => {
-                            if (e.target.checked) {
-                                setFormData({...formData, taskIds: [...formData.taskIds, t]});
-                            } else {
-                                setFormData({...formData, taskIds: formData.taskIds.filter((id) => id._id !== t._id)});
-                            }
-                        }}
-                    />
-                </td>
-                <td>{t.name}</td>
-                <td>{t.annotations.length}</td>
-                <td>
-                    {t.annotations.reduce((acc, a) => acc + a.entities.length, 0)}
-                </td>
-                <td>
-                    <div style={{cursor: 'pointer'}} onClick={()=>downloadModel(t.meshPath)}>Download</div>
-                </td>
-            </tr>
-            )}
+            <thead>
+                <tr>
+                    <th>Keep</th>
+                    <th>Name</th>
+                    <th>Archetypes</th>
+                    <th>Annotations</th>
+                    <th>Model</th>
+                </tr>
+            </thead>
+            <tbody>
+                {tasks.map((t, i) =>
+                t && t.annotations &&
+                <tr key={i}>
+                    <td>
+                        <input 
+                            type="checkbox" 
+                            checked={formData.taskIds.some((id) => id._id === t._id)}
+                            onChange={(e) => {
+                                if (e.target.checked) {
+                                    setFormData({...formData, taskIds: [...formData.taskIds, t]});
+                                } else {
+                                    setFormData({...formData, taskIds: formData.taskIds.filter((id) => id._id !== t._id)});
+                                }
+                            }}
+                        />
+                    </td>
+                    <td>{t.name}</td>
+                    <td>{t.annotations.length}</td>
+                    <td>
+                        {t.annotations.reduce((acc, a) => acc + a.entities.length, 0)}
+                    </td>
+                    <td>
+                        <div style={{cursor: 'pointer'}} onClick={()=>downloadModel(t.meshPath)}>Download</div>
+                    </td>
+                </tr>
+                )}
+            </tbody>
             </table>
         </div>
         <div className='EditProject'>
             <h3>Actions</h3>
             <div className='ActionButtons'>
-                <button className='Save'>Save</button>
+                <button className='Save' onClick={onSave}>Save</button>
                 <button className='Archive'>Archive</button>
-                <button className='Delete'>Delete Project</button>
+                <button className='Delete' onClick={onDelete}>Delete Project</button>
             </div>
         </div>
     </div>
