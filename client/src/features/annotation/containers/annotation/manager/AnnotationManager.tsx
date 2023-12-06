@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect } from 'react'
 import { useTaskContext } from '../../../hooks/useTask';
 import { config } from '../../../../../utils/config';
 import { Mesh, Group, Vector3, BufferGeometry, NormalBufferAttributes, Material, BufferAttribute } from 'three';
@@ -10,9 +10,8 @@ import { radialUnwrap } from '../../../utils/radialUnwrap';
 import { flattenAxis } from '../../../utils/flattenAxis';
 import AnnotationController from '../controller/AnnotationController';
 import AnnotationViewer from '../viewer/AnnotationViewer';
-import './AnnotationManager.css';
 import useTaskDispatcher from '../../../../taskDispatcher';
-import { PatternArchetype } from '../../../../../api/ModelTypes';
+import './AnnotationManager.css';
 
 export type IntersectionPayload = {
 	face: {a: number, b: number, c: number, normal: Vector3} | null,
@@ -20,7 +19,7 @@ export type IntersectionPayload = {
 }
 
 export default function AnnotationManager() {
-    const { task, dispatch, loading: loadingTask, uploadTask } = useTaskContext();
+    const { task, dispatch, loading: loadingTask } = useTaskContext();
     const { loading: loadingMesh, dispatch: dispatchProxyMesh } = useProxyMeshContext();
     const { user } = useAuthContext();
     const { socket, emit, roomId } = useSocket();

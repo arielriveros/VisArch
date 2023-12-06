@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { config } from '../../../utils/config';
 import { useAuthContext } from '../../../hooks/useAuthContext';
+import { Project } from '../../../api/ModelTypes';
 import MeshInput from '../../../components/inputs/mesh/MeshInput';
 import './NewTaskForm.css';
 
 type NewTaskFormProps = {
-    projectId: string;
+    project: Project;
     handleNewTask: (task: {_id: string}) => void;
 };
 
@@ -37,7 +38,7 @@ export default function NewTaskForm(props: NewTaskFormProps) {
                 const outFormData = new FormData();
                 outFormData.append('name', formData.name);
                 outFormData.append('model', formData.model);
-                outFormData.append('project', props.projectId);
+                outFormData.append('project', props.project._id);
                 const response = await fetch(`${config.API_URL}/tasks/`, {
                     headers: {
                         'Authorization': `Bearer ${user?.token}`

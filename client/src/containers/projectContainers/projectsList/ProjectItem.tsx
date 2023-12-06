@@ -1,9 +1,8 @@
 import { useNavigate } from 'react-router-dom';
 import { useAuthContext } from '../../../hooks/useAuthContext';
-import { config } from '../../../utils/config';
 import { Project } from '../../../api/ModelTypes';
-import './ProjectsList.css'
 import { GridItem } from '../../../components/grid/Grid';
+import './ProjectsList.css'
 
 interface ProjectItemProps {
 	project: Project;
