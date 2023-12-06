@@ -4,6 +4,7 @@ import { config } from '../../../utils/config';
 import { useAuthContext } from '../../../hooks/useAuthContext';
 import Grid from '../../../components/grid/Grid';
 import './EditProjectForm.css';
+import { useNavigate } from 'react-router-dom';
 
 interface ProjectFormData {
     projectName: string;
@@ -31,6 +32,7 @@ function OptionCard(props: {text: string; onClick:()=>void; toRemove?: boolean; 
 
 export default function EditProjectForm(props: {project: Project}) {
     const { user } = useAuthContext();
+    const navigate = useNavigate();
 
     const [formData, setFormData] = useState<ProjectFormData>({
         projectName: props.project.name,
@@ -159,6 +161,8 @@ export default function EditProjectForm(props: {project: Project}) {
         const data = await response.json();
 
         if (!response.ok) throw new Error(data.message);
+
+        navigate('/projects');
 	}
     
     return (

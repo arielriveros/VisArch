@@ -106,10 +106,12 @@ async function deleteById(req, res) {
             throw new Error('User is not the owner of the project');
 
         // remove project from members
-        for (let m of project.members) {
-            const member = await UserModel.findById(m);
-            member.projects.pull(project._id);
-            await member.save();
+        if (project.members.length > 0  && project.members[0] !== null) {
+            for (let m of project.members) {
+                const member = await UserModel.findById(m);
+                member.projects.pull(project._id);
+                await member.save();
+            }
         }
 
         // remove tasks associated with project
