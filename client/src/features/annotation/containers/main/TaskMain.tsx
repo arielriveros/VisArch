@@ -3,7 +3,7 @@ import { config } from '../../../../utils/config';
 import { useAuthContext } from '../../../../hooks/useAuthContext';
 import { useTaskContext } from '../../hooks/useTask';
 import { useSocket } from '../../../socket/hooks/useSocket';
-import { Project } from '../../../../api/ModelTypes';
+import { Project, Task } from '../../../../api/ModelTypes';
 import TaskSidebar from '../../components/sidebar/TaskSidebar';
 import ArchetypesList from '../../components/archetypesList/ArchetypesList';
 import AnnotationManager from '../annotation/manager/AnnotationManager';
@@ -28,12 +28,14 @@ export default function TaskMain(props: TaskMainProps) {
 					'Authorization': `Bearer ${user?.token}`
 				}
 			});
-			const task = await response.json();
+
+			const task: Task = await response.json();
 			for (let annotation of task.annotations)
 				annotation.color = '#'+(Math.random()*0xFFFFFF<<0).toString(16); // TODO: Fix some colors not working
 
+			task.class = props.project.class;
+
 			dispatch({ type: 'SET_TASK', payload: task });
-			dispatch({ type: 'SET_CLASS', payload: props.project.class });
 			dispatch({ type: 'SET_LOADING', payload: false });
 		} catch (error) {
 			console.error(error);

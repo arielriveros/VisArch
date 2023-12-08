@@ -46,4 +46,5 @@ export type Task = {
 	name: string,
 	meshPath: string,
     annotations: PatternArchetype[],
+    class: 'object' | 'terrain';
 }

@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { Group, Mesh, Vector3 } from "three";
+import { Box3, Group, Mesh, MeshBasicMaterial, Vector3 } from "three";
 import { MeshBVHVisualizer } from 'three-mesh-bvh';
 import { Perf } from 'r3f-perf'
 import { useTaskContext } from "../../../../hooks/useTask";
@@ -15,8 +15,9 @@ type DebugGroupProps = {
 
 export default function DebugGroup(props: DebugGroupProps) {
 	const { task } = useTaskContext();
-	const { unwrappedGeometry } = useProxyMeshContext();
+	const { unwrappedGeometry,  } = useProxyMeshContext();
 	const [boxes, setBoxes] = useState<{centroid: Vector3; box: {min: Vector3, max: Vector3}}[]>([]);
+	const [boundingBox, setBoundingBox] = useState<Box3>(new Box3());
 	const bvhMeshRef = useRef<Group>(new Group());
 
 	useEffect(() => {
@@ -47,16 +48,31 @@ export default function DebugGroup(props: DebugGroupProps) {
 		setBoxes(newBoxes);
 
 	}, [task?.annotations]);
+
+	useEffect(() => {
+		if(!props.debug) return;
+		if (!task) return;
+		if (!unwrappedGeometry) return;
+		const boundingBox = new Box3();
+		const mesh = new Mesh(unwrappedGeometry, new MeshBasicMaterial());
+		boundingBox.setFromObject(mesh);
+		setBoundingBox(boundingBox);
+
+	}, [task]);
+
 	return (
 		<group visible={props.debug}>
+			<axesHelper />
+			{boundingBox &&
+				<DebugBox centroid={boundingBox.getCenter(new Vector3())} box={{min: boundingBox.min, max: boundingBox.max}} color={'#00ff00'} />
+			}
 			{boxes.map((box, index) => 
 				<DebugBox key={index} centroid={box.centroid} box={box.box} color={'#ff0000'} />
 			)}
 			{props.bvhMesh &&
 				<group ref={bvhMeshRef} />
 			}
-			{
-				props.showMonitor &&
+			{props.showMonitor &&
 				<Perf
 					openByDefault
 					trackGPU={true}

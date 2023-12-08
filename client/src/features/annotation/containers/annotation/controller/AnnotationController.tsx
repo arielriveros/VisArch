@@ -15,7 +15,7 @@ import useTaskDispatcher from '../../../../taskDispatcher';
 import './AnnotationController.css';
 
 export default function AnnotationController() {
-    const { task, selectedArchetype, loading, selectedEntity, showPropertyController, class: projectClass } = useTaskContext();
+    const { task, selectedArchetype, loading, selectedEntity, showPropertyController } = useTaskContext();
     const { proxyGeometry, proxyMaterial, unwrappedGeometry } = useProxyMeshContext();
     const DISPATCH = useTaskDispatcher();
     const [unwrappedMesh, setUnwrappedMesh] = useState<Mesh>(new Mesh());
@@ -63,7 +63,7 @@ export default function AnnotationController() {
 
 	return (
 		<div className="annotation-viewer-container">
-			<Canvas camera={{ position: [0, 0, 2] }} frameloop={'always'}>
+			<Canvas camera={{ position: [0, 0, 2], near:1e-4, far: 1000 }} frameloop={'always'}>
 				<CameraController />
                 { !showPropertyController &&
                     <>

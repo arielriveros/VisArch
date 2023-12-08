@@ -9,7 +9,6 @@ interface TaskState {
     indexPosition: IntersectionPayload | null;
     showPropertyController: boolean;
     loading: boolean;
-    class: 'object' | 'terrain';
 }
 
 interface AddPatternEntityPayload { 
@@ -132,7 +131,6 @@ export const TaskContext = createContext<TaskContextProps>(
         indexPosition: null,
         showPropertyController: false,
         loading: false,
-        class: 'object',
         dispatch: () => {}
     }
 );
@@ -348,9 +346,6 @@ function taskReducer(state: TaskState, action: TaskAction): TaskState {
         case 'SET_LOADING':
             return { ...state, loading: (action.payload as boolean) };
 
-        case 'SET_CLASS':
-            return { ...state, class: (action.payload as 'object' | 'terrain') };
-
         default:
             return state;
         
@@ -365,8 +360,7 @@ export default function TaskContextProvider({ children }: { children: React.Reac
         selectedEntity: null,
         indexPosition: null,
         showPropertyController: false,
-        loading: false,
-        class: 'object'
+        loading: false
     });
     return (
         <TaskContext.Provider value={{ ...state, dispatch }}>

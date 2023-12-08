@@ -70,7 +70,7 @@ export default function NewTaskForm(props: NewTaskFormProps) {
                 <label htmlFor='name'>Name</label>
                 <input type='text' id='name' name='name' onChange={handleChange} />
             </div>
-            <MeshInput meshHandler={handleMeshInput} />
+            <MeshInput meshHandler={handleMeshInput} projectClass={props.project.class} />
             <button disabled={formData.model === null} onClick={downloadGLB}>Download</button>
             <button disabled={formData.model === null} type='submit'>Create</button>
             </form>

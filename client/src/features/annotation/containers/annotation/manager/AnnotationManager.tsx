@@ -19,7 +19,7 @@ export type IntersectionPayload = {
 }
 
 export default function AnnotationManager() {
-    const { task, dispatch, loading: loadingTask, class: projectClass } = useTaskContext();
+    const { task, dispatch, loading: loadingTask } = useTaskContext();
     const { loading: loadingMesh, dispatch: dispatchProxyMesh } = useProxyMeshContext();
     const { user } = useAuthContext();
     const { socket, emit, roomId } = useSocket();
@@ -48,7 +48,7 @@ export default function AnnotationManager() {
                 Array.from(geometry.attributes.position.array),
                 unwrapAxis
             );
-            const unwrappedPositions = flattenAxis(unwrappedPositionsNotFlattened, 'x', 0.05);
+            const unwrappedPositions = flattenAxis(unwrappedPositionsNotFlattened, 'x', 0.5);
             const positionsBufferAttribute = new BufferAttribute(new Float32Array(unwrappedPositions), 3);
 
             unwrappedGeometry.setAttribute('position', positionsBufferAttribute);
@@ -115,7 +115,7 @@ export default function AnnotationManager() {
     };
 
     useEffect(() => {
-        loadMesh(projectClass === 'object');
+        loadMesh(task?.class === 'object');
     }, [task?.meshPath]);
 
     useEffect(() => {
@@ -175,7 +175,7 @@ export default function AnnotationManager() {
             { !ready ? <div className='loading-container'> Loading... </div> :
                 <>
                     <AnnotationController />
-                    {projectClass === 'object' && <AnnotationViewer />}
+                    {task?.class === 'object' && <AnnotationViewer />}
                 </>
             }
         </div>
