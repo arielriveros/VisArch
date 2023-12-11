@@ -9,7 +9,7 @@ export default function AnnotateTask() {
     return (
         <SocketContextProvider>
             <TaskContextProvider>
-                <TaskMain taskId={location.state.taskId} projectId={location.state.projectId}/>
+                <TaskMain taskId={location.state.taskId} project={location.state.project}/>
             </TaskContextProvider>
         </SocketContextProvider>
     )

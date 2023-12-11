@@ -1,10 +1,10 @@
 import { useNavigate } from 'react-router-dom';
-import { Task } from '../../../api/ModelTypes'
-import './TaskList.css'
+import { Project, Task } from '../../../api/ModelTypes'
 import { GridItem } from '../../../components/grid/Grid';
+import './TaskList.css'
 
 interface TaskItemProps extends Task {
-    projectId: string;
+    project: Project;
 }
 
 export default function TaskItem(props: TaskItemProps) {
@@ -15,7 +15,7 @@ export default function TaskItem(props: TaskItemProps) {
 		navigate(`/task/${props._id}`, {
 			state: {
 				taskId: props._id,
-                projectId: props.projectId
+                project: props.project
 			}
 		});
 	}

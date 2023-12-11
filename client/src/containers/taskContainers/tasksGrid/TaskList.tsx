@@ -1,14 +1,14 @@
 import { useState, useEffect } from 'react';
 import { config } from '../../../utils/config';
 import { useAuthContext } from '../../../hooks/useAuthContext';
-import { Task } from '../../../api/ModelTypes';
+import { Project, Task } from '../../../api/ModelTypes';
 import TaskItem from './TaskItem';
 import NewTaskForm from '../createTask/NewTaskForm';
 import Grid, { GridItem } from '../../../components/grid/Grid';
 import './TaskList.css';
 
 type TaskListProps = {
-  projectId: string;
+  project: Project;
   filter?: string
 };
 
@@ -20,7 +20,7 @@ export default function TaskList(props: TaskListProps) {
 
 	const getTasks = async () => {
 		try {
-		const response = await fetch(`${config.API_URL}/projects/${props.projectId}/tasks/`, {
+		const response = await fetch(`${config.API_URL}/projects/${props.project._id}/tasks/`, {
 				headers: {
 					'Authorization': `Bearer ${user?.token}`
 				}
@@ -35,7 +35,7 @@ export default function TaskList(props: TaskListProps) {
 
 	useEffect(() => {
 		getTasks();
-	}, [props.projectId]);
+	}, [props.project._id]);
 
 	useEffect(() => {
 		setFilteredTasks(tasks);
@@ -52,11 +52,11 @@ export default function TaskList(props: TaskListProps) {
 				<h4>Add New Task</h4>
 			</GridItem>
 			{filteredTasks.map((t: Task) => (
-				<TaskItem key={t._id} {...t} projectId={props.projectId} />
+				<TaskItem key={t._id} {...t} project={props.project} />
 			))}
 			{ showNewTaskForm && 
 				<NewTaskForm 
-					projectId={props.projectId} 
+					project={props.project} 
 					handleNewTask={() => { setShowNewTaskForm(false); getTasks(); } }
 				/>
 			}

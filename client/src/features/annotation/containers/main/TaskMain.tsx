@@ -3,6 +3,7 @@ import { config } from '../../../../utils/config';
 import { useAuthContext } from '../../../../hooks/useAuthContext';
 import { useTaskContext } from '../../hooks/useTask';
 import { useSocket } from '../../../socket/hooks/useSocket';
+import { Project, Task } from '../../../../api/ModelTypes';
 import TaskSidebar from '../../components/sidebar/TaskSidebar';
 import ArchetypesList from '../../components/archetypesList/ArchetypesList';
 import AnnotationManager from '../annotation/manager/AnnotationManager';
@@ -11,7 +12,7 @@ import './TaskMain.css';
 
 type TaskMainProps = {
 	taskId: string;
-	projectId: string;
+	project: Project;
 }
 
 export default function TaskMain(props: TaskMainProps) {
@@ -27,9 +28,12 @@ export default function TaskMain(props: TaskMainProps) {
 					'Authorization': `Bearer ${user?.token}`
 				}
 			});
-			const task = await response.json();
+
+			const task: Task = await response.json();
 			for (let annotation of task.annotations)
-				annotation.color = '#'+(Math.random()*0xFFFFFF<<0).toString(16);
+				annotation.color = '#'+(Math.random()*0xFFFFFF<<0).toString(16); // TODO: Fix some colors not working
+
+			task.class = props.project.class;
 
 			dispatch({ type: 'SET_TASK', payload: task });
 			dispatch({ type: 'SET_LOADING', payload: false });
@@ -46,14 +50,15 @@ export default function TaskMain(props: TaskMainProps) {
 	}, [props.taskId]);
 
 	useEffect(() => {
+		if (!props.project) return;
 		if (loading) return;
 		if (roomId) leave(); // Leave previous room
-		const newRoomId = `${props.projectId}:${props.taskId}`
+		const newRoomId = `${props.project._id}:${props.taskId}`
 		join(newRoomId);
 
 		return () => { if (roomId) leave(); }
 	}
-	, [props.projectId, props.taskId, loading]);
+	, [props.project, props.taskId, loading]);
 
 
 	return (

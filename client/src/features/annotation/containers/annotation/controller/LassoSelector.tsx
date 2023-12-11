@@ -5,7 +5,7 @@ All credit goes to the original author.
 
 import { useState, useEffect, useRef } from "react";
 import { useThree } from "@react-three/fiber";
-import { Vector2, Vector3, Matrix4, Line, Line3, Mesh, PerspectiveCamera, BufferGeometry, Float32BufferAttribute, LineBasicMaterial, MathUtils, Ray, BackSide } from "three";
+import { Vector2, Vector3, Matrix4, Line, Line3, Mesh, PerspectiveCamera, BufferGeometry, Float32BufferAttribute, LineBasicMaterial, MathUtils, Ray, BackSide, FrontSide, DoubleSide } from "three";
 import { CONTAINED, INTERSECTED, NOT_INTERSECTED } from "three-mesh-bvh";
 import { getConvexHull, lineCrossesLine, pointRayCrossesSegments } from "../../../utils/lassoMath";
 

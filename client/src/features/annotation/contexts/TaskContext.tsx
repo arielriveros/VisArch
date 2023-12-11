@@ -99,6 +99,11 @@ interface SetLoadingAction extends TaskActionBase {
     payload: boolean;
 }
 
+interface SetClassAction extends TaskActionBase {
+    type: 'SET_CLASS';
+    payload: 'object' | 'terrain';
+}
+
 
 type TaskAction = SetTaskAction |
                   SetAnnotationsAction |
@@ -111,7 +116,8 @@ type TaskAction = SetTaskAction |
                   UpdatePatternEntityPropertiesAction |
                   SetIndexPositionAction |
                   SetShowPropertyControllerAction |
-                  SetLoadingAction;
+                  SetLoadingAction |
+                  SetClassAction;
 
 interface TaskContextProps extends TaskState {
     dispatch: Dispatch<TaskAction>;
