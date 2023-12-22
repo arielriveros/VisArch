@@ -14,11 +14,15 @@ export function useSocket() {
 	
 		// Set up event listeners
 		socket.on('connect', () => {
-		  console.log('Connected to server');
+			console.log('Connected to server');
 		});
 	
 		socket.on('disconnect', () => {
-		  console.log('Disconnected from server');
+			console.log('Disconnected from server');
+		});
+
+		socket.on("connect_error", (err) => {
+			console.log(`connect_error due to ${err.message}`);
 		});
 	
 		// Clean up event listeners when the component unmounts

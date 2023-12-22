@@ -9,6 +9,7 @@ router.use(requireAuth);
 router.get('/', ProjectController.index);
 router.post('/', ProjectController.create);
 router.delete('/:id', ProjectController.deleteById);
+router.put('/:id', ProjectController.updateById);
 
 router.get('/:id/tasks', ProjectController.getTasks);
 

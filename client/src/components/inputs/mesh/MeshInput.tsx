@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { TextureLoader, Mesh, Group, Object3D, MeshBasicMaterial, BufferGeometry } from "three";
+import { TextureLoader, Mesh, Group, Object3D, MeshBasicMaterial, Box3, Vector3, Matrix4, Quaternion, Euler } from "three";
 import { GLTFExporter } from "three/examples/jsm/exporters/GLTFExporter";
 import { OBJLoader } from "three/examples/jsm/loaders/OBJLoader";
 import { PLYLoader } from "three/examples/jsm/loaders/PLYLoader";
@@ -9,6 +9,7 @@ import * as BufferGeometryUtils from "three/examples/jsm/utils/BufferGeometryUti
 
 type ModelInputProps = {
     meshHandler: (glbFile: File) => void;
+	projectClass: 'object' | 'terrain';
 };
   
 type ModelData = {
@@ -40,7 +41,7 @@ export default function MeshInput( props : ModelInputProps): JSX.Element {
 		});
 
       	exporter.parse(
-			obj,
+			adjustMesh(obj),
 			gltf => {
 				const blob = new Blob([gltf as BlobPart], { type: "application/octet-stream" });
 				const glbFile = new File([blob], `${previewModelData.modelPath}.glb`, { type: "model/gltf-binary" });
@@ -108,6 +109,72 @@ export default function MeshInput( props : ModelInputProps): JSX.Element {
 			default:
 				break;
 		}
+	}
+
+	const adjustMesh = (obj: Object3D): Object3D => {
+		const normalizedObj = obj;
+
+		// get obj bounding box
+		const box = new Box3();
+		box.setFromObject(normalizedObj);
+		const size = box.getSize(new Vector3()).length();
+		const center = box.getCenter(new Vector3());
+
+		// traverse the object and update vertex positions
+		normalizedObj.traverse((child) => {
+			if (child instanceof Mesh) {
+				const geometry = child.geometry;
+	
+				// set obj position to center
+				// update vertex positions
+				for (let i = 0; i < geometry.attributes.position.count; i++) {
+					geometry.attributes.position.setXYZ(
+						i,
+						geometry.attributes.position.getX(i) - center.x,
+						geometry.attributes.position.getY(i) - center.y,
+						geometry.attributes.position.getZ(i) - center.z
+					);
+				}
+	
+				if (props.projectClass === 'terrain') {
+					// calculate the average normal vector of the mesh
+					const avgNormal = new Vector3();
+					let numNormals = 0;
+					normalizedObj.traverse((child) => {
+						if (child instanceof Mesh) {
+							const geometry = child.geometry;
+							const positionAttribute = geometry.attributes.position;
+							const normalAttribute = geometry.attributes.normal;
+							for (let i = 0; i < positionAttribute.count; i++) {
+								const normal = new Vector3();
+								normal.fromBufferAttribute(normalAttribute, i);
+								avgNormal.add(normal);
+								numNormals++;
+							}
+						}
+					});
+					avgNormal.divideScalar(numNormals);
+					avgNormal.normalize();
+
+					// rotate the mesh so that the average normal vector is pointing upwards
+					const angleX = Math.acos(avgNormal.dot(new Vector3(0, 1, 0)));
+					const angleZ = Math.atan2(avgNormal.x, avgNormal.y);
+
+	
+					// apply rotation to the geometry
+					const rotationMatrix = new Matrix4();
+					const rotationQuaternion = new Quaternion();
+					rotationQuaternion.setFromEuler(
+						new Euler(-angleX, 0, angleZ)
+					);
+					rotationMatrix.makeRotationFromQuaternion(rotationQuaternion);
+					geometry.applyMatrix4(rotationMatrix);
+				}
+			}
+		});
+
+
+		return normalizedObj;
 	}
 
     useEffect(() => {

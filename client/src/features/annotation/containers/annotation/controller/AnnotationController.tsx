@@ -63,7 +63,7 @@ export default function AnnotationController() {
 
 	return (
 		<div className="annotation-viewer-container">
-			<Canvas camera={{ position: [0, 0, 2] }} frameloop={'always'}>
+			<Canvas camera={{ position: [0, 0, 2], near:1e-4, far: 1000 }} frameloop={'always'}>
 				<CameraController />
                 { !showPropertyController &&
                     <>

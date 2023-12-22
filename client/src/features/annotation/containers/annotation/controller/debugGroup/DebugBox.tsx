@@ -12,7 +12,7 @@ export default function DebugBox(props: DebugBoxProps) {
 
     return (
 		<mesh position={centroid}>
-			<boxGeometry args={[box.max.x - box.min.x, box.max.y - box.min.y, box.max.z]} />
+			<boxGeometry args={[box.max.x - box.min.x, box.max.y - box.min.y, box.max.z - box.min.z]} />
 			<meshBasicMaterial color={color} wireframe={true} />
 		</mesh>
     )

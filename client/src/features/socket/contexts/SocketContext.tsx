@@ -1,6 +1,6 @@
 import { createContext, Context, useReducer, Dispatch } from "react";
 import { Socket, io } from 'socket.io-client';
-import { config } from '../../../utils/config';
+import { SOCKET_ENDPOINT } from "../../../api/Endpoints";
 
 interface SocketState {
     socket: Socket<any, any> | null;
@@ -28,8 +28,11 @@ function SocketReducer(state: SocketState, action: SocketAction): SocketState {
     }
 }
 
-export const socket: Socket<any> = io(config.SOCKET_URL, {autoConnect: false, reconnection: false, transports: ['websocket']});
-//export const SocketContext: Context<Socket<any, any> | null> = createContext<Socket<any, any> | null>(null);
+export const socket: Socket<any> = io(SOCKET_ENDPOINT(), {
+    path: '/websocket',
+    autoConnect: false,
+    reconnection: false,
+    transports: ['websocket']});
 export const SocketContext: Context<SocketContextProps> = createContext<SocketContextProps>({socket: null, roomId: null, dispatch: () => {}});
 
 export default function SocketContextProvider({ children }: { children: React.ReactNode}) {

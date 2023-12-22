@@ -1,13 +1,14 @@
 import React, { useState, useEffect } from 'react'
 import TextInput from '../../../components/inputs/text/TextInput';
-import { config } from '../../../utils/config';
 import { useAuthContext } from '../../../hooks/useAuthContext';
+import { API_ENDPOINT } from '../../../api/Endpoints';
 import './NewProjectForm.css'
 
 type NewProjectFormData = {
     projectName: string;
     projectDescription: string;
     members: string[];
+    class: 'object' | 'terrain';
 }
 
 interface MinUser {
@@ -22,6 +23,7 @@ export default function NewProjectForm(props: {onAddProject:()=>void, onExit: ()
     const [formData, setFormData] = useState<NewProjectFormData>({
         projectName: '',
         projectDescription: '',
+        class: 'object',
         members: []
     })
 
@@ -45,6 +47,11 @@ export default function NewProjectForm(props: {onAddProject:()=>void, onExit: ()
         .filter((u: MinUser) => {
             return !members.includes(u.username);
         })
+
+        // remove self from the list
+        .filter((u: MinUser) => {
+            return u.username !== user?.username;
+        })
         setFilteredMembers(filteredUsers);
     }, [members, searchMember])
 
@@ -64,14 +71,13 @@ export default function NewProjectForm(props: {onAddProject:()=>void, onExit: ()
 
     const getUsers = async () => {
         try {
-            const res = await fetch(`${config.API_URL}/user/`, {
+            const res = await fetch(`${API_ENDPOINT()}/user/`, {
                 headers: {
                     'Authorization': `Bearer ${user?.token}`
                 }
             });
             const data = await res.json();
             setUsers(data);
-            console.log(users);
         }
         catch (err) { console.error(err) }
     }
@@ -100,12 +106,13 @@ export default function NewProjectForm(props: {onAddProject:()=>void, onExit: ()
                 name: formData.projectName,
                 description: formData.projectDescription,
                 owner: user?.username,
-                members: formData.members
+                members: formData.members,
+                class: formData.class
             }
         )
 
         try {
-            const res = await fetch(`${config.API_URL}/projects/`, {
+            await fetch(`${API_ENDPOINT()}/projects/`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -113,8 +120,6 @@ export default function NewProjectForm(props: {onAddProject:()=>void, onExit: ()
                 },
                 body: body
             });
-            const data = await res.json();
-            console.log(data);
             props.onAddProject();
         }
 
@@ -128,6 +133,16 @@ export default function NewProjectForm(props: {onAddProject:()=>void, onExit: ()
                 <form onSubmit={submit}>
                     <div className='FormGroup'>
                         <TextInput targetName="projectName" type="text" label="Project Name"  handleInput={handleInput}/>
+                        <br />
+                        <div className='ClassSelector'>
+                            <div>
+                                Class:
+                            </div>    
+                            <div>
+                                Object <input type="radio" name="class" value="object" checked={formData.class === 'object'} onChange={handleInput}/>
+                                Terrain <input type="radio" name="class" value="terrain" checked={formData.class === 'terrain'} onChange={handleInput}/>
+                            </div> 
+                        </div>
                         <br />
                         <TextInput targetName="projectDescription" type="text" label="Project Description"  handleInput={handleInput}/>
                         <br />

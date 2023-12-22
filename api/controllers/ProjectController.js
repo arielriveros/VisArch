@@ -79,7 +79,8 @@ async function create(req, res) {
             tasks: [],
             owner: owner,
             members: memberUsers,
-            status: 'active'
+            status: 'active',
+            class: req.body.class
         });
 
         // add project to members
@@ -106,10 +107,12 @@ async function deleteById(req, res) {
             throw new Error('User is not the owner of the project');
 
         // remove project from members
-        for (let m of project.members) {
-            const member = await UserModel.findById(m);
-            member.projects.pull(project._id);
-            await member.save();
+        if (project.members.length > 0  && project.members[0] !== null) {
+            for (let m of project.members) {
+                const member = await UserModel.findById(m);
+                member.projects.pull(project._id);
+                await member.save();
+            }
         }
 
         // remove tasks associated with project
@@ -124,6 +127,50 @@ async function deleteById(req, res) {
         await project.deleteOne();
 
         return res.status(200).json({ message: 'Project deleted' });
+    } catch (err) {
+        console.error(err);
+        return res.status(500).json({ err });
+    }
+}
+
+async function updateById(req, res) {
+    try {
+        const project = await ProjectModel.findById(req.params.id);
+        if (!project)
+            throw new Error('Project not found');
+
+        const { id: userId } = req.user;
+        if (project.owner.toString() !== userId)
+            throw new Error('User is not the owner of the project');
+
+        const membersToDelete = req.body.membersToDelete;
+
+        // remove project from members
+        for (let m of membersToDelete) {
+            const member = await UserModel.findById(m);
+            member.projects.pull(project._id);
+            await member.save();
+        }
+
+        const tasksToDelete = req.body.tasksToDelete;
+        // remove tasks associated with project
+        for (let t of tasksToDelete) {
+            const task = await TaskModel.findById(t);
+            if (!task)
+                throw new Error('Task not found');
+            let out = await task.deleteOne();
+            fs.unlinkSync(`public/${out.meshPath}`);
+        }
+
+        project.name = req.body.name;
+        project.description = req.body.description;
+        project.owner = project.owner;
+        project.members = project.members.filter(m => !membersToDelete.includes(m.toString()));
+        project.tasks = project.tasks.filter(t => !tasksToDelete.includes(t.toString()));
+
+        await project.save();
+
+        return res.status(200).json(project);
     } catch (err) {
         console.error(err);
         return res.status(500).json({ err });
@@ -156,5 +203,6 @@ module.exports = {
     index,
     create,
     deleteById,
+    updateById,
     getTasks
 }

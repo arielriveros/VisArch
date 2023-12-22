@@ -9,11 +9,6 @@ const TaskSchema = new Schema({
     meshPath: {
         type: String
     },
-    status: {
-        type: String,
-        enum: ['active', 'archived'],
-        default: 'active'
-    },
     project: {
         type: Schema.Types.ObjectId,
         ref: 'Project'

@@ -24,6 +24,11 @@ const ProjectSchema = new Schema({
         type: String,
         enum: ['active', 'archived'],
         default: 'active'
+    },
+    class: {
+        type: String,
+        enum: ['object', 'terrain'],
+        default: 'object'
     }
 });
 

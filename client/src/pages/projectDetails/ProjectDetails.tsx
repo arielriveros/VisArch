@@ -36,7 +36,7 @@ export default function ProjectDetails() {
 					{ user?.username === project?.owner.username && <button onClick={handleGoToProjectSettings}> Settings </button>}
 				</div>
 			</div>
-			<TaskList projectId={project._id} filter={search}/>
+			<TaskList project={project} filter={search}/>
 		</>	}
 		</div>
 	)

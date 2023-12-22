@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { MemoryRouter as Router, Routes, Route, Navigate,  } from 'react-router-dom';
 import { useAuthContext } from './hooks/useAuthContext';
 import { useEffect } from 'react';
 import { acceleratedRaycast, computeBoundsTree, disposeBoundsTree } from 'three-mesh-bvh';
@@ -27,7 +27,7 @@ export default function App(): JSX.Element {
 
 	return (
 		<div className="App">
-		<BrowserRouter>
+		<Router>
 			<Navbar />
 			<Content>
 				<Routes>
@@ -38,7 +38,7 @@ export default function App(): JSX.Element {
 					<Route path="/task/:id" element={ user ? <AnnotateTask /> : <Navigate to="/" />} />
 				</Routes>
 			</Content>
-		</BrowserRouter>
+		</Router>
 		</div>
 	);
 }

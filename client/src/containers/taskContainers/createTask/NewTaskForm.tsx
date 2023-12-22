@@ -1,11 +1,12 @@
-import React, { useState, useEffect } from 'react';
-import { config } from '../../../utils/config';
+import React, { useState } from 'react';
 import { useAuthContext } from '../../../hooks/useAuthContext';
+import { Project } from '../../../api/ModelTypes';
+import { API_ENDPOINT } from '../../../api/Endpoints';
 import MeshInput from '../../../components/inputs/mesh/MeshInput';
 import './NewTaskForm.css';
 
 type NewTaskFormProps = {
-    projectId: string;
+    project: Project;
     handleNewTask: (task: {_id: string}) => void;
 };
 
@@ -37,8 +38,8 @@ export default function NewTaskForm(props: NewTaskFormProps) {
                 const outFormData = new FormData();
                 outFormData.append('name', formData.name);
                 outFormData.append('model', formData.model);
-                outFormData.append('project', props.projectId);
-                const response = await fetch(`${config.API_URL}/tasks/`, {
+                outFormData.append('project', props.project._id);
+                const response = await fetch(`${API_ENDPOINT()}/tasks/`, {
                     headers: {
                         'Authorization': `Bearer ${user?.token}`
                     },
@@ -69,7 +70,7 @@ export default function NewTaskForm(props: NewTaskFormProps) {
                 <label htmlFor='name'>Name</label>
                 <input type='text' id='name' name='name' onChange={handleChange} />
             </div>
-            <MeshInput meshHandler={handleMeshInput} />
+            <MeshInput meshHandler={handleMeshInput} projectClass={props.project.class} />
             <button disabled={formData.model === null} onClick={downloadGLB}>Download</button>
             <button disabled={formData.model === null} type='submit'>Create</button>
             </form>
