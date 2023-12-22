@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react'
 import { useTaskContext } from '../../../hooks/useTask';
-import { config } from '../../../../../utils/config';
 import { Mesh, Group, Vector3, BufferGeometry, NormalBufferAttributes, Material, BufferAttribute } from 'three';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
 import { useAuthContext } from '../../../../../hooks/useAuthContext';
@@ -8,6 +7,7 @@ import { useProxyMeshContext } from '../../../hooks/useProxyMesh';
 import { useSocket } from '../../../../socket/hooks/useSocket';
 import { radialUnwrap } from '../../../utils/radialUnwrap';
 import { flattenAxis } from '../../../utils/flattenAxis';
+import { API_ENDPOINT } from '../../../../../api/Endpoints';
 import AnnotationController from '../controller/AnnotationController';
 import AnnotationViewer from '../viewer/AnnotationViewer';
 import useTaskDispatcher from '../../../../taskDispatcher';
@@ -72,7 +72,7 @@ export default function AnnotationManager() {
 
             /* Load glb file into ref */
             const loader = new GLTFLoader();
-            const response = await fetch(`${config.STATICS_URL}/${task.meshPath}`, {
+            const response = await fetch(`${API_ENDPOINT()}/files/${task.meshPath}`, {
                 headers: {
                     'Authorization': `Bearer ${user?.token}`
                 }

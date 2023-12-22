@@ -1,10 +1,10 @@
 import  { useEffect, useState } from 'react'
 import { Project, Task } from '../../../api/ModelTypes';
-import { config } from '../../../utils/config';
 import { useAuthContext } from '../../../hooks/useAuthContext';
+import { useNavigate } from 'react-router-dom';
+import { API_ENDPOINT } from '../../../api/Endpoints';
 import Grid from '../../../components/grid/Grid';
 import './EditProjectForm.css';
-import { useNavigate } from 'react-router-dom';
 
 interface ProjectFormData {
     projectName: string;
@@ -55,7 +55,7 @@ export default function EditProjectForm(props: {project: Project}) {
 
     const getTasks = async () => {
 		try {
-		    const response = await fetch(`${config.API_URL}/projects/${props.project._id}/tasks/`, {
+		    const response = await fetch(`${API_ENDPOINT()}/projects/${props.project._id}/tasks/`, {
 				headers: {
 					'Authorization': `Bearer ${user?.token}`
 				}
@@ -79,7 +79,7 @@ export default function EditProjectForm(props: {project: Project}) {
 
     const getAnnotationInfo = async (taskId: string) => {
         try {
-            const response = await fetch(`${config.API_URL}/tasks/${taskId}`, {
+            const response = await fetch(`${API_ENDPOINT()}/tasks/${taskId}`, {
 				headers: {
 					'Authorization': `Bearer ${user?.token}`
 				}
@@ -95,7 +95,8 @@ export default function EditProjectForm(props: {project: Project}) {
     }
 
     const downloadModel = async (path: string) => {
-        const response = await fetch(`${config.STATICS_URL}/${path}`, {
+        // remove meshFiles from path
+        const response = await fetch(`${API_ENDPOINT()}/files/${path}`, {
             headers: {
                 'Authorization': `Bearer ${user?.token}`
             }
@@ -123,7 +124,7 @@ export default function EditProjectForm(props: {project: Project}) {
                         ).map(t => t._id)
                 }
             )
-            const response = await fetch(`${config.API_URL}/projects/${props.project._id}`, {
+            const response = await fetch(`${API_ENDPOINT()}/projects/${props.project._id}`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
@@ -151,7 +152,7 @@ export default function EditProjectForm(props: {project: Project}) {
     };
 
     const onDelete = async ()  => {
-		const response = await fetch(`${config.API_URL}/projects/${props.project._id}`, {
+		const response = await fetch(`${(API_ENDPOINT())}/projects/${props.project._id}`, {
 			method: 'DELETE',
 			headers: {
 			'Authorization': `Bearer ${user?.token}`

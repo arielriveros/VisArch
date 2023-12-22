@@ -71,7 +71,6 @@ export default function PropertyController() {
 	}, [proxyMaterial, unwrappedGeometry]);
 
 	useEffect(() => {
-		console.log(selectedEntity)
 		setProperties({
 			orientation: selectedEntity!.orientation,
 			scale: selectedEntity!.scale,

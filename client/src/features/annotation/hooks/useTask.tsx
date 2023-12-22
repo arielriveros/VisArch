@@ -1,7 +1,7 @@
 import { useContext } from "react";
 import { TaskContext } from "../contexts/TaskContext";
 import { Task } from "../../../api/ModelTypes";
-import { config } from "../../../utils/config";
+import { API_ENDPOINT } from "../../../api/Endpoints";
 
 export function useTaskContext() {
     const context = useContext(TaskContext);
@@ -13,7 +13,7 @@ export function useTaskContext() {
         try {
             if (!task) return;
 
-            const response = await fetch(`${config.API_URL}/tasks/${task._id}`, {
+            const response = await fetch(`${API_ENDPOINT()}/tasks/${task._id}`, {
                 method: 'PUT',
                 headers: {
                     'Authorization': `Bearer ${token}`,

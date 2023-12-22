@@ -3,18 +3,19 @@ const express = require('express');
 const cors = require('cors');
 const socketIO = require('socket.io');
 
-const CLIENT_URL = process.env.CLIENT_URL;
-const PORT = process.env.PORT;
+const PORT = process.env.PORT || 80;
 
 // Create the Express app
 const app = express();
 
 // Listen for connections
 const server = app.listen(PORT, () => console.log(`Listening on port ${PORT}`));
-app.use(cors({ origin: CLIENT_URL }));
+app.use(cors());
 
 // Create the Socket.io server
-const io = socketIO(server);
+const io = socketIO(server, {
+    path: '/websocket',
+});
 
 // Listen for new connections
 io.on('connection', (socket) => {

@@ -1,9 +1,9 @@
 import { useEffect } from 'react'
-import { config } from '../../../../utils/config';
 import { useAuthContext } from '../../../../hooks/useAuthContext';
 import { useTaskContext } from '../../hooks/useTask';
 import { useSocket } from '../../../socket/hooks/useSocket';
 import { Project, Task } from '../../../../api/ModelTypes';
+import { API_ENDPOINT } from '../../../../api/Endpoints';
 import TaskSidebar from '../../components/sidebar/TaskSidebar';
 import ArchetypesList from '../../components/archetypesList/ArchetypesList';
 import AnnotationManager from '../annotation/manager/AnnotationManager';
@@ -23,7 +23,7 @@ export default function TaskMain(props: TaskMainProps) {
 	const getTask = async () => {
 		try {
 			dispatch({ type: 'SET_LOADING', payload: true });
-			const response = await fetch(`${config.API_URL}/tasks/${props.taskId}`, {
+			const response = await fetch(`${API_ENDPOINT()}/tasks/${props.taskId}`, {
 				headers: {
 					'Authorization': `Bearer ${user?.token}`
 				}
@@ -68,9 +68,7 @@ export default function TaskMain(props: TaskMainProps) {
 					<ArchetypesList />
 					<button onClick={()=>{
 						if (task && user)
-							uploadTask(task, user.token, (response: any) => {
-								console.log(response);
-							});
+							uploadTask(task, user.token);
 					}}> Upload </button>
 				</TaskSidebar>
 			</div>

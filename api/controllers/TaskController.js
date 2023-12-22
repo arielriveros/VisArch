@@ -35,8 +35,10 @@ async function create(req, res) {
             throw new Error('User is not a member of the project');
         
         // Removes the public folder name in the relative path
-        function filterPublicFolder(path) {
-            let fixedPath = path.split('\\').slice(1).join('\\');
+        function filterPublicFolder(destination, name) {
+            // remove first folder in path
+            let fixedPath = destination.split('/').slice(1).join('/')
+            fixedPath = `${fixedPath}${name}`;
             return fixedPath;
         }
 
@@ -47,7 +49,7 @@ async function create(req, res) {
 
         const newTask = await TaskModel.create({
             name: req.body.name,
-            meshPath: filterPublicFolder(req.files.model[0].path),
+            meshPath: filterPublicFolder(req.files.model[0].destination, req.files.model[0].filename),
             members: project.members,
             project: project,
             annotations: []

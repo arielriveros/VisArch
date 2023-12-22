@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useAuthContext } from '../../../hooks/useAuthContext';
-import { config } from '../../../utils/config';
 import { Project } from '../../../api/ModelTypes';
+import { API_ENDPOINT } from '../../../api/Endpoints';
 import ProjectItem from './ProjectItem';
 import NewProjectForm from '../createProject/NewProjectForm';
 import Grid, { GridItem } from '../../../components/grid/Grid';
@@ -23,13 +23,16 @@ export default function ProjectsList(props: ProjectsListProps): JSX.Element {
     }, [user]);
 
     async function getProjects() {
-        fetch(`${config.API_URL}/projects/`, {
-            headers: {
-                'Authorization': `Bearer ${user?.token}`
-            }
-        })
-        .then(response => response.json())
-        .then(data => {
+        try {
+            const response = await fetch(`${API_ENDPOINT()}/projects/`, {
+                headers: {
+                    'Authorization': `Bearer ${user?.token}`
+                }
+            });
+            if (!response.ok)
+                throw new Error(response.statusText);
+
+            const data = await response.json();
             const projects: Project[] = [];
             for(let p of data.projects) {
                 projects.push({
@@ -45,8 +48,10 @@ export default function ProjectsList(props: ProjectsListProps): JSX.Element {
             }
             setProjects(projects);
             setFilteredProjects(projects);
-        })
-        .catch(error => console.error(error));
+        }
+        catch(error) {
+            console.error(error);
+        }
     }
 
     async function addProject() {

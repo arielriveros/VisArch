@@ -1,10 +1,10 @@
 import { useState, useEffect } from 'react';
-import { config } from '../../../utils/config';
 import { useAuthContext } from '../../../hooks/useAuthContext';
 import { Project, Task } from '../../../api/ModelTypes';
 import TaskItem from './TaskItem';
 import NewTaskForm from '../createTask/NewTaskForm';
 import Grid, { GridItem } from '../../../components/grid/Grid';
+import { API_ENDPOINT } from '../../../api/Endpoints';
 import './TaskList.css';
 
 type TaskListProps = {
@@ -20,15 +20,18 @@ export default function TaskList(props: TaskListProps) {
 
 	const getTasks = async () => {
 		try {
-		const response = await fetch(`${config.API_URL}/projects/${props.project._id}/tasks/`, {
-				headers: {
-					'Authorization': `Bearer ${user?.token}`
-				}
-		});
-		const data = await response.json();
-		setTasks(data.tasks);
-		setFilteredTasks(data.tasks);
-		} catch (error) {
+			const response = await fetch(`${(API_ENDPOINT())}/projects/${props.project._id}/tasks/`, {
+					headers: {
+						'Authorization': `Bearer ${user?.token}`
+					}
+			});
+			if (!response.ok)
+				throw new Error(response.statusText);
+			const data = await response.json()
+			setTasks(data.tasks);
+			setFilteredTasks(data.tasks);
+		}
+		catch(error) {
 			console.error(error);
 		}
 	};

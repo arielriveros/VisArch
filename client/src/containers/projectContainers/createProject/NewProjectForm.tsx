@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import TextInput from '../../../components/inputs/text/TextInput';
-import { config } from '../../../utils/config';
 import { useAuthContext } from '../../../hooks/useAuthContext';
+import { API_ENDPOINT } from '../../../api/Endpoints';
 import './NewProjectForm.css'
 
 type NewProjectFormData = {
@@ -71,7 +71,7 @@ export default function NewProjectForm(props: {onAddProject:()=>void, onExit: ()
 
     const getUsers = async () => {
         try {
-            const res = await fetch(`${config.API_URL}/user/`, {
+            const res = await fetch(`${API_ENDPOINT()}/user/`, {
                 headers: {
                     'Authorization': `Bearer ${user?.token}`
                 }
@@ -112,7 +112,7 @@ export default function NewProjectForm(props: {onAddProject:()=>void, onExit: ()
         )
 
         try {
-            await fetch(`${config.API_URL}/projects/`, {
+            await fetch(`${API_ENDPOINT()}/projects/`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
