@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useTaskContext } from '../../hooks/useTask';
-import { PatternEntity } from '../../../../api/ModelTypes';
+import { PatternEntity } from '../../../../common/api/ModelTypes';
 import EntityItem from './EntityItem';
 
 export default function EntitiesList() {
@@ -20,7 +20,6 @@ export default function EntitiesList() {
 
 	return (
 		<div>
-			<div> Entities</div>
 			{entities.map((entity, index) => (
 				<EntityItem
 					key={index}

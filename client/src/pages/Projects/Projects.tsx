@@ -1,6 +1,6 @@
 import { useState } from 'react';
-import TextInput from '../../components/inputs/text/TextInput'
-import ProjectsList from '../../containers/projectContainers/projectsList/ProjectsList'
+import TextInput from 'common/components/input/TextInput'
+import ProjectsList from 'features/projectManagement/containers/projectsList/ProjectsList'
 import './Projects.css'
 
 export default function Projects(): JSX.Element {

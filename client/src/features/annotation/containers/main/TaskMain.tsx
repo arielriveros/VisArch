@@ -1,14 +1,16 @@
 import { useEffect } from 'react'
-import { useAuthContext } from '../../../../hooks/useAuthContext';
-import { useTaskContext } from '../../hooks/useTask';
-import { useSocket } from '../../../socket/hooks/useSocket';
-import { Project, Task } from '../../../../api/ModelTypes';
-import { API_ENDPOINT } from '../../../../api/Endpoints';
-import TaskSidebar from '../../components/sidebar/TaskSidebar';
-import ArchetypesList from '../../components/archetypesList/ArchetypesList';
+import { Project, Task } from 'common/api/ModelTypes';
+import { API_ENDPOINT } from 'common/api/Endpoints';
+import { useAuthContext } from 'features/authentication/hooks/useAuthContext';
+import { useTaskContext } from 'features/annotation/hooks/useTask';
+import { useSocket } from 'features/socket/hooks/useSocket';
+import ArchetypesList from 'features/annotation/components/archetypesList/ArchetypesList';
 import AnnotationManager from '../annotation/manager/AnnotationManager';
 import ProxyMeshContextProvider from '../../contexts/ProxyMeshContext';
 import './TaskMain.css';
+import Sidebar from 'common/components/sidebar/Sidebar';
+import Button from 'common/components/button/Button';
+import AnnotationSidebar from '../sidebar/AnnotationSidebar';
 
 type TaskMainProps = {
 	taskId: string;
@@ -42,8 +44,6 @@ export default function TaskMain(props: TaskMainProps) {
 			dispatch({ type: 'SET_LOADING', payload: false });
 		}
 	};
-
-	
 			
 	useEffect(() => {
 		getTask();
@@ -63,15 +63,7 @@ export default function TaskMain(props: TaskMainProps) {
 
 	return (
 		<div className='task-main'>
-			<div className='task-sidebar-container'> 
-				<TaskSidebar>
-					<ArchetypesList />
-					<button onClick={()=>{
-						if (task && user)
-							uploadTask(task, user.token);
-					}}> Upload </button>
-				</TaskSidebar>
-			</div>
+			<AnnotationSidebar />
 			<ProxyMeshContextProvider>
 				<div className='task-content'>
 					<AnnotationManager />

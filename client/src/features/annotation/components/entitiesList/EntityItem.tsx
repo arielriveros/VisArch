@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react';
-import { PatternEntity } from '../../../../api/ModelTypes'
+import { PatternEntity } from '../../../../common/api/ModelTypes'
 import { useTaskContext } from '../../hooks/useTask';
 import './EntityItem.css'
+import Button from 'common/components/button/Button';
 
 type EntityItemProps = {
     entity: PatternEntity;
@@ -14,7 +15,7 @@ export default function EntityItem(props: EntityItemProps) {
 	const [selected, setSelected] = useState<boolean>(false);
 
 	const onClickEdit = (e: React.MouseEvent<HTMLButtonElement>) => {
-		/* e.stopPropagation(); */
+		e.stopPropagation();
 		dispatchTask({ type: 'SELECT_PATTERN_ENTITY', payload: { patternEntityName: props.entity.nameId, patternArchetypeName: props.archetypeName }});
 		dispatchTask({ type: 'SET_SHOW_PROPERTY_CONTROLLER', payload: true });
 	}
@@ -35,9 +36,7 @@ export default function EntityItem(props: EntityItemProps) {
 					{props.entity.isArchetype ? 'Archetype' : 'Instance'}
 				</div>
 				<div>
-					<button className='edit-entity' onClick={onClickEdit}>
-						Edit
-					</button>
+					<Button text={'Edit'} class='small' onClick={onClickEdit} />
 				</div>
 			</div>
 		</div>

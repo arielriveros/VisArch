@@ -1,6 +1,6 @@
 import { createContext, Context, useReducer, Dispatch } from "react";
 import { Socket, io } from 'socket.io-client';
-import { SOCKET_ENDPOINT } from "../../../api/Endpoints";
+import { SOCKET_ENDPOINT } from "../../../common/api/Endpoints";
 
 interface SocketState {
     socket: Socket<any, any> | null;

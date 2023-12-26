@@ -1,7 +1,6 @@
-import React from 'react'
-import { useAuthContext } from '../../hooks/useAuthContext'
-import AuthenticationContainer from '../../containers/authentication/authenticationContainer';
-import Quickguide from '../../containers/quickguide/Quickguide';
+import { useAuthContext } from 'features/authentication/hooks/useAuthContext'
+import AuthenticationContainer from 'features/authentication/containers/authenticationContainer';
+import Quickguide from 'common/containers/quickguide/Quickguide';
 import './Home.css'
 
 export default function Home(): JSX.Element {

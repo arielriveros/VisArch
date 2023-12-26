@@ -1,11 +1,9 @@
 .archetype-item {
-    height: 100%;
     padding: 10px 10px;
     border: 1px solid #e6e6e6;
 }
 
 .archetype-item-selected {
-    height: 100%;
     padding: 15px 15px;
     border: 1px solid #e6e6e6;
     background-color: rgb(206, 206, 255);

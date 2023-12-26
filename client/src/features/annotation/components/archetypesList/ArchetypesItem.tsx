@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { PatternArchetype } from '../../../../api/ModelTypes';
+import { PatternArchetype } from '../../../../common/api/ModelTypes';
 import { useTaskContext } from '../../hooks/useTask';
 import EntitiesList from '../entitiesList/EntitiesList';
 import useTaskDispatcher from '../../../taskDispatcher';
@@ -56,11 +56,11 @@ export default function ArchetypesItem(props: ArchetypesItemProps) {
                     </button>
                 </div>
             </div>
-            { selected && 
+            {/* { selected && 
             <div>
                 <EntitiesList />
             </div>
-            }
+            } */}
             
 		</div>
     )

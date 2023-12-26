@@ -1,7 +1,7 @@
 import { useContext } from "react";
 import { TaskContext } from "../contexts/TaskContext";
-import { Task } from "../../../api/ModelTypes";
-import { API_ENDPOINT } from "../../../api/Endpoints";
+import { Task } from "../../../common/api/ModelTypes";
+import { API_ENDPOINT } from "../../../common/api/Endpoints";
 
 export function useTaskContext() {
     const context = useContext(TaskContext);

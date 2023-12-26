@@ -1,16 +1,16 @@
 import { useState, useEffect } from 'react'
-import { useTaskContext } from '../../../hooks/useTask';
 import { Mesh, Group, Vector3, BufferGeometry, NormalBufferAttributes, Material, BufferAttribute } from 'three';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
-import { useAuthContext } from '../../../../../hooks/useAuthContext';
-import { useProxyMeshContext } from '../../../hooks/useProxyMesh';
-import { useSocket } from '../../../../socket/hooks/useSocket';
-import { radialUnwrap } from '../../../utils/radialUnwrap';
-import { flattenAxis } from '../../../utils/flattenAxis';
-import { API_ENDPOINT } from '../../../../../api/Endpoints';
+import { useTaskContext } from 'features/annotation/hooks/useTask';
+import { useProxyMeshContext } from 'features/annotation/hooks/useProxyMesh';
+import { flattenAxis } from 'features/annotation/utils/flattenAxis';
+import { radialUnwrap } from 'features/annotation/utils/radialUnwrap';
+import { useAuthContext } from 'features/authentication/hooks/useAuthContext';
+import { useSocket } from 'features/socket/hooks/useSocket';
+import { API_ENDPOINT } from 'common/api/Endpoints';
 import AnnotationController from '../controller/AnnotationController';
 import AnnotationViewer from '../viewer/AnnotationViewer';
-import useTaskDispatcher from '../../../../taskDispatcher';
+import useTaskDispatcher from 'features/taskDispatcher';
 import './AnnotationManager.css';
 
 export type IntersectionPayload = {
@@ -48,7 +48,7 @@ export default function AnnotationManager() {
                 Array.from(geometry.attributes.position.array),
                 unwrapAxis
             );
-            const unwrappedPositions = flattenAxis(unwrappedPositionsNotFlattened, 'x', 0.5);
+            const unwrappedPositions = flattenAxis(unwrappedPositionsNotFlattened, 'x', 0.01);
             const positionsBufferAttribute = new BufferAttribute(new Float32Array(unwrappedPositions), 3);
 
             unwrappedGeometry.setAttribute('position', positionsBufferAttribute);

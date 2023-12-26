@@ -1,5 +1,5 @@
 import { createContext, useReducer, Dispatch } from "react";
-import { PatternArchetype, PatternEntity, Task } from "../../../api/ModelTypes";
+import { PatternArchetype, PatternEntity, Task } from "../../../common/api/ModelTypes";
 import { Vector3 } from "three";
 
 interface TaskState {
