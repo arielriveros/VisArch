@@ -10,19 +10,16 @@ import LassoSelector from './LassoSelector';
 import HighlightMesh from '../highlightMesh/HighlightMesh';
 import SelectionHighlightMesh from '../highlightMesh/SelectionHighlightMesh';
 import DebugGroup from './debugGroup/DebugGroup';
-import PropertyController from '../propertyController/PropertyController';
 import useTaskDispatcher from '../../../../taskDispatcher';
 import './AnnotationController.css';
 
 export default function AnnotationController() {
-    const { task, selectedArchetype, loading, selectedEntity, showPropertyController } = useTaskContext();
+    const { task, selectedArchetype, loading, selectedEntity, hoveredEntity } = useTaskContext();
     const { proxyGeometry, proxyMaterial, unwrappedGeometry } = useProxyMeshContext();
     const DISPATCH = useTaskDispatcher();
     const [unwrappedMesh, setUnwrappedMesh] = useState<Mesh>(new Mesh());
     
     const groupRef = useRef<Group | null>(null)
-
-    let showPropertyControllerWindow: boolean = showPropertyController && unwrappedGeometry !== null && selectedEntity !== null && selectedArchetype !== null;
 
     const init = () => {
         groupRef.current = new Group();
@@ -51,8 +48,6 @@ export default function AnnotationController() {
         DISPATCH.ADD_PATTERN_ENTITY(selectedArchetype.nameId, indices, null, true);        
     }
 
-    
-
     useEffect(() => {
         if(loading) return;
         init();
@@ -65,25 +60,36 @@ export default function AnnotationController() {
 		<div className="annotation-viewer-container">
 			<Canvas camera={{ position: [0, 0, 2], near:1e-4, far: 1000 }} frameloop={'always'}>
 				<CameraController />
-                { !showPropertyController &&
-                    <>
-                        <HoverIndex 
-                            rate={0} 
-                            mesh={unwrappedMesh as Mesh}
-                        />
-                        <LassoSelector
-                            mesh={unwrappedMesh as Mesh}
-                            handleOnSelect={ indicesSelectHandler }
-                        />
-                    </>
-                }
+                <HoverIndex 
+                    rate={0} 
+                    mesh={unwrappedMesh as Mesh}
+                />
+                <LassoSelector
+                    mesh={unwrappedMesh as Mesh}
+                    handleOnSelect={ indicesSelectHandler }
+                />
 				<ambientLight />
 				<color attach="background" args={['gray']} />
 				<pointLight position={[10, 10, 10]} />
                 {groupRef.current && <primitive object={groupRef.current} />}
                 {unwrappedGeometry &&
                     <>
-                        <SelectionHighlightMesh geometry={unwrappedGeometry} color={'red'} wireframe={config.DEBUG}/>
+                        {/* Selected Selection */}
+                        <SelectionHighlightMesh
+                            geometry={unwrappedGeometry}
+                            color={'red'}
+                            wireframe={true}
+                            toHighlight={selectedEntity}
+                            pulse={true}
+                        />
+                        {/* Hovered Selection */}
+                        <SelectionHighlightMesh
+                            geometry={unwrappedGeometry}
+                            color={'orange'}
+                            wireframe={false}
+                            toHighlight={hoveredEntity}
+                            pulse={false} 
+                        />
                         { 
                         task?.annotations?.map(archetype => 
                             <HighlightMesh key={archetype.nameId} name={archetype.nameId} geometry={unwrappedGeometry} color={archetype.color} />
@@ -93,10 +99,6 @@ export default function AnnotationController() {
                 <DebugGroup debug={config.DEBUG} bvhMesh={unwrappedMesh} showMonitor={config.DEBUG}/>
                 
 			</Canvas>
-            { 
-                showPropertyControllerWindow && 
-                <PropertyController/>
-            }
 		</div>
 	);
 }

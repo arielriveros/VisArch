@@ -1,5 +1,5 @@
 import React from 'react'
-import './TextInput.css'
+import './Input.css'
 
 interface TextInputProps {
     targetName: string;
@@ -8,10 +8,11 @@ interface TextInputProps {
     text?: string;
     label?: string;
     hint?: string;
+    value?: string;
 }
 function TextInput(props: TextInputProps) {
     return (
-        <div className='text-input-container'>
+        <div className='input-container'>
             { props.label && <label>{props.label}</label> }
             <input 
                 className='text-input'
@@ -20,6 +21,7 @@ function TextInput(props: TextInputProps) {
                 placeholder={props.text} 
                 autoComplete='off'
                 onChange={props.handleInput}
+                value={props.value}
             />
         </div>
     )

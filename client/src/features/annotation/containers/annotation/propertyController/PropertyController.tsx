@@ -160,9 +160,7 @@ export default function PropertyController() {
 		onClose();
 	}
 
-	const onClose = () => {
-		dispatchTask({ type: 'SET_SHOW_PROPERTY_CONTROLLER', payload: false });
-	}
+	const onClose = () => {}
 
   	return (
 		<div className='property-container'>

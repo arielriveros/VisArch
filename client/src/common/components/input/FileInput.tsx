@@ -1,4 +1,5 @@
 import React from 'react'
+import './Input.css'
 
 interface FileInputProps {
     targetName: string;
@@ -9,7 +10,7 @@ interface FileInputProps {
 
 function FileInput(props: FileInputProps) {
     return (
-        <div className='file-input-container'>
+        <div>
             { props.label ? <label>{props.label}</label>: null}
             <input name={props.targetName} type="file" title={props.text} onChange={props.handleFileInput}/>
         </div>

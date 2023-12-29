@@ -9,14 +9,6 @@
     left: 0;
     width: 100%;
     height: calc(100% - var(--nav-bar-height));
-  }
-  
-.task-sidebar-container {
-    display: flex;
-    flex-direction: column;
-    overflow: auto;
-    width: 250px;
-    height: 100%;
 }
 
 .task-content {

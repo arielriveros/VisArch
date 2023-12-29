@@ -20,18 +20,3 @@
     background-color: #f5f5f5;
     cursor: pointer;
 }
-
-.archetype-item:hover .delete-archetype {
-    display: block;
-}
-
-.archetype-item-selected .delete-archetype {
-    display: block;
-}
-
-.delete-archetype {
-    display: none;
-    color: #ff0000;
-    font-size: 15px;
-    margin-left: 10px;
-}

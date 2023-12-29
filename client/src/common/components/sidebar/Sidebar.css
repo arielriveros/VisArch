@@ -1,5 +1,12 @@
+@import url('global.css');
+
 .sidebar {
     display: flex;
+    position: absolute;
     flex-direction: column;
-    overflow: scroll;
+    height: calc(100vh - var(--nav-bar-height));
+    overflow-y: auto;
+    min-width: 200px;
+    z-index: 100;
+    background-color: #fff;
 }

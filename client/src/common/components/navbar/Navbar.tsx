@@ -9,7 +9,7 @@ function Navbar() {
     return (
         <div className="navbar">
             <div className="logo">
-                <h1>VisArch</h1>
+                <h1></h1>
             </div>
             <nav>
                 { user && 

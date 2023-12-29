@@ -1,6 +1,6 @@
-@import url('../../../global.css');
+@import url('global.css');
 
-.text-input-container {
+.input-container {
     display: flex;
     width: 100%;
     align-items: center;
@@ -9,9 +9,16 @@
 
 .text-input {
     width: 60%;
-    padding: 0.5rem;
     border: 1px solid black;
+    padding: 0.5rem;
     border-radius: var(--border-radius-1);
+    font-size: 1rem;
+    color: var(--color-1);
+}
+
+.input {
+    width: 65%;
+    border: 1px solid black;
     font-size: 1rem;
     color: var(--color-1);
 }

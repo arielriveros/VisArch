@@ -9,8 +9,9 @@ import { useAuthContext } from 'features/authentication/hooks/useAuthContext';
 import { useSocket } from 'features/socket/hooks/useSocket';
 import { API_ENDPOINT } from 'common/api/Endpoints';
 import AnnotationController from '../controller/AnnotationController';
-import AnnotationViewer from '../viewer/AnnotationViewer';
 import useTaskDispatcher from 'features/taskDispatcher';
+import EntityExplorer from '../../entityExplorer/EntityExplorer';
+import EntityEditor from '../../entityEditor/EntityEditor';
 import './AnnotationManager.css';
 
 export type IntersectionPayload = {
@@ -172,10 +173,13 @@ export default function AnnotationManager() {
 
     return (
         <div className='annotation-manager-container'>
-            { !ready ? <div className='loading-container'> Loading... </div> :
+            { !ready ? 
+            <div className='loading-container'> Loading... </div> 
+            :
                 <>
+                    <EntityExplorer />
+                    <EntityEditor />
                     <AnnotationController />
-                    {task?.class === 'object' && <AnnotationViewer />}
                 </>
             }
         </div>

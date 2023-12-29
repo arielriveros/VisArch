@@ -4,13 +4,9 @@ import { API_ENDPOINT } from 'common/api/Endpoints';
 import { useAuthContext } from 'features/authentication/hooks/useAuthContext';
 import { useTaskContext } from 'features/annotation/hooks/useTask';
 import { useSocket } from 'features/socket/hooks/useSocket';
-import ArchetypesList from 'features/annotation/components/archetypesList/ArchetypesList';
 import AnnotationManager from '../annotation/manager/AnnotationManager';
 import ProxyMeshContextProvider from '../../contexts/ProxyMeshContext';
 import './TaskMain.css';
-import Sidebar from 'common/components/sidebar/Sidebar';
-import Button from 'common/components/button/Button';
-import AnnotationSidebar from '../sidebar/AnnotationSidebar';
 
 type TaskMainProps = {
 	taskId: string;
@@ -19,7 +15,7 @@ type TaskMainProps = {
 
 export default function TaskMain(props: TaskMainProps) {
 	const { user } = useAuthContext();
-	const { task, dispatch, uploadTask, loading } = useTaskContext();
+	const { dispatch, loading } = useTaskContext();
 	const { join, leave, roomId } = useSocket();
 
 	const getTask = async () => {
@@ -63,7 +59,6 @@ export default function TaskMain(props: TaskMainProps) {
 
 	return (
 		<div className='task-main'>
-			<AnnotationSidebar />
 			<ProxyMeshContextProvider>
 				<div className='task-content'>
 					<AnnotationManager />

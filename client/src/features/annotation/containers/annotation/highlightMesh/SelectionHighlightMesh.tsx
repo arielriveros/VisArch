@@ -2,19 +2,23 @@ import { useRef, useEffect } from "react";
 import { BufferGeometry, MeshBasicMaterial, NormalBufferAttributes } from "three";
 import { useTaskContext } from "../../../hooks/useTask";
 import { useFrame } from "@react-three/fiber";
+import { PatternEntity } from "common/api/ModelTypes";
 
 type SelectionHighlightMeshProps = {
     geometry: BufferGeometry<NormalBufferAttributes>;
     color: string;
     wireframe: boolean;
+    pulse: boolean;
+    toHighlight: PatternEntity | null;
 }
 
-function PulseMaterial(props: {color: string}) {
+function PulseMaterial(props: {color: string, pulse: boolean}) {
     const { color } = props;
 
     const pulseMaterial = useRef<MeshBasicMaterial>(new MeshBasicMaterial({ color, transparent: true, opacity: 0.5, side: 0 }));
 
     useFrame((state, delta) => {
+        if (!props.pulse) return;
         let alpha = state.clock.getElapsedTime();
         let opacity = Math.sin(alpha * 3) / 2 + 1;
         pulseMaterial.current.opacity = opacity;
@@ -31,7 +35,6 @@ function PulseMaterial(props: {color: string}) {
 }
 
 export default function SelectionHighlightMesh(props: SelectionHighlightMeshProps) {
-    const { selectedEntity } = useTaskContext();
     const geometryRef = useRef<BufferGeometry<NormalBufferAttributes>>(new BufferGeometry());
 
     const highlightIndices = (indicesToHighlight: number[]) => {
@@ -64,14 +67,14 @@ export default function SelectionHighlightMesh(props: SelectionHighlightMeshProp
     }, []);
 
     useEffect(() => {
-        highlightIndices(selectedEntity?.faceIds || []);
+        highlightIndices(props.toHighlight?.faceIds || []);
 
-    }, [selectedEntity]);
+    }, [props.toHighlight]);
 
     return (
         <group renderOrder={10}>
             <mesh geometry={geometryRef.current} >
-                <PulseMaterial color={props.color}/>
+            <PulseMaterial color={props.color} pulse={props.pulse}/>
             </mesh>
             { props.wireframe &&
                 <mesh geometry={geometryRef.current}>

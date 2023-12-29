@@ -5,15 +5,15 @@ import EntitiesList from 'features/annotation/components/entitiesList/EntitiesLi
 import { useTaskContext } from 'features/annotation/hooks/useTask';
 import { useAuthContext } from 'features/authentication/hooks/useAuthContext';
 import useTaskDispatcher from 'features/taskDispatcher';
-import './AnnotationSidebar.css';
+import './EntityExplorer.css';
 
-export default function AnnotationSidebar() {
+export default function EntityExplorer() {
     const { user } = useAuthContext();
     const { task, uploadTask } = useTaskContext();
     const { ADD_PATTERN_ARCHETYPE } = useTaskDispatcher();
 
     return (
-        <Sidebar width='350px'>
+        <Sidebar width='250px' position='left'>
             <div>
                 <Button text='Add Archetype' class='small' onClick={()=>ADD_PATTERN_ARCHETYPE(null, true)} />
                 <Button text='Save' class='small' onClick={()=>{if (task && user) uploadTask(task, user.token); }}/>

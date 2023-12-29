@@ -10,9 +10,8 @@ import HighlightMesh from '../highlightMesh/HighlightMesh';
 import './AnnotationViewer.css';
 
 export default function AnnotationViewer() {
-	const { task } = useTaskContext();
+	const { task, selectedEntity } = useTaskContext();
 	const { proxyGeometry, proxyMaterial } = useProxyMeshContext();
-	const [originalMesh, setOriginalMesh] = useState<Mesh>(new Mesh());
 
 	const groupRef = useRef<Group | null>(null);
 
@@ -25,7 +24,6 @@ export default function AnnotationViewer() {
 		originalMesh.geometry = proxyGeometry.clone();
 		originalMesh.material = proxyMaterial.clone();
 
-        setOriginalMesh(originalMesh);
         groupRef.current?.add(originalMesh);
 	}
 
@@ -48,7 +46,6 @@ export default function AnnotationViewer() {
 
 	return (
 		<div className="small-canvas">
-			<CrossHairs resolution={50}/>
 			<Canvas camera={{ position: [0, 0, 2] }}>
 				<LookAtIndex />
 				<ambientLight />
@@ -56,7 +53,7 @@ export default function AnnotationViewer() {
 				{groupRef.current && <primitive object={groupRef.current} />}
 				{proxyGeometry &&
                     <>
-                        <SelectionHighlightMesh geometry={proxyGeometry} color={'red'} wireframe={true}/>
+                        <SelectionHighlightMesh geometry={proxyGeometry} color={'red'} wireframe={true} toHighlight={selectedEntity} pulse={false}/>
                         { 
                         task?.annotations?.map(archetype => 
                             <HighlightMesh key={archetype.nameId} name={archetype.nameId} geometry={proxyGeometry} color={archetype.color} />
@@ -64,6 +61,7 @@ export default function AnnotationViewer() {
                     </>
                 }
 			</Canvas>
+			<CrossHairs resolution={50}/>
 		</div>
 	);
 }

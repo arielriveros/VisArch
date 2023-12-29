@@ -6,8 +6,8 @@ interface TaskState {
     task: Task | null;
     selectedArchetype: PatternArchetype | null;
     selectedEntity: PatternEntity | null;
+    hoveredEntity: PatternEntity | null;
     indexPosition: IntersectionPayload | null;
-    showPropertyController: boolean;
     loading: boolean;
 }
 
@@ -56,7 +56,7 @@ interface AddSelectRemovePatternArchetypeAction extends TaskActionBase {
 
 interface UpdateSelectedPatternArchetypeAction extends TaskActionBase {
     type: 'UPDATE_SELECTED_PATTERN_ARCHETYPE';
-    payload: PatternArchetype;
+    payload: { fold_symmetry?: number, color?: string, label?: string };
 }
 
 interface UpdatePatternArchetypeLabelAction extends TaskActionBase {
@@ -76,7 +76,12 @@ interface RemovePatternEntityAction extends TaskActionBase {
 
 interface SelectPatternEntityAction extends TaskActionBase {
     type: 'SELECT_PATTERN_ENTITY';
-    payload: { patternArchetypeName: string, patternEntityName: string };
+    payload: { patternArchetypeName: string, patternEntityName: string } | null;
+}
+
+interface HoverPatternEntityAction extends TaskActionBase {
+    type: 'HOVER_PATTERN_ENTITY';
+    payload: { patternArchetypeName: string, patternEntityName: string } | null;
 }
 
 interface UpdatePatternEntityPropertiesAction extends TaskActionBase {
@@ -87,11 +92,6 @@ interface UpdatePatternEntityPropertiesAction extends TaskActionBase {
 interface SetIndexPositionAction extends TaskActionBase {
     type: 'SET_INDEX_POSITION';
     payload: IntersectionPayload | null;
-}
-
-interface SetShowPropertyControllerAction extends TaskActionBase {
-    type: 'SET_SHOW_PROPERTY_CONTROLLER';
-    payload: boolean;
 }
 
 interface SetLoadingAction extends TaskActionBase {
@@ -113,9 +113,9 @@ type TaskAction = SetTaskAction |
                   AddPatternEntityAction |
                   RemovePatternEntityAction |
                   SelectPatternEntityAction |
+                  HoverPatternEntityAction |
                   UpdatePatternEntityPropertiesAction |
                   SetIndexPositionAction |
-                  SetShowPropertyControllerAction |
                   SetLoadingAction |
                   SetClassAction;
 
@@ -128,8 +128,8 @@ export const TaskContext = createContext<TaskContextProps>(
         task: null,
         selectedArchetype: null,
         selectedEntity: null,
+        hoveredEntity: null,
         indexPosition: null,
-        showPropertyController: false,
         loading: false,
         dispatch: () => {}
     }
@@ -138,7 +138,7 @@ export const TaskContext = createContext<TaskContextProps>(
 function taskReducer(state: TaskState, action: TaskAction): TaskState {  
     switch (action.type) {
         case 'SET_TASK':
-            return { ...state, task: (action.payload as Task), selectedArchetype: null, selectedEntity: null };
+            return { ...state, task: (action.payload as Task), selectedArchetype: null, selectedEntity: null, hoveredEntity: null };
 
         case 'SET_ANNOTATIONS':
             if (!state.task) return state;
@@ -186,7 +186,7 @@ function taskReducer(state: TaskState, action: TaskAction): TaskState {
             const filteredArchetypes = state.task.annotations?.filter(archetype => archetype.nameId !== (action.payload as { patternArchetypeName: string }).patternArchetypeName);
             state.selectedArchetype = null;
 
-            return { ...state, task: { ...state.task, annotations: filteredArchetypes }, selectedEntity: null };
+            return { ...state, task: { ...state.task, annotations: filteredArchetypes }, selectedEntity: null, hoveredEntity: null };
 
         case 'ADD_PATTERN_ENTITY':
         {
@@ -258,7 +258,7 @@ function taskReducer(state: TaskState, action: TaskAction): TaskState {
             });
 
             if (action.payload.client) {
-                return { ...state, task: { ...state.task, annotations: updatedArchetypes }, selectedEntity: null };
+                return { ...state, task: { ...state.task, annotations: updatedArchetypes }, selectedEntity: null, hoveredEntity: null };
             }
 
             return { ...state, task: { ...state.task, annotations: updatedArchetypes } };
@@ -269,7 +269,7 @@ function taskReducer(state: TaskState, action: TaskAction): TaskState {
 
             const updatedSelectedArchetypes = state.task.annotations?.map(archetype => {
                 if (archetype.nameId === state.selectedArchetype?.nameId) {
-                    return { ...archetype, ...(action.payload as PatternArchetype) };
+                    return { ...archetype, ...action.payload };
                 }
                 else {
                     return archetype;
@@ -306,7 +306,20 @@ function taskReducer(state: TaskState, action: TaskAction): TaskState {
             const selectedEntity = state.task.annotations?.find(archetype => archetype.nameId === selectEntityPayload.patternArchetypeName)?.entities.find(entity => entity.nameId === selectEntityPayload.patternEntityName);
             if (!selectedEntity) return state;
 
-            return { ...state, selectedEntity: selectedEntity };
+            return { ...state, selectedEntity: selectedEntity, hoveredEntity: null };
+
+        case 'HOVER_PATTERN_ENTITY':
+            if (!state.task || !state.selectedArchetype) return state;
+
+            if (!action.payload) return { ...state, hoveredEntity: null };
+
+            const hoverEntityPayload = action.payload as { patternArchetypeName: string, patternEntityName: string };
+
+            const hoveredEntity = state.task.annotations?.find(archetype => archetype.nameId === hoverEntityPayload.patternArchetypeName)?.entities.find(entity => entity.nameId === hoverEntityPayload.patternEntityName);
+            if (!hoveredEntity) return state;
+
+            return { ...state, hoveredEntity: hoveredEntity };
+
 
         case 'UPDATE_PATTERN_ENTITY_PROPERTIES':
             if (!state.task) return state;
@@ -337,12 +350,6 @@ function taskReducer(state: TaskState, action: TaskAction): TaskState {
 
             return { ...state, indexPosition: action.payload as IntersectionPayload };
 
-        case 'SET_SHOW_PROPERTY_CONTROLLER':
-            if (!action.payload)
-                return { ...state, showPropertyController: false };
-
-            return { ...state, showPropertyController: action.payload as boolean };
-
         case 'SET_LOADING':
             return { ...state, loading: (action.payload as boolean) };
 
@@ -358,8 +365,8 @@ export default function TaskContextProvider({ children }: { children: React.Reac
         task: null,
         selectedArchetype: null,
         selectedEntity: null,
+        hoveredEntity: null,
         indexPosition: null,
-        showPropertyController: false,
         loading: false
     });
     return (
