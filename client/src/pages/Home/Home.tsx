@@ -6,7 +6,7 @@ import './Home.css'
 export default function Home(): JSX.Element {
 	const { user } = useAuthContext();
 	return (
-		<div className="va-home">
+		<div className="home">
 		{ user ? <Quickguide /> : <AuthenticationContainer /> }
 		</div>
 	)

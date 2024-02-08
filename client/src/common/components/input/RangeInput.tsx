@@ -5,6 +5,7 @@ interface RangeInputProps {
     targetName: string;
     value: number;
     handleInput: (e: React.ChangeEvent<HTMLInputElement>) => void;
+    mouseUp?: (e: React.MouseEvent<HTMLInputElement>) => void;
 
     min?: number;
     max?: number;
@@ -24,6 +25,7 @@ function RangeInput(props: RangeInputProps) {
                 step={ props.step || 0.1 }
                 value={ props.value }
                 onChange={ props.handleInput }
+                onMouseUp={ props.mouseUp }
             />
         </div>
     )

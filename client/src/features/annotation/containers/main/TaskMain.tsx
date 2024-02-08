@@ -15,8 +15,8 @@ type TaskMainProps = {
 
 export default function TaskMain(props: TaskMainProps) {
 	const { user } = useAuthContext();
-	const { dispatch, loading } = useTaskContext();
-	const { join, leave, roomId } = useSocket();
+	const { dispatch } = useTaskContext();
+	const { connect, disconnect, join, leave } = useSocket();
 
 	const getTask = async () => {
 		try {
@@ -29,33 +29,39 @@ export default function TaskMain(props: TaskMainProps) {
 
 			const task: Task = await response.json();
 			for (let annotation of task.annotations)
-				annotation.color = '#'+(Math.random()*0xFFFFFF<<0).toString(16); // TODO: Fix some colors not working
-
+			 {
+				// ramdomized hex color
+				const compToHex = (c: number) => {
+					var hex = c.toString(16);
+					return hex.length == 1 ? "0" + hex : hex;
+				};
+				let hex = [Math.random() * 255, Math.random() * 255, Math.random() * 255].map(Math.round).map(compToHex).join('');
+				 annotation.color = '#' + hex;
+			 }
 			task.class = props.project.class;
 
 			dispatch({ type: 'SET_TASK', payload: task });
-			dispatch({ type: 'SET_LOADING', payload: false });
+			
 		} catch (error) {
 			console.error(error);
-			dispatch({ type: 'SET_LOADING', payload: false });
 		}
 	};
+
+	useEffect(() => {
+		connect();
+		return () => disconnect();
+	}, []);
 			
 	useEffect(() => {
-		getTask();
-	}, [props.taskId]);
-
-	useEffect(() => {
-		if (!props.project) return;
-		if (loading) return;
-		if (roomId) leave(); // Leave previous room
-		const newRoomId = `${props.project._id}:${props.taskId}`
-		join(newRoomId);
-
-		return () => { if (roomId) leave(); }
-	}
-	, [props.project, props.taskId, loading]);
-
+		getTask().then(() => {
+			dispatch({ type: 'SET_LOADING', payload: false });
+			join(`${props.project._id}:${props.taskId}`);
+		});
+		return () => {
+			dispatch({ type: 'SET_LOADING', payload: false });
+			leave(`${props.project._id}:${props.taskId}`);
+		}
+	}, [props.project, props.taskId]);
 
 	return (
 		<div className='task-main'>

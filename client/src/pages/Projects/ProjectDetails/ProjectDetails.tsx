@@ -28,7 +28,7 @@ export default function ProjectDetails() {
 		<div className='ProjectDetails'>
 		{ project && <>
 			<div className='TopBar'>
-				<h2>{project?.name} | Tasks</h2>
+				<h2> {project?.name} | Tasks</h2>
 				<div>
 					<TextInput label='Search' targetName='search' type='text' handleInput={(e) => setSearch(e.target.value)} />
 				</div>

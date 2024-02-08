@@ -1,4 +1,4 @@
-import { MemoryRouter as Router, Routes, Route, Navigate,  } from 'react-router-dom';
+import { MemoryRouter as Router, Routes, Route, Navigate, Link,  } from 'react-router-dom';
 import { useAuthContext } from 'features/authentication/hooks/useAuthContext';
 import { useEffect } from 'react';
 import { acceleratedRaycast, computeBoundsTree, disposeBoundsTree } from 'three-mesh-bvh';
@@ -10,6 +10,7 @@ import Projects from 'pages/Projects/Projects';
 import AnnotateTask from 'pages/AnnotateTask/AnnotateTask';
 import ProjectDetails from 'pages/Projects/ProjectDetails/ProjectDetails';
 import ProjectSettings from 'pages/Projects/ProjectSettings/ProjectSettings';
+import ProfileCard from 'features/authentication/containers/profileCard/ProfileCard';
 
 export default function App(): JSX.Element {
 	const { user } = useAuthContext();
@@ -28,7 +29,11 @@ export default function App(): JSX.Element {
 	return (
 		<div className="App">
 		<Router>
-			<Navbar />
+			<Navbar>
+				<Link className='navbar-link' to="/">Home</Link>
+                <Link className='navbar-link' to="/projects">Projects</Link>
+                <ProfileCard/>
+			</Navbar>
 			<Content>
 				<Routes>
 					{/*  Home  */}

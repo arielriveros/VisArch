@@ -19,14 +19,16 @@ export default function EntitiesList() {
 	}, [task?.annotations, selectedArchetype]);
 
 	return (
-		<div>
-			{entities.map((entity, index) => (
+		<div> { entities.length !== 0 ? 
+			entities.map((entity, index) => (
 				<EntityItem
 					key={index}
 					entity={entity}
 					archetypeName={selectedArchetype?.nameId || ''}
 				/>
-			))}
+			))
+			: <div>No entities</div>	
+		}
 		</div>
 	)
 }

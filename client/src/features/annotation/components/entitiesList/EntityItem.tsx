@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react';
 import { PatternEntity } from '../../../../common/api/ModelTypes'
 import { useTaskContext } from '../../hooks/useTask';
-import Button from 'common/components/button/Button';
 import './EntityItem.css'
 
 type EntityItemProps = {

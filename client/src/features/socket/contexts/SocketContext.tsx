@@ -1,4 +1,4 @@
-import { createContext, Context, useReducer, Dispatch } from "react";
+import { createContext, useReducer, Dispatch, useEffect } from "react";
 import { Socket, io } from 'socket.io-client';
 import { SOCKET_ENDPOINT } from "../../../common/api/Endpoints";
 
@@ -28,21 +28,21 @@ function SocketReducer(state: SocketState, action: SocketAction): SocketState {
     }
 }
 
-export const socket: Socket<any> = io(SOCKET_ENDPOINT(), {
-    path: '/websocket',
-    autoConnect: false,
-    reconnection: false,
-    transports: ['websocket']});
-export const SocketContext: Context<SocketContextProps> = createContext<SocketContextProps>({socket: null, roomId: null, dispatch: () => {}});
+export const SocketContext = createContext<SocketContextProps>({ socket: null, roomId: null, dispatch: () => {} });
 
-export default function SocketContextProvider({ children }: { children: React.ReactNode}) {
-
-    const [state, dispatch] = useReducer(SocketReducer, {socket: socket, roomId: null});
+export function SocketContextProvider({ children }: { children: React.ReactNode }) {
+    const [state, dispatch] = useReducer(
+                                SocketReducer, {
+                                    socket: io(SOCKET_ENDPOINT(), {
+                                        path: '/websocket',
+                                        autoConnect: false,
+                                        reconnection: false,
+                                        transports: ['websocket'] }),
+                                    roomId: null } );
 
     return (
         <SocketContext.Provider value={{ ...state, dispatch }}>
             {children}
         </SocketContext.Provider>
-    )
+    );
 }
-

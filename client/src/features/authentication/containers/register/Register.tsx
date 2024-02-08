@@ -2,6 +2,7 @@ import React, { useState } from 'react'
 import { useRegister } from 'features/authentication/hooks/useRegister'
 import TextInput from 'common/components/input/TextInput'
 import '../authenticationContainer.css'
+import Button from 'common/components/button/Button'
 
 interface FormData {
     username: string
@@ -28,7 +29,7 @@ export default function Register(): JSX.Element {
             <TextInput targetName="username" type="text" label="Username" handleInput={handleOnChange}/>
             <TextInput targetName="email" type="text" label="Email" handleInput={handleOnChange}/>
             <TextInput targetName="password" type="password" label="Password" handleInput={handleOnChange}/>
-            <button disabled={loading} type="submit">Register</button>
+            { !loading && <Button onClick={()=>submit} class='medium' text={'Register'}/>}
             {error && <p>{error}</p>}
         </form>
     )

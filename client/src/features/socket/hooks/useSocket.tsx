@@ -1,17 +1,12 @@
-import { useContext, useEffect, useRef } from 'react'
+import { useContext, useEffect } from 'react'
 import { SocketContext } from '../contexts/SocketContext';
 
 export function useSocket() {
-	const socketContext = useContext(SocketContext);
-	const socket = socketContext.socket;
-	const roomId = socketContext.roomId;
-	const dispatch = socketContext.dispatch;
+	const { socket, roomId, dispatch } = useContext(SocketContext);
 
 	useEffect(() => {
 		if (!socket) return;
-		// Connect to the server when the component mounts
-		socket.connect();
-	
+
 		// Set up event listeners
 		socket.on('connect', () => {
 			console.log('Connected to server');
@@ -30,17 +25,18 @@ export function useSocket() {
 			socket.off('connect');
 			socket.off('disconnect');
 		};
-	  }, []);
+	}, [socket]);
 
+	function connect() {
+		socket?.connect();
+	}
 
 	function emit(event: string, data: any) {
-		if (!socket) return;
-		socket.emit(`EMIT::${event}`, data, roomId);
+		socket?.emit(`EMIT::${event}`, data, roomId);
 	}
 
 	function disconnect() {
-		if (!socket) return;
-		socket.disconnect();
+		socket?.disconnect();
 	}
 
 	function join(roomId: string) {
@@ -49,11 +45,11 @@ export function useSocket() {
 		socket.emit('JOIN', roomId);
 	}
 
-	function leave() {
+	function leave(roomId: string) {
 		if (!socket) return;
 		socket.emit('LEAVE', roomId);
 		dispatch({ type: 'SET_ROOM_ID', payload: null });
 	}
 
-	return { socket, emit, disconnect, join, leave, roomId };
+	return { socket, emit, connect, disconnect, join, leave, roomId };
 }

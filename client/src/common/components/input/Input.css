@@ -5,6 +5,7 @@
     width: 100%;
     align-items: center;
     justify-content: space-between;
+    color: var(--font-color);
 }
 
 .text-input {
@@ -13,12 +14,12 @@
     padding: 0.5rem;
     border-radius: var(--border-radius-1);
     font-size: 1rem;
-    color: var(--color-1);
+    color: var(--dark-color-1);
 }
 
 .input {
     width: 65%;
     border: 1px solid black;
     font-size: 1rem;
-    color: var(--color-1);
+    color: var(--dark-color-1);
 }

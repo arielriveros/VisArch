@@ -6,9 +6,10 @@ import AnnotationViewer from "../annotation/viewer/AnnotationViewer";
 import ColorInput from "common/components/input/ColorInput";
 import Button from "common/components/button/Button";
 import useTaskDispatcher from "features/taskDispatcher";
-import './EntityEditor.css';
 import RangeInput from "common/components/input/RangeInput";
 import CheckboxInput from "common/components/input/CheckboxInput";
+import './EntityEditor.css';
+import Collapsable from "common/components/collapsable/Collapsable";
 
 
 interface EntityEditorProps {
@@ -47,7 +48,7 @@ export default function EntityEditor() {
         DISPATCH.UPDATE_PATTERN_ARCHETYPE_LABEL(selectedArchetype.nameId, label, true);
 
 		if (!selectedEntity) return;
-		//DISPATCH.UPDATE_PATTERN_ENTITY_PROPERTIES(selectedArchetype.nameId, selectedEntity.nameId, properties, true);
+		DISPATCH.UPDATE_PATTERN_ENTITY_PROPERTIES(selectedArchetype.nameId, selectedEntity.nameId, properties, true);
 	}
 
     const onArchetypeDelete = () => {
@@ -63,17 +64,11 @@ export default function EntityEditor() {
     return (
         <Sidebar width='20vw' position='right'>
             {task?.class === 'object' &&
-                <div className='editor-preview'>
+                <Collapsable title='Preview'>
                     <AnnotationViewer />
-                </div>
+                </Collapsable>
             }
-
-            <div className='editor-buttons'>
-                <Button text='Save' class='small' onClick={onSave}/>
-            </div>
-            
-            <div className='editor-section'>
-                <h3>Archetype</h3>
+            <Collapsable title='Archetype'>
                 { selectedArchetype ?
                     <div>
                         <TextInput 
@@ -87,12 +82,11 @@ export default function EntityEditor() {
                         <ColorInput label='Color' targetName={'color'} value={color} handleInput={e=>setColor(e.target.value)}/>
                         <Button text='Delete' class='small' onClick={onArchetypeDelete}/>
                     </div>
-                    : <div>No archetype selected</div>
-                }
-            </div>
-            <div className='editor-section'>
-                <h3>Entity</h3>
-                { selectedEntity ?
+                    :
+                    <div>No archetype selected</div> }
+            </Collapsable>
+            <Collapsable title='Entity'>
+            { selectedEntity ?
                     <div>
                         {selectedEntity.isArchetype ?
                             <div>
@@ -108,6 +102,7 @@ export default function EntityEditor() {
                                     step={0.1}
                                     value={properties.orientation}
                                     handleInput={e => setProperties({...properties, orientation: parseInt(e.target.value)})}
+                                    mouseUp={()=>console.log("UP")}
                                 />
                                 <RangeInput
                                     label='Scale'
@@ -131,7 +126,9 @@ export default function EntityEditor() {
                     </div>
                     : <div>No entity selected</div>
                 }
-            </div>
+            </Collapsable>
+            {/* Delete later:  */}
+            <Button text='Save' class='small' onClick={onSave}/>
         </Sidebar>
     )
 }

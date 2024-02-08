@@ -96,7 +96,9 @@ export default function AnnotationController() {
                         )}
                     </>
                 }
-                <DebugGroup debug={config.DEBUG} bvhMesh={unwrappedMesh} showMonitor={config.DEBUG}/>
+                { config.DEBUG && 
+                    <DebugGroup debug={config.DEBUG} bvhMesh={unwrappedMesh} showMonitor={config.DEBUG}/>
+                }
                 
 			</Canvas>
 		</div>

@@ -1,8 +1,6 @@
 import { useEffect, useState } from 'react'
 import { PatternArchetype } from 'common/api/ModelTypes'
 import { useTaskContext } from 'features/annotation/hooks/useTask';
-import Button from 'common/components/button/Button';
-import useTaskDispatcher from 'features/taskDispatcher';
 import ArchetypesItem from './ArchetypesItem'
 
 export default function ArchetypesList() {
@@ -18,13 +16,15 @@ export default function ArchetypesList() {
     }, [task?.annotations]);
 
     return (
-        <div>
-            {archetypes.map((archetype, index) => (
+        <div>{ archetypes.length !== 0 ? 
+            archetypes.map((archetype, index) => (
                 <ArchetypesItem
                     key={index}
                     archetype={archetype}
                 />
-            ))}
+            ))
+            : <div>No archetypes</div>
+        }
         </div>
         
     )

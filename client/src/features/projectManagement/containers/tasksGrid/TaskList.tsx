@@ -60,6 +60,7 @@ export default function TaskList(props: TaskListProps) {
 			{ showNewTaskForm && 
 				<NewTaskForm 
 					project={props.project} 
+					setShowForm={setShowNewTaskForm}
 					handleNewTask={() => { setShowNewTaskForm(false); getTasks(); } }
 				/>
 			}

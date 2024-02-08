@@ -8,13 +8,13 @@ export default function Projects(): JSX.Element {
 
   return (
     <div className='Projects'>
-      <div className='TopBar'>
-				<h2>Projects</h2>
-				<div>
-					<TextInput label='Search' targetName='search' type='text' handleInput={(e) => setSearch(e.target.value)} />
-				</div>
+      <div className='SeachBar'>
+        <h2> Projects </h2>
+        <div>
+				  <TextInput label='Search' targetName='search' type='text' handleInput={(e) => setSearch(e.target.value)} />
+        </div>
         <div />
-			</div>
+      </div>
       <ProjectsList filter={search}/>
     </div>
   )

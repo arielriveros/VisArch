@@ -1,12 +1,13 @@
 :root {
     /* Colors */
-    --primary-color-1: #364AA8;
-    --primary-color-2: #2A3A81;
-    --secondary-color-1: #1E295A;
-    --secondary-color-2: #4B67E6;
-    --terciary-color-1: rgb(235, 236, 226);
+    --clear-color-1: rgb(235, 236, 226);
+    --clear-color-2: #4b6975;
+    --clear-color-3: #1f4959;
+    --dark-color-1: rgb(25, 25, 25);
+    --dark-color-2: #011425;
 
     /* Fonts */
+    --font-color: rgb(235, 236, 226);
     --font-family-1: 'Roboto', sans-serif;
     --font-family-2: 'Montserrat', sans-serif;
 
@@ -18,5 +19,5 @@
     --border-radius-1: 0.5rem;
     --border-radius-2: 1rem;
 
-    --nav-bar-height: 4rem;
+    --nav-bar-height: 2.7rem;
 }

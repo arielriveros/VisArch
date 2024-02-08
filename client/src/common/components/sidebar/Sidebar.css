@@ -8,5 +8,7 @@
     overflow-y: auto;
     min-width: 200px;
     z-index: 100;
-    background-color: #fff;
+
+    /* bulrry background */
+    backdrop-filter: blur(10px);
 }

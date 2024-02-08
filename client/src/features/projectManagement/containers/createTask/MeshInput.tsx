@@ -3,8 +3,8 @@ import { TextureLoader, Mesh, Group, Object3D, MeshBasicMaterial, Box3, Vector3,
 import { GLTFExporter } from "three/examples/jsm/exporters/GLTFExporter";
 import { OBJLoader } from "three/examples/jsm/loaders/OBJLoader";
 import { PLYLoader } from "three/examples/jsm/loaders/PLYLoader";
-import { ModelPreview } from "../preview/ModelPreview";
-import PreviewRenderer from "../preview/PreviewRenderer";
+import { ModelPreview } from "../../../../common/components/preview/ModelPreview";
+import PreviewRenderer from "../../../../common/components/preview/PreviewRenderer";
 import * as BufferGeometryUtils from "three/examples/jsm/utils/BufferGeometryUtils";
 
 type ModelInputProps = {

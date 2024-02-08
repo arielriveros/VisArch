@@ -1,12 +1,13 @@
 import { useState, ChangeEvent, FormEvent } from 'react';
-import MeshInput from 'common/components/input/MeshInput';
 import { useAuthContext } from 'features/authentication/hooks/useAuthContext';
 import { Project } from 'common/api/ModelTypes';
 import { API_ENDPOINT } from 'common/api/Endpoints';
+import MeshInput from 'features/projectManagement/containers/createTask/MeshInput';
 import './NewTaskForm.css';
 
 type NewTaskFormProps = {
     project: Project;
+    setShowForm: (show: boolean) => void;
     handleNewTask: (task: {_id: string}) => void;
 };
 
@@ -73,6 +74,7 @@ export default function NewTaskForm(props: NewTaskFormProps) {
             <MeshInput meshHandler={handleMeshInput} projectClass={props.project.class} />
             <button disabled={formData.model === null} onClick={downloadGLB}>Download</button>
             <button disabled={formData.model === null} type='submit'>Create</button>
+            <button onClick={() => props.setShowForm(false)}>Cancel</button>
             </form>
         </div>
   );

@@ -1,9 +1,12 @@
 import { Link } from 'react-router-dom'
 import { useAuthContext } from '../../../features/authentication/hooks/useAuthContext';
-import ProfileCard from '../profileCard/ProfileCard';
+import ProfileCard from '../../../features/authentication/containers/profileCard/ProfileCard';
 import './Navbar.css'
 
-function Navbar() {
+interface NavbarProps {
+    children?: React.ReactNode
+}
+function Navbar(props: NavbarProps) {
     const { user } = useAuthContext();
 
     return (
@@ -14,9 +17,7 @@ function Navbar() {
             <nav>
                 { user && 
                     <div className="navigation">
-                        <Link className='navbar-link' to="/">Home</Link>
-                        <Link className='navbar-link' to="/projects">Projects</Link>
-                        <ProfileCard username={user.username} email={""} />
+                        {props.children}
                     </div>
                 }
             </nav>

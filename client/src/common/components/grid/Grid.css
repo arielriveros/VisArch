@@ -1,3 +1,5 @@
+@import url("global.css");
+
 .GridContainer {
     display: flex;
     flex-direction: column;
@@ -29,10 +31,11 @@
     margin: 0.5rem;
     padding: 0.5rem;
 
+    background-color: var(--clear-color-2);
     cursor: pointer;
 }
 
 .GridItem:hover {
-    background-color: #ccc;
+    background-color: var(--clear-color-3);
     transition: background-color 0.5s ease;
 }

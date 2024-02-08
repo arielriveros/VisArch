@@ -1,3 +1,5 @@
+@import url("global.css");
+
 .ProjectFormContainer {
     position: fixed;
     display: flex;
@@ -21,7 +23,7 @@
     border: 1px solid #ccc;
     border-radius: 5px;
     box-shadow: 2px 2px 2px #ccc;
-    background-color: #fff;
+    background-color: var(--dark-color-1);
 }
 
 .FormGroup {
@@ -67,6 +69,7 @@
     box-shadow: 2px 2px 2px #ccc;
     background-color: #fff;
     overflow-y: auto;
+    color: var(--dark-color-1);
 }
 
 .UsersDropdown .Item {
