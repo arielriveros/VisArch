@@ -37,6 +37,7 @@ export default function HoverIndex(props: HoverIndexProps) {
     }
 
     useEffect(() => {
+        /* When selecting a new entity the preview will hover over that entity */
         if(!selectedEntity) return;
 
         const centroid = calculateBoundingBox(selectedEntity.faceIds, props.mesh.geometry).centroid;

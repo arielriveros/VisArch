@@ -241,12 +241,7 @@ function taskReducer(state: TaskState, action: TaskAction): TaskState {
                     return {
                         ...archetype,
                         entities: archetype.entities.filter(entity => entity.nameId !== patternEntityName).map(entity => {
-                            if (entity.nameId === newArchetype.nameId) {
-                                return { ...entity, isArchetype: true };
-                            }
-                            else {
-                                return entity;
-                            }
+                            return { ...entity, isArchetype: entity.nameId === newArchetype.nameId };
                         })
                     };
                 }
@@ -258,7 +253,16 @@ function taskReducer(state: TaskState, action: TaskAction): TaskState {
             });
 
             if (action.payload.client) {
-                return { ...state, task: { ...state.task, annotations: updatedArchetypes }, selectedEntity: null, hoveredEntity: null };
+                return {
+                    ...state,
+                    task: {
+                        ...state.task,
+                        annotations: updatedArchetypes
+                    },
+                    selectedEntity: null,
+                    hoveredEntity: null,
+                    selectedArchetype: updatedArchetypes?.find(archetype => archetype.nameId === patternArchetypeName) || null
+                    };
             }
 
             return { ...state, task: { ...state.task, annotations: updatedArchetypes } };

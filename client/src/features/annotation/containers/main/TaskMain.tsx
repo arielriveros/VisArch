@@ -4,6 +4,7 @@ import { API_ENDPOINT } from 'common/api/Endpoints';
 import { useAuthContext } from 'features/authentication/hooks/useAuthContext';
 import { useTaskContext } from 'features/annotation/hooks/useTask';
 import { useSocket } from 'features/socket/hooks/useSocket';
+import { calculateBoundingBox } from 'features/annotation/utils/boundingBox';
 import AnnotationManager from '../annotation/manager/AnnotationManager';
 import ProxyMeshContextProvider from '../../contexts/ProxyMeshContext';
 import './TaskMain.css';
@@ -36,7 +37,7 @@ export default function TaskMain(props: TaskMainProps) {
 					return hex.length == 1 ? "0" + hex : hex;
 				};
 				let hex = [Math.random() * 255, Math.random() * 255, Math.random() * 255].map(Math.round).map(compToHex).join('');
-				 annotation.color = '#' + hex;
+				annotation.color = '#' + hex;
 			 }
 			task.class = props.project.class;
 
