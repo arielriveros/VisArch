@@ -1,0 +1,10 @@
+FROM node:current-alpine
+WORKDIR /app
+COPY package*.json .
+RUN npm ci
+COPY . .
+EXPOSE 5000
+
+RUN mkdir files
+
+CMD ["node", "server.js"]

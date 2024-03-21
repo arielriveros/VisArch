@@ -1,28 +1,18 @@
 {
   "name": "visarch",
   "version": "1.0.0",
-  "description": "Web application for the visualization and labeling of repetitive patterns in 3D meshes' surface.",
+  "description": "",
   "scripts": {
-    "start-client": "cd client && npm start",
-    "start-api": "cd api && npm start",
-    "start-websocket": "cd websocket && npm start",
-    "install-client": "cd client && npm install",
-    "install-api": "cd api && npm install",
-    "install-websocket": "cd websocket && npm install",
-    "install-all": "npm install && npm run install-client && npm run install-api && npm run install-websocket",
-    "start": "concurrently \"npm run start-api\" \"npm run start-websocket\" \"npm run start-client\""
+    "install-all": "npm install && cd client && npm install && cd ../server/api && npm install && cd ../websocket && npm install",
+    "api-dev": "cd server/api & npm run start",
+    "websocket-dev": "cd server/websocket & npm run start",
+    "client-dev": "cd client & npm run start",
+    "dev": "dotenv -e .env -v MONGO_URI=mongodb://localhost:27017/visarch -v APP_URL=http://localhost:3000 -- concurrently \"npm run api-dev\" \"npm run websocket-dev\" \"npm run client-dev\""
   },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/arielriveros/VisArch.git"
-  },
-  "author": "Ariel Riveros",
+  "author": "",
   "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/arielriveros/VisArch/issues"
-  },
-  "homepage": "https://github.com/arielriveros/VisArch#readme",
-  "dependencies": {
-    "concurrently": "^8.2.0"
+  "devDependencies": {
+    "concurrently": "^8.2.2",
+    "dotenv-cli": "^7.3.0"
   }
 }

@@ -1,0 +1,19 @@
+.annotation-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.25rem;
+  cursor: pointer;
+  background-color: #3c3c3c;
+  transition: background-color 0.2s;
+}
+
+.annotation-item:hover {
+  background-color: #5c5c5c;
+}
+
+.annotation-item.selected {
+  cursor: default;
+  border-left: 0.25rem solid #ffcc00;
+  background-color: #7c7c7c;
+}
