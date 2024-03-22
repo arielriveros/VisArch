@@ -1,6 +1,0 @@
-FROM node:current-alpine
-COPY package*.json .
-RUN npm ci
-COPY . .
-EXPOSE 5001
-CMD ["node", "server.js"]
