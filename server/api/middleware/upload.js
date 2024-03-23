@@ -17,8 +17,8 @@ const uploadModel = multer({
   storage: storage,
   fileFilter: (req, file, cb) => {
     let extension = path.extname(file.originalname);
-    if (extension !== '.glb')
-      return cb(new Error('Only .glb files are allowed.'));
+    if (extension !== '.glb' && extension !== '.png' && extension !== '.jpg' && extension !== '.jpeg')
+      return cb(new Error('Unsupported file type.'));
 
     cb(null, true);
   },
@@ -27,4 +27,4 @@ const uploadModel = multer({
   }
 });
 
-module.exports = uploadModel;
+module.exports = uploadModel
