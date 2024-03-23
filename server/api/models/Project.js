@@ -25,8 +25,12 @@ const ProjectSchema = new Schema({
 });
 
 ProjectSchema.pre('deleteOne', async function(next) {
+  const project = await this.model.findOne(this.getQuery());
+  if(!project)
+    return next();
   // Delete all tasks in the project
-  await mongoose.model('Task').deleteMany({ project: this._conditions._id });
+  await mongoose.model('Task').deleteMany({ _id: { $in: project.tasks } });
+  
   next();
 });
 

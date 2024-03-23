@@ -16,28 +16,30 @@ export default function NewTask() {
     thumbnail: File | null;
   }>({name: '', description: '', model: null, thumbnail: null});
   const [loading, setLoading] = useState(false);
+  const [stateText, setStateText] = useState('');
 
   const createTask = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!user) return;
   
     try {
-      console.log(task);
       if (!task.model || !task.thumbnail) return;
       setLoading(true);
+      setStateText('Setting up data');
       const formData = new FormData();
       formData.append('name', task.name);
       formData.append('description', task.description);
       formData.append('model', task.model);
       formData.append('thumbnail', task.thumbnail);
-      formData.append('project', projectId as string);
   
-      const response = await fetch(API_BASE_URL + '/api/tasks/', {
+      setStateText('Uploading data');
+      const response = await fetch(API_BASE_URL + '/api/projects/' + projectId + '/tasks', {
         credentials: 'include',
         method: 'POST',
         body: formData,
       });
       setLoading(false);
+      setStateText('Data uploaded');
   
       if (response.ok) navigate(-1);
       else throw new Error('Failed to create task');
@@ -50,7 +52,9 @@ export default function NewTask() {
     <div className='flex justify-center align-middle w-full'>
       <div className='flex flex-col w-full'>
         { loading ?
-          <div className='text-center'>Loading...</div>
+          <div className='text-center'>
+            Loading: {stateText}
+          </div>
           :
           <TaskForm task={task} setTask={setTask} handleSubmit={createTask} />
         }

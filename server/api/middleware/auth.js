@@ -7,7 +7,7 @@ const requireAuth = async (req, res, next) => {
       throw new Error('You must be logged in.');
 
   } catch (err) {
-    res.status(401).json({ error: 'You must be logged in.' });
+    res.status(401).json({ msg: 'You must be logged in.' });
   }
 }
 

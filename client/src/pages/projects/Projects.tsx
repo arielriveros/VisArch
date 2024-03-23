@@ -1,12 +1,12 @@
+import { useState, useEffect } from 'react';
+import { ProjectsApiResponse } from '@/api/types';
 import useSession from '@/hooks/useSession';
 import ProjectList from '@/components/ProjectList';
 import Restricted from '@/components/Restricted';
-import { ProjectsApiResponse } from '@/api/types';
 import useFetch from '@/hooks/useFetch';
-import { useState, useEffect } from 'react';
 
 function ProjectsContainer({userId} : {userId: string}) {
-  const { data, loading, status } = useFetch<ProjectsApiResponse>('api/projects/fromUser/' + userId, { credentials: 'include'});
+  const { data, loading, status } = useFetch<ProjectsApiResponse>('api/users/' + userId + '/projects', { credentials: 'include'});
   const [projects, setProjects] = useState<ProjectsApiResponse>([]);
 
   useEffect(() => {
