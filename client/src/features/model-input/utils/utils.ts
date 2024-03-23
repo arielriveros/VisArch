@@ -78,17 +78,34 @@ export function adjustRotation(mesh: Mesh) {
   mesh.geometry.applyQuaternion(rotationQuaternion);
 }
 
-export function convertToGLB(mesh: Mesh, onComplete: (output: File) => void, onError: (output: ErrorEvent) => void ) {
-  const exporter = new GLTFExporter();
+export async function convertToGLB(mesh: Mesh): Promise<File> {
+  return new Promise((resolve, reject) => {
+    const exporter = new GLTFExporter();
+  
+    exporter.parse(
+      mesh,
+      gltf => {
+        const blob = new Blob([gltf as BlobPart], { type: 'application/octet-stream' });
+        const glbFile = new File([blob], `${mesh.name}.glb`, { type: 'model/gltf-binary' });
+        resolve(glbFile);
+      },
+      error => reject(error),
+      { binary: true }
+    );
+  });
+}
 
-  exporter.parse(
-    mesh,
-    gltf => {
-      const blob = new Blob([gltf as BlobPart], { type: 'application/octet-stream' });
-      const glbFile = new File([blob], `${mesh.name}.glb`, { type: 'model/gltf-binary' });
-      onComplete(glbFile);
-    },
-    error => onError(error),
-    { binary: true }
-  );
+export async function pngFromMesh(mesh: Mesh): Promise<File> {
+  return new Promise((resolve, reject) => {
+    const canvas = document.querySelector('canvas');
+    if (!canvas) {
+      reject();
+      return;
+    }
+    canvas.toBlob(blob => {
+      // download the image
+      if (blob)
+        resolve(new File([blob], `${mesh.name}.png`, { type: blob.type }));
+    }, 'image/png', 0.5);
+  });
 }

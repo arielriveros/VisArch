@@ -16,6 +16,10 @@ const TaskSchema = new Schema({
     type: String,
     required: true
   },
+  thumbnail: {
+    type: String,
+    required: true
+  },
   annotations: [{
     type: Object
   }]
@@ -26,7 +30,8 @@ TaskSchema.pre('deleteOne', async function(next) {
   if(!task)
       return next();
 
-  fs.unlinkSync(`public/meshFiles/${task.model}`);
+  fs.unlinkSync(`files/${task.model}`);
+  fs.unlinkSync(`files/${task.thumbnail}`);
 
   // Find project this task belongs to
   const project = await Project.findOne({ tasks: task._id });

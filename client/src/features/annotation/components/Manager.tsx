@@ -48,7 +48,7 @@ export default function  Manager(props: ManagerProps) {
 
   useEffect(() => {
     if (task) {
-      loadmodelRef.current(`${API_BASE_URL}/api/files/${task.model}`);
+      loadmodelRef.current(`${API_BASE_URL}/api/files/models/${task.model}`);
       const annotations = task.annotations || [];
       setAnnotations(annotations);
     }

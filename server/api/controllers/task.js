@@ -39,7 +39,8 @@ async function create(req, res) {
     const task = await Task.create({
       name: req.body.name,
       description: req.body.description,
-      model: req.files.model[0].filename
+      model: req.files.model[0].filename,
+      thumbnail: req.files.thumbnail[0].filename,
     });
     project.tasks.push(task);
     await project.save();
@@ -47,10 +48,18 @@ async function create(req, res) {
   }
   catch (error) {
     console.error('Error in postTask:', error);
-    // Remove uploaded file if error occurs
+    // Remove uploaded files if error occurs
     if (req.files.model && req.files.model[0].path) {
       try {
         fs.unlinkSync(req.files.model[0].path);
+        console.log('File deleted successfully.');
+      } catch (unlinkError) {
+        console.error('Error deleting file:', unlinkError);
+      }
+    }
+    if (req.files.thumbnail && req.files.thumbnail[0].path) {
+      try {
+        fs.unlinkSync(req.files.thumbnail[0].path);
         console.log('File deleted successfully.');
       } catch (unlinkError) {
         console.error('Error deleting file:', unlinkError);

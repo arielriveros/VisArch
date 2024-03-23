@@ -47,6 +47,7 @@ export interface TaskApiResponse {
   name: string;
   description: string;
   model: string;
+  thumbnail: string;
   annotations: Archetype[];
 }
 

@@ -1,13 +1,13 @@
 import { Canvas } from '@react-three/fiber';
 import { useEffect, useRef, useState } from 'react';
-import PreviewModel from './components/PreviewModel';
 import { Mesh, MeshStandardMaterial, TextureLoader } from 'three';
-import { adjustMesh, convertToGLB, loadGeometry } from './utils/utils';
+import { adjustMesh, convertToGLB, loadGeometry, pngFromMesh } from './utils/utils';
+import PreviewModel from './components/PreviewModel';
 
 type SupportedModelInput = null | 'obj' | 'ply';
 
 interface ModelInputProps {
-  handleModel: (glbFile: File) => void;
+  handleModel: (glbFile: File, screenshot: File) => void;
 }
 
 export default function ModelInput(props: ModelInputProps) {
@@ -22,7 +22,7 @@ export default function ModelInput(props: ModelInputProps) {
   useEffect(() => {
     handleModelRef.current = props.handleModel;
   }, [props.handleModel]);
-  
+
   // Handle file upload
   useEffect(() => {
     if (modelFile) {
@@ -71,14 +71,27 @@ export default function ModelInput(props: ModelInputProps) {
     }
   }, [modelData.texturePath]);
 
-  // On loading, export the mesh to glb
-  useEffect(() => {
-    if (loading) return;
+
+  const handleModelData = async () => {
     if (meshRef.current) {
       // Normalize mesh and center it
       adjustMesh(meshRef.current);
-      convertToGLB(meshRef.current, handleModelRef.current, console.error);
+
+      // Convert to GLB
+      const glbFile = await convertToGLB(meshRef.current);
+
+      // Take a screenshot
+      const pngFile = await pngFromMesh(meshRef.current);
+
+      if (glbFile && pngFile)
+        handleModelRef.current(glbFile, pngFile);
     }
+  };
+
+  // On loading, export the mesh to glb and get a screenshot
+  useEffect(() => {
+    if (loading) return;
+    handleModelData();
   }, [loading]);
 
 
@@ -87,7 +100,7 @@ export default function ModelInput(props: ModelInputProps) {
       <div className='flex flex-col w-1/2'>
         <label> Model </label>
         <div className='flex flex-col w-full h-full'>
-          <Canvas camera={{position: [0, 0, 2]}}>
+          <Canvas camera={{position: [0, 0, 2]}} gl={{ preserveDrawingBuffer: true }} >
             <ambientLight />
             <PreviewModel meshRef={meshRef} />
           </Canvas>

@@ -9,11 +9,13 @@ interface TaskFormProps {
     name: string;
     description: string;
     model: File | null;
+    thumbnail: File | null;
   };
   setTask: (task: {
     name: string;
     description: string;
     model: File | null;
+    thumbnail: File | null;
   }) => void;
   handleSubmit: (e: React.FormEvent<HTMLFormElement>) => void;
 }
@@ -31,8 +33,8 @@ export default function TaskForm(props: TaskFormProps) {
     navigate(-1);
   };
 
-  const handleModel = (glbFile: File) => {
-    setTask({ ...task, model: glbFile });
+  const handleModel = (glbFile: File, screenshot: File) => {
+    setTask({ ...task, model: glbFile, thumbnail: screenshot });
   };
 
   return (
