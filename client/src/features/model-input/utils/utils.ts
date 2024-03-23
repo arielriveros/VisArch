@@ -2,7 +2,6 @@ import { BufferGeometry, Euler, Mesh, NormalBufferAttributes, Quaternion, Vector
 import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader';
 import { PLYLoader } from 'three/examples/jsm/loaders/PLYLoader';
 import { GLTFExporter } from 'three/examples/jsm/exporters/GLTFExporter';
-import * as BufferGeometryUtils from 'three/examples/jsm/utils/BufferGeometryUtils';
 
 export async function loadGeometry(modelPath: string, format: string): Promise<BufferGeometry> {
   let geometry: BufferGeometry<NormalBufferAttributes> = new BufferGeometry();
@@ -12,7 +11,7 @@ export async function loadGeometry(modelPath: string, format: string): Promise<B
     const group = await objLoader.loadAsync(modelPath);
     group.traverse(child => {
       if (child instanceof Mesh) {
-        geometry = BufferGeometryUtils.mergeVertices(child.geometry);
+        geometry = child.geometry;
       }
     });
   }
