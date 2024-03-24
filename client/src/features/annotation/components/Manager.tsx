@@ -10,6 +10,7 @@ import Annotations from './Annotations';
 import Inspector from './Inspector';
 import useAnnotation from '../hooks/useAnnotation';
 import Emitter from '../utils/emitter';
+import Progress from './Progress';
 
 interface ManagerProps {
   taskId?: string;
@@ -114,6 +115,7 @@ export default function  Manager(props: ManagerProps) {
         <Annotations />
       </Sidebar>
       <Center>
+        <Progress />
         <Viewport />
       </Center>
       <Sidebar width='30%'>
