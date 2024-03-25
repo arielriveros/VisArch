@@ -55,6 +55,10 @@ io.on('connection', (socket) => {
     }
   }
 
+  socket.on('setAnnotations', (annotations) => {
+    broadcastMessage('setAnnotations', annotations);
+  });
+
   socket.on('addArchetype', (newArchetype) => {
     broadcastMessage('addArchetype', newArchetype);
   });

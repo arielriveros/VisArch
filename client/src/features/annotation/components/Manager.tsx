@@ -20,7 +20,8 @@ export default function  Manager(props: ManagerProps) {
   const [task, setTask] = useState<TaskApiResponse | null>(null);
   const [roomId, setRoomId] = useState<string | null>(null);
   const { annotations, setAnnotations, setUsers, dispatch } = useAnnotation();
-  const { registerEvent, unregisterEvent, join, leave } = useSocket();
+  const [lockedAnnotations, setLockedAnnotations] = useState(false);
+  const { registerEvent, unregisterEvent, join, leave, emit } = useSocket();
   const { loadModel } = useModel();
 
   useEffect(() => {
@@ -46,10 +47,11 @@ export default function  Manager(props: ManagerProps) {
     if (task) {
       loadModel(`${API_BASE_URL}/api/files/models/${task.model}`);
       const annotations = task.annotations || [];
-      setAnnotations(annotations);
+      if (!lockedAnnotations)
+        setAnnotations(annotations);
       setUsers(task.owner, task.collaborators);
     }
-  }, [task, setAnnotations, loadModel, setUsers]);
+  }, [task, lockedAnnotations, setAnnotations, loadModel, setUsers]);
 
   const onSave = useCallback(() => {
     const updatedTask = { ...task, annotations };
@@ -73,37 +75,38 @@ export default function  Manager(props: ManagerProps) {
 
   // Websocket events
   useEffect(() => {
-    const onUserJoined = (user: UserApiResponse) => console.log(`${user?.name} joined`, user);
+    const onUserJoined = () => {
+      emit('setAnnotations', annotations);
+    };
     const onUserLeft = (user: UserApiResponse) => console.log(`${user?.name} left`, user);
+    const onSetAnnotations = (annotations: Archetype[]) => {
+      setLockedAnnotations(true);
+      setAnnotations(annotations);
+    };
 
-    const onAddArchetype = (archetype: Archetype, userId: string, timeStamp: number) => {
-      console.log('addArchetype', userId, timeStamp);
+    const onAddArchetype = (archetype: Archetype) => {
       dispatch({ type: 'ADD_ARCHETYPE', payload: archetype });
     };
-    const onRemoveArchetype = (id: string, userId: string, timeStamp: number) => {
-      console.log('onRemoveArchetype', userId, timeStamp);
+    const onRemoveArchetype = (id: string) => {
       dispatch({ type: 'REMOVE_ARCHETYPE', payload: id });
     };
-    const onUpdateArchetype = (archetype: Archetype, userId: string, timeStamp: number) => {
-      console.log('onUpdateArchetype', userId, timeStamp);
+    const onUpdateArchetype = (archetype: Archetype) => {
       dispatch({ type: 'UPDATE_ARCHETYPE', payload: archetype });
     };
     
-    const onAddEntity = (payload: { archetypeId: string, entity: Entity }, userId: string, timeStamp: number) => {
-      console.log('onAddEntity', userId, timeStamp);
+    const onAddEntity = (payload: { archetypeId: string, entity: Entity }) => {
       dispatch({ type: 'ADD_ENTITY', payload });
     };
-    const onRemoveEntity = (payload: { archetypeId: string, entityId: string }, userId: string, timeStamp: number) => {
-      console.log('onRemoveEntity', userId, timeStamp);
+    const onRemoveEntity = (payload: { archetypeId: string, entityId: string }) => {
       dispatch({ type: 'REMOVE_ENTITY', payload });
     };
-    const onUpdateEntity = (payload: { archetypeId: string, entityId: string, entity: Entity }, userId: string, timeStamp: number) => {
-      console.log('onUpdateEntity', userId, timeStamp);
+    const onUpdateEntity = (payload: { archetypeId: string, entityId: string, entity: Entity }) => {
       dispatch({ type: 'UPDATE_ENTITY', payload });
     };
 
     registerEvent('userJoined', onUserJoined);
     registerEvent('userLeft', onUserLeft);
+    registerEvent('setAnnotations', onSetAnnotations);
     registerEvent('addArchetype', onAddArchetype);
     registerEvent('removeArchetype', onRemoveArchetype);
     registerEvent('updateArchetype', onUpdateArchetype);
@@ -113,6 +116,7 @@ export default function  Manager(props: ManagerProps) {
     return () => {
       unregisterEvent('userJoined', onUserJoined);
       unregisterEvent('userLeft', onUserLeft);
+      unregisterEvent('setAnnotations', onSetAnnotations);
       unregisterEvent('addArchetype', onAddArchetype);
       unregisterEvent('removeArchetype', onRemoveArchetype);
       unregisterEvent('updateArchetype', onUpdateArchetype);
@@ -120,7 +124,7 @@ export default function  Manager(props: ManagerProps) {
       unregisterEvent('removeEntity', onRemoveEntity);
       unregisterEvent('updateEntity', onUpdateEntity);
     };
-  }, [registerEvent, unregisterEvent, dispatch]);
+  }, [registerEvent, unregisterEvent, dispatch, emit, annotations, setLockedAnnotations, setAnnotations]);
 
   return (
     <section className='flex h-svh w-full pt-8'>
