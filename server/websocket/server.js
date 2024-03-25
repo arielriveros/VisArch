@@ -51,9 +51,7 @@ io.on('connection', (socket) => {
 
   function broadcastMessage(event, payload) {
     if (user && socketRoom) {
-      payload.user = user.id;
-      payload.timestamp = new Date().getTime();
-      socket.broadcast.to(socketRoom).emit(event, payload);
+      socket.broadcast.to(socketRoom).emit(event, payload, user.id, Date.now());
     }
   }
 

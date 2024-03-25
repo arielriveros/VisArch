@@ -1,12 +1,14 @@
 import { useCallback, useContext } from 'react';
-import { Archetype } from '@/api/types';
+import { Archetype, UserApiResponse } from '@/api/types';
 import { useSocket } from '@/features/socket/hooks/useSocket';
 import { AnnotationContext } from '../contexts/AnnotationContext';
 import { rgbToHex, uuid } from '../utils/math';
+import useSession from '@/hooks/useSession';
 
 export default function useAnnotation() {
   const context = useContext(AnnotationContext);
   const { emit } = useSocket();
+  const { user } = useSession();
 
   if (!context)
     throw new Error('useAnnotation must be used within a AnnotationContextProvider');
@@ -18,12 +20,14 @@ export default function useAnnotation() {
   }, [dispatch]);
 
   const addArchetype = () => {
+    if (!user) return; 
     const newArchetype = {
       id: uuid(),
       label: 'Archetype',
       archetype: null,
       entities: [],
-      color: rgbToHex([Math.random() * 255, Math.random() * 255, Math.random() * 255])
+      color: rgbToHex([Math.random() * 255, Math.random() * 255, Math.random() * 255]),
+      addedBy: user.id
     };
     dispatch({ type: 'ADD_ARCHETYPE', payload: newArchetype});
     emit('addArchetype', newArchetype);
@@ -47,7 +51,15 @@ export default function useAnnotation() {
   };
 
   const addEntity = (archetypeId: string, faces: number[]) => {
-    const newEntity = { id: uuid(), faces, scale: 1, orientation: 0, reflection: false };
+    if (!user) return;
+    const newEntity = {
+      id: uuid(),
+      faces,
+      scale: 1,
+      orientation: 0,
+      reflection: false,
+      addedBy: user.id
+    };
     dispatch({ type: 'ADD_ENTITY', payload: { archetypeId, entity: newEntity } });
     emit('addEntity', { archetypeId, entity: newEntity });
   };
@@ -72,9 +84,14 @@ export default function useAnnotation() {
     emit('updateEntity', { archetypeId, entityId, entity: updatedEntity });
   };
 
+  const setUsers = useCallback((owner: UserApiResponse, collaborators: UserApiResponse[]) => {
+    dispatch({ type: 'SET_USERS', payload: { owner, collaborators } });
+  }, [dispatch]);
+
   return {
     ...context, setAnnotations,
     addArchetype, removeArchetype, selectArchetype, updateArchetype,
-    addEntity, removeEntity, selectEntity, updateEntity
+    addEntity, removeEntity, selectEntity, updateEntity,
+    setUsers
   };
 }

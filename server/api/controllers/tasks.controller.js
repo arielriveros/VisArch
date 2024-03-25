@@ -1,4 +1,6 @@
 const Task = require('../models/Task');
+const Project = require('../models/Project');
+const User = require('../models/User');
 
 async function get(req, res) {
   try {
@@ -6,7 +8,12 @@ async function get(req, res) {
     if (!task)
       return res.status(404).json({ msg: 'Task not found' });
 
-    res.status(200).json(task);
+    const project = await Project.findOne({ tasks: task._id });
+    
+    const owner = await User.findById(project.owner);
+    const collaborators = await User.find({ _id: { $in: project.collaborators } }).lean();
+
+    res.status(200).json({...task.toObject(), owner, collaborators});
   }
   catch (error) {
     console.error('Error in getTask:', error);

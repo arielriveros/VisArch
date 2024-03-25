@@ -1,10 +1,11 @@
 import { createContext, useReducer } from 'react';
-import { Archetype, Entity } from '@/api/types';
+import { Archetype, Entity, UserApiResponse } from '@/api/types';
 
 interface AnnotationState {
   annotations: Archetype[];
   selectedArchetype: string | null;
   selectedEntity: string | null;
+  users: UserApiResponse[];
 }
 
 interface SetAnnotationsAction {
@@ -52,10 +53,19 @@ interface UpdateEntityAction {
   payload: { archetypeId: string, entityId: string, entity: Entity };
 }
 
+interface SetUsersAction {
+  type: 'SET_USERS';
+  payload: {
+    owner: UserApiResponse;
+    collaborators: UserApiResponse[];
+  };
+}
+
     
 type AnnotationAction = SetAnnotationsAction |
   AddArchetypeAction | RemoveArchetypeAction | SelectArchetypeAction | UpdateArchetypeAction |
-  AddEntityAction | RemoveEntityAction | SelectEntityAction | UpdateEntityAction;
+  AddEntityAction | RemoveEntityAction | SelectEntityAction | UpdateEntityAction |
+  SetUsersAction;
 
 interface AnnotationContextProps extends AnnotationState {
   dispatch: React.Dispatch<AnnotationAction>;
@@ -64,7 +74,8 @@ interface AnnotationContextProps extends AnnotationState {
 const defaultState: AnnotationState = {
   annotations: [],
   selectedArchetype: null,
-  selectedEntity: null
+  selectedEntity: null,
+  users: []
 };
 
 export const AnnotationContext = createContext<AnnotationContextProps>({ ...defaultState, dispatch: () => {} });
@@ -154,6 +165,9 @@ function AnnotationReducer(state: AnnotationState, action: AnnotationAction): An
       })
     };
   }
+
+  case 'SET_USERS':
+    return { ...state, users: [action.payload.owner, ...action.payload.collaborators] };
 
   default:
     return state;

@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { API_BASE_URL } from '@/api/config';
 import { Archetype, Entity, TaskApiResponse, UserApiResponse } from '@/api/types';
 import { useModel } from '../hooks/useModel';
@@ -19,14 +19,9 @@ export default function  Manager(props: ManagerProps) {
   const { taskId } = props;
   const [task, setTask] = useState<TaskApiResponse | null>(null);
   const [roomId, setRoomId] = useState<string | null>(null);
-  const { annotations, setAnnotations, dispatch } = useAnnotation();
+  const { annotations, setAnnotations, setUsers, dispatch } = useAnnotation();
   const { registerEvent, unregisterEvent, join, leave } = useSocket();
-  const { loadModel, dispose } = useModel();
-  const loadmodelRef = useRef(loadModel);
-  const disposeRef = useRef(dispose);
-
-  useEffect(() => { loadmodelRef.current = loadModel; }, [loadModel]);
-  useEffect(() => { disposeRef.current = dispose; }, [dispose]);
+  const { loadModel } = useModel();
 
   useEffect(() => {
     fetch(`${API_BASE_URL}/api/tasks/${taskId}`, { credentials: 'include' })
@@ -36,10 +31,6 @@ export default function  Manager(props: ManagerProps) {
         if (taskId) setRoomId(taskId);
       });
   }, [taskId]);
-
-  useEffect(() => {
-    return () => disposeRef.current();
-  }, []);
 
   useEffect(() => {
     if (roomId)
@@ -53,11 +44,12 @@ export default function  Manager(props: ManagerProps) {
 
   useEffect(() => {
     if (task) {
-      loadmodelRef.current(`${API_BASE_URL}/api/files/models/${task.model}`);
+      loadModel(`${API_BASE_URL}/api/files/models/${task.model}`);
       const annotations = task.annotations || [];
       setAnnotations(annotations);
+      setUsers(task.owner, task.collaborators);
     }
-  }, [task, setAnnotations]);
+  }, [task, setAnnotations, loadModel, setUsers]);
 
   const onSave = useCallback(() => {
     const updatedTask = { ...task, annotations };
@@ -82,20 +74,41 @@ export default function  Manager(props: ManagerProps) {
   // Websocket events
   useEffect(() => {
     const onUserJoined = (user: UserApiResponse) => console.log(`${user?.name} joined`, user);
-    registerEvent('userJoined', onUserJoined);
     const onUserLeft = (user: UserApiResponse) => console.log(`${user?.name} left`, user);
+
+    const onAddArchetype = (archetype: Archetype, userId: string, timeStamp: number) => {
+      console.log('addArchetype', userId, timeStamp);
+      dispatch({ type: 'ADD_ARCHETYPE', payload: archetype });
+    };
+    const onRemoveArchetype = (id: string, userId: string, timeStamp: number) => {
+      console.log('onRemoveArchetype', userId, timeStamp);
+      dispatch({ type: 'REMOVE_ARCHETYPE', payload: id });
+    };
+    const onUpdateArchetype = (archetype: Archetype, userId: string, timeStamp: number) => {
+      console.log('onUpdateArchetype', userId, timeStamp);
+      dispatch({ type: 'UPDATE_ARCHETYPE', payload: archetype });
+    };
+    
+    const onAddEntity = (payload: { archetypeId: string, entity: Entity }, userId: string, timeStamp: number) => {
+      console.log('onAddEntity', userId, timeStamp);
+      dispatch({ type: 'ADD_ENTITY', payload });
+    };
+    const onRemoveEntity = (payload: { archetypeId: string, entityId: string }, userId: string, timeStamp: number) => {
+      console.log('onRemoveEntity', userId, timeStamp);
+      dispatch({ type: 'REMOVE_ENTITY', payload });
+    };
+    const onUpdateEntity = (payload: { archetypeId: string, entityId: string, entity: Entity }, userId: string, timeStamp: number) => {
+      console.log('onUpdateEntity', userId, timeStamp);
+      dispatch({ type: 'UPDATE_ENTITY', payload });
+    };
+
+    registerEvent('userJoined', onUserJoined);
     registerEvent('userLeft', onUserLeft);
-    const onAddArchetype = (archetype: Archetype) => dispatch({ type: 'ADD_ARCHETYPE', payload: archetype });
     registerEvent('addArchetype', onAddArchetype);
-    const onRemoveArchetype = (id: string) => dispatch({ type: 'REMOVE_ARCHETYPE', payload: id });
     registerEvent('removeArchetype', onRemoveArchetype);
-    const onUpdateArchetype = (archetype: Archetype) => dispatch({ type: 'UPDATE_ARCHETYPE', payload: archetype });
     registerEvent('updateArchetype', onUpdateArchetype);
-    const onAddEntity = (payload: { archetypeId: string, entity: Entity }) => dispatch({ type: 'ADD_ENTITY', payload });
     registerEvent('addEntity', onAddEntity);
-    const onRemoveEntity = (payload: { archetypeId: string, entityId: string }) => dispatch({ type: 'REMOVE_ENTITY', payload });
     registerEvent('removeEntity', onRemoveEntity);
-    const onUpdateEntity = (payload: { archetypeId: string, entityId: string, entity: Entity }) => dispatch({ type: 'UPDATE_ENTITY', payload });
     registerEvent('updateEntity', onUpdateEntity);
     return () => {
       unregisterEvent('userJoined', onUserJoined);

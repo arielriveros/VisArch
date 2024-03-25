@@ -4,7 +4,7 @@ import useAnnotation from '../hooks/useAnnotation';
 import Overview from './Overview';
 
 export default function Inspector() {
-  const { annotations, selectedArchetype: selectedArchetypeId, selectedEntity: selectedEntityId, updateArchetype, updateEntity } = useAnnotation();
+  const { annotations, users, selectedArchetype: selectedArchetypeId, selectedEntity: selectedEntityId, updateArchetype, updateEntity } = useAnnotation();
   const [selectedArchetype, setSelectedArchetype] = useState<Archetype | null>(null);
   const [selectedEntity, setSelectedEntity] = useState<Entity | null>(null);
   useEffect(() => {
@@ -32,8 +32,8 @@ export default function Inspector() {
           !selectedArchetype ? <p className='center-text'>Select an Archetype</p> :
             <div className='flex flex-col items-center px-2'>
               <span className='flex justify-between w-full'>
-                <p>Id</p>
-                <p>{selectedArchetype.id}</p>
+                <p>Added By</p>
+                <p>{users.find(user => user._id === selectedArchetype.addedBy)?.name}</p>
               </span>
               <span className='flex justify-between w-full'>
                 <p>Label</p>
@@ -73,8 +73,8 @@ export default function Inspector() {
           !selectedEntity ? <p className='center-text'>Select an Entity</p> :
             <div className='flex flex-col items-center px-2'>
               <span className='flex justify-between w-full'>
-                <p>Id</p>
-                <p>{selectedEntity.id}</p>
+                <p>Added By</p>
+                <p>{users.find(user => user._id === selectedEntity.addedBy)?.name}</p>
               </span>
               <span className='flex justify-between w-full'>
                 <p>Faces</p>

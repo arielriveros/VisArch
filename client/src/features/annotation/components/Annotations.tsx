@@ -53,7 +53,7 @@ export default function Annotations() {
               onMouseLeave={() => Emitter.emit('HIGHLIGHT_FACES', [])}
               className={`annotation-item ${selectedEntity === entity.id ? 'selected' : ''}`} 
             >
-              <span>{entity.id}</span>
+              <span> Entity </span>
               <button 
                 onClick={(e) => {
                   e.stopPropagation(); // Stop event propagation
