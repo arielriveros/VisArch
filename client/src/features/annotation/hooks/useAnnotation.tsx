@@ -1,8 +1,8 @@
 import { useCallback, useContext } from 'react';
 import { Archetype } from '@/api/types';
+import { useSocket } from '@/features/socket/hooks/useSocket';
 import { AnnotationContext } from '../contexts/AnnotationContext';
 import { rgbToHex, uuid } from '../utils/math';
-import { useSocket } from './useSocket';
 
 export default function useAnnotation() {
   const context = useContext(AnnotationContext);

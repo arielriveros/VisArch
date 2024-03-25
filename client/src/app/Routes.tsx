@@ -1,5 +1,6 @@
 import { useEffect } from 'react';
 import { Routes, Route } from 'react-router-dom';
+import { useSocket } from '@/features/socket/hooks/useSocket';
 import Home from '@/pages/Home';
 import Profile from '@/pages/Profile';
 import Projects from '@/pages/projects/Projects';
@@ -19,6 +20,16 @@ export default function AppRoutes() {
     if (!signedIn)
       login();
   }, [signedIn, login]);
+
+  
+  const { connect, disconnect } = useSocket();
+
+  useEffect(() => {
+    connect();
+    return () => {
+      disconnect();
+    };
+  }, [connect, disconnect]);
 
   return (
     <Routes>

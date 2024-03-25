@@ -21,48 +21,64 @@ const io = new Server(server, {
 
 // Listen for incoming connections
 io.on('connection', (socket) => {
-  console.log('A user connected');
   let socketRoom = null;
+  let user = null;
+  console.log('A user connected')
+
+  socket.on('setUser', (incUser) => {
+    if (user) return;
+    console.log(`User connected: ${incUser.name}`);
+    user = incUser;
+  });
 
   socket.on('join', (room) => {
-    console.log(`User joined room: ${room}`);
+    console.log(`User ${user?.name} joined room: ${room}`);
     socket.join(room);
     socketRoom = room;
-    socket.broadcast.to(room).emit('userJoined', socket.id);
+    socket.broadcast.to(room).emit('userJoined', user);
   });
 
   socket.on('leave', (room) => {
-    console.log(`User left room: ${room}`);
+    console.log(`User ${user?.name} left room: ${room}`);
+    socket.broadcast.to(room).emit('userLeft', user);
     socket.leave(room);
     socketRoom = null;
   });
 
   socket.on('disconnect', () => {
-    console.log('A user disconnected');
+    console.log(`User ${user?.name} disconnected`);
   });
 
+  function broadcastMessage(event, payload) {
+    if (user && socketRoom) {
+      payload.user = user.id;
+      payload.timestamp = new Date().getTime();
+      socket.broadcast.to(socketRoom).emit(event, payload);
+    }
+  }
+
   socket.on('addArchetype', (newArchetype) => {
-    socket.broadcast.to(socketRoom).emit('addArchetype', newArchetype);
+    broadcastMessage('addArchetype', newArchetype);
   });
 
   socket.on('removeArchetype', (archetypeId) => {
-    socket.broadcast.to(socketRoom).emit('removeArchetype', archetypeId);
+    broadcastMessage('removeArchetype', archetypeId);
   });
 
   socket.on('updateArchetype', (archetypePayload) => {
-    socket.broadcast.to(socketRoom).emit('updateArchetype', archetypePayload);
+    broadcastMessage('updateArchetype', archetypePayload);
   });
 
   socket.on('addEntity', (entityPayload) => {
-    socket.broadcast.to(socketRoom).emit('addEntity', entityPayload);
+    broadcastMessage('addEntity', entityPayload);
   });
 
   socket.on('removeEntity', (entityPayload) => {
-    socket.broadcast.to(socketRoom).emit('removeEntity', entityPayload);
+    broadcastMessage('removeEntity', entityPayload);
   });
 
   socket.on('updateEntity', (entityPayload) => {
-    socket.broadcast.to(socketRoom).emit('updateEntity', entityPayload);
+    broadcastMessage('updateEntity', entityPayload);
   });
 
 });
