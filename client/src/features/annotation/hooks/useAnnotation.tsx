@@ -84,6 +84,11 @@ export default function useAnnotation() {
     emit('updateEntity', { archetypeId, entityId, entity: updatedEntity });
   };
 
+  const setEntityAsArchetype = (archetypeId: string, entityId: string | null) => {
+    dispatch({ type: 'SET_ENTITY_AS_ARCHETYPE', payload: { archetypeId, entityId } });
+    emit('setEntityAsArchetype', { archetypeId, entityId });
+  };
+
   const setUsers = useCallback((owner: UserApiResponse, collaborators: UserApiResponse[]) => {
     dispatch({ type: 'SET_USERS', payload: { owner, collaborators } });
   }, [dispatch]);
@@ -91,7 +96,7 @@ export default function useAnnotation() {
   return {
     ...context, setAnnotations,
     addArchetype, removeArchetype, selectArchetype, updateArchetype,
-    addEntity, removeEntity, selectEntity, updateEntity,
+    addEntity, removeEntity, selectEntity, updateEntity, setEntityAsArchetype,
     setUsers
   };
 }

@@ -103,6 +103,9 @@ export default function  Manager(props: ManagerProps) {
     const onUpdateEntity = (payload: { archetypeId: string, entityId: string, entity: Entity }) => {
       dispatch({ type: 'UPDATE_ENTITY', payload });
     };
+    const onSetEntityAsArchetype = (payload: { archetypeId: string, entityId: string | null }) => {
+      dispatch({ type: 'SET_ENTITY_AS_ARCHETYPE', payload });
+    };
 
     registerEvent('userJoined', onUserJoined);
     registerEvent('userLeft', onUserLeft);
@@ -113,6 +116,7 @@ export default function  Manager(props: ManagerProps) {
     registerEvent('addEntity', onAddEntity);
     registerEvent('removeEntity', onRemoveEntity);
     registerEvent('updateEntity', onUpdateEntity);
+    registerEvent('setEntityAsArchetype', onSetEntityAsArchetype);
     return () => {
       unregisterEvent('userJoined', onUserJoined);
       unregisterEvent('userLeft', onUserLeft);
@@ -123,6 +127,7 @@ export default function  Manager(props: ManagerProps) {
       unregisterEvent('addEntity', onAddEntity);
       unregisterEvent('removeEntity', onRemoveEntity);
       unregisterEvent('updateEntity', onUpdateEntity);
+      unregisterEvent('setEntityAsArchetype', onSetEntityAsArchetype);
     };
   }, [registerEvent, unregisterEvent, dispatch, emit, annotations, setLockedAnnotations, setAnnotations]);
 

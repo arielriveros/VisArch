@@ -53,6 +53,11 @@ interface UpdateEntityAction {
   payload: { archetypeId: string, entityId: string, entity: Entity };
 }
 
+interface SetEntityAsArchetypeAction {
+  type: 'SET_ENTITY_AS_ARCHETYPE';
+  payload: { archetypeId: string, entityId: string | null };
+}
+
 interface SetUsersAction {
   type: 'SET_USERS';
   payload: {
@@ -64,7 +69,7 @@ interface SetUsersAction {
     
 type AnnotationAction = SetAnnotationsAction |
   AddArchetypeAction | RemoveArchetypeAction | SelectArchetypeAction | UpdateArchetypeAction |
-  AddEntityAction | RemoveEntityAction | SelectEntityAction | UpdateEntityAction |
+  AddEntityAction | RemoveEntityAction | SelectEntityAction | UpdateEntityAction | SetEntityAsArchetypeAction |
   SetUsersAction;
 
 interface AnnotationContextProps extends AnnotationState {
@@ -137,6 +142,7 @@ function AnnotationReducer(state: AnnotationState, action: AnnotationAction): An
         if (archetype.id === archetypeId)
           return {
             ...archetype,
+            archetype: archetype.archetype === entityId ? null : archetype.archetype, // Unset the archetype if it is the entity being removed
             entities: archetype.entities.filter(entity => entity.id !== entityId) ,
           };
         return archetype;
@@ -160,6 +166,21 @@ function AnnotationReducer(state: AnnotationState, action: AnnotationAction): An
           return {
             ...archetype,
             entities: archetype.entities.map(e => e.id === entityId ? entity : e)
+          };
+        return archetype;
+      })
+    };
+  }
+
+  case 'SET_ENTITY_AS_ARCHETYPE': {
+    const { archetypeId, entityId } = action.payload;
+    return {
+      ...state,
+      annotations: state.annotations.map(archetype => {
+        if (archetype.id === archetypeId)
+          return {
+            ...archetype,
+            archetype: entityId
           };
         return archetype;
       })

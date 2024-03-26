@@ -83,4 +83,8 @@ io.on('connection', (socket) => {
     broadcastMessage('updateEntity', entityPayload);
   });
 
+  socket.on('setEntityAsArchetype', (entityAsArchetypePayload) => {
+    broadcastMessage('setEntityAsArchetype', entityAsArchetypePayload);
+  });
+
 });

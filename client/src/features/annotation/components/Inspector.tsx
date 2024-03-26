@@ -4,7 +4,12 @@ import useAnnotation from '../hooks/useAnnotation';
 import Overview from './Overview';
 
 export default function Inspector() {
-  const { annotations, users, selectedArchetype: selectedArchetypeId, selectedEntity: selectedEntityId, updateArchetype, updateEntity } = useAnnotation();
+  const {
+    annotations, users,
+    selectedArchetype: selectedArchetypeId,
+    selectedEntity: selectedEntityId,
+    updateArchetype, updateEntity, setEntityAsArchetype
+  } = useAnnotation();
   const [selectedArchetype, setSelectedArchetype] = useState<Archetype | null>(null);
   const [selectedEntity, setSelectedEntity] = useState<Entity | null>(null);
   useEffect(() => {
@@ -80,66 +85,75 @@ export default function Inspector() {
                 <p>Faces</p>
                 <p>{selectedEntity.faces.length}</p>
               </span>
-              <span className='flex justify-between w-full'>
-                <p>Scale</p>
-                <input 
-                  type='range'
-                  min={0}
-                  max={2}
-                  step={0.05}
-                  value={selectedEntity.scale} 
-                  onChange={e => {
-                    const value = parseFloat(e.target.value);
-                    setSelectedEntity({ ...selectedEntity, scale: value });
-                  }}
-                  onMouseUp={() => {
-                    if (selectedArchetypeId && selectedEntityId)
-                      updateEntity(selectedArchetypeId, selectedEntityId, selectedEntity.scale, selectedEntity.orientation, selectedEntity.reflection);
-                  }}
-                />
-              </span>
-              <span className='flex justify-between w-full'>
-                <p>Orientation</p>
-                <input 
-                  type='range'
-                  min={-180}
-                  max={180}
-                  step={0.5}
+              { selectedArchetype?.archetype === null ? 
+                <button onClick={() => setEntityAsArchetype(selectedArchetype.id, selectedEntity.id)}>
+                  Set as Archetype
+                </button> :
+                selectedArchetype?.archetype === selectedEntity.id ?
+                  <button onClick={() => setEntityAsArchetype(selectedArchetype.id, null)}>
+                    Unset as Archetype
+                  </button> :
+                  <>
+                    <span className='flex justify-between w-full'>
+                      <p>Scale</p>
+                      <input 
+                        type='range'
+                        min={0}
+                        max={2}
+                        step={0.05}
+                        value={selectedEntity.scale} 
+                        onChange={e => {
+                          const value = parseFloat(e.target.value);
+                          setSelectedEntity({ ...selectedEntity, scale: value });
+                        }}
+                        onMouseUp={() => {
+                          if (selectedArchetypeId && selectedEntityId)
+                            updateEntity(selectedArchetypeId, selectedEntityId, selectedEntity.scale, selectedEntity.orientation, selectedEntity.reflection);
+                        }}
+                      />
+                    </span>
+                    <span className='flex justify-between w-full'>
+                      <p>Orientation</p>
+                      <input 
+                        type='range'
+                        min={-180}
+                        max={180}
+                        step={0.5}
 
-                  value={selectedEntity.orientation} 
-                  onChange={e => {
-                    const value = parseFloat(e.target.value);
-                    setSelectedEntity({ ...selectedEntity, orientation: value });
-                  }}
-                  onMouseUp={() => {
-                    if (selectedArchetypeId && selectedEntityId)
-                      updateEntity(selectedArchetypeId, selectedEntityId, selectedEntity.scale, selectedEntity.orientation, selectedEntity.reflection);
-                  }}
-                />
-              </span>
-              <span className='flex justify-between w-full'>
-                <p>Reflection</p>
-                <input 
-                  type='checkbox' 
-                  checked={selectedEntity.reflection} 
-                  onChange={e => {
-                    const value = e.target.checked;
-                    setSelectedEntity({ ...selectedEntity, reflection: value });
-                    if (selectedArchetypeId && selectedEntityId)
-                      updateEntity(selectedArchetypeId, selectedEntityId, selectedEntity.scale, selectedEntity.orientation, value);
-                  }}
-                />
-              </span>
-              <button 
-                onClick={() => {
-                  setSelectedEntity({ ...selectedEntity, scale: 1, orientation: 0, reflection: false });
-                  if (selectedArchetypeId && selectedEntityId)
-                    updateEntity(selectedArchetypeId, selectedEntityId, 1, 0, false);
-                }}>
-                  Reset
-              </button>
-
-                
+                        value={selectedEntity.orientation} 
+                        onChange={e => {
+                          const value = parseFloat(e.target.value);
+                          setSelectedEntity({ ...selectedEntity, orientation: value });
+                        }}
+                        onMouseUp={() => {
+                          if (selectedArchetypeId && selectedEntityId)
+                            updateEntity(selectedArchetypeId, selectedEntityId, selectedEntity.scale, selectedEntity.orientation, selectedEntity.reflection);
+                        }}
+                      />
+                    </span>
+                    <span className='flex justify-between w-full'>
+                      <p>Reflection</p>
+                      <input 
+                        type='checkbox' 
+                        checked={selectedEntity.reflection} 
+                        onChange={e => {
+                          const value = e.target.checked;
+                          setSelectedEntity({ ...selectedEntity, reflection: value });
+                          if (selectedArchetypeId && selectedEntityId)
+                            updateEntity(selectedArchetypeId, selectedEntityId, selectedEntity.scale, selectedEntity.orientation, value);
+                        }}
+                      />
+                    </span>
+                    <button 
+                      onClick={() => {
+                        setSelectedEntity({ ...selectedEntity, scale: 1, orientation: 0, reflection: false });
+                        if (selectedArchetypeId && selectedEntityId)
+                          updateEntity(selectedArchetypeId, selectedEntityId, 1, 0, false);
+                      }}>
+                        Reset
+                    </button>
+                  </>
+              }
             </div>
         }
       </section>
