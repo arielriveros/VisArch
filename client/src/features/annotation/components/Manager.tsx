@@ -11,6 +11,8 @@ import Inspector from './Inspector';
 import useAnnotation from '../hooks/useAnnotation';
 import Emitter from '../utils/emitter';
 import Progress from './Progress';
+import Overview from './Overview';
+import useConfig from '../hooks/useConfig';
 
 interface ManagerProps {
   taskId?: string;
@@ -19,10 +21,11 @@ export default function  Manager(props: ManagerProps) {
   const { taskId } = props;
   const [task, setTask] = useState<TaskApiResponse | null>(null);
   const [roomId, setRoomId] = useState<string | null>(null);
-  const { annotations, setAnnotations, setUsers, dispatch } = useAnnotation();
   const [lockedAnnotations, setLockedAnnotations] = useState(false);
+  const { annotations, setAnnotations, setUsers, dispatch } = useAnnotation();
   const { registerEvent, unregisterEvent, join, leave, emit } = useSocket();
   const { loadModel } = useModel();
+  const { unwrapping } = useConfig();
 
   useEffect(() => {
     fetch(`${API_BASE_URL}/api/tasks/${taskId}`, { credentials: 'include' })
@@ -139,6 +142,7 @@ export default function  Manager(props: ManagerProps) {
       <Center>
         <Progress />
         <Viewport />
+        { unwrapping !== 'none' && <Overview /> }
       </Center>
       <Sidebar width='30%'>
         <Inspector />

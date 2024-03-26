@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Archetype, Entity } from '@/api/types';
 import useAnnotation from '../hooks/useAnnotation';
-import Overview from './Overview';
 
 export default function Inspector() {
   const {
@@ -28,9 +27,6 @@ export default function Inspector() {
   }, [selectedArchetypeId, selectedEntityId, annotations]);
   return (
     <div className='flex flex-col w-full h-full p-1 bg-gray-800'>
-      <section className='flex flex-col overflow-y-auto mb-2 bg-gray-700'>
-        <Overview />
-      </section>
       <section className='flex flex-col overflow-y-auto mb-2 bg-gray-700'>
         <h4>Archetype</h4>
         {

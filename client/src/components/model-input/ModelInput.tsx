@@ -1,8 +1,8 @@
-import { Canvas } from '@react-three/fiber';
 import { useEffect, useRef, useState } from 'react';
 import { Mesh, MeshStandardMaterial, TextureLoader } from 'three';
-import { adjustMesh, convertToGLB, loadGeometry, pngFromMesh } from './utils/utils';
-import PreviewModel from './components/PreviewModel';
+import { Canvas } from '@react-three/fiber';
+import { adjustMesh, convertToGLB, loadGeometry, pngFromMesh } from '@/utils/math';
+import PreviewModel from './PreviewModel';
 
 type SupportedModelInput = null | 'obj' | 'ply';
 

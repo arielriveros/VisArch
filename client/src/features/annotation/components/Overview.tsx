@@ -49,8 +49,8 @@ function OverviewModel() {
 
 export default function Overview() {
   return (
-    <div className='relative'>
-      <Canvas camera={{ position: [0, 0, 2] }}>
+    <div className='absolute bg-slate-700 bg-opacity-50 border'>
+      <Canvas camera={{ position: [0, 0, 1.5] }}>
         <ambientLight intensity={2} />
         <OverviewModel />
       </Canvas>
