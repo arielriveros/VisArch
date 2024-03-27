@@ -79,7 +79,6 @@ export default function useAnnotation() {
     const entity = archetype.entities.find(entity => entity.id === entityId);
     if (!entity) return;
     const updatedEntity = { ...entity, scale, orientation, reflection };
-    console.log(updatedEntity);
     dispatch({ type: 'UPDATE_ENTITY', payload: { archetypeId, entityId, entity: updatedEntity } });
     emit('updateEntity', { archetypeId, entityId, entity: updatedEntity });
   };

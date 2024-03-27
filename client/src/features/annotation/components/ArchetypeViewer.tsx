@@ -5,7 +5,14 @@ import { useModel } from '../hooks/useModel';
 import { facesToIndex, getCentroidNormalFromFaces } from '../utils/math';
 import HighlightMesh from './HighlightMesh';
 
-function LookAtCentroid({faces, zoom}: {faces: number[]; zoom: number}) {
+interface LookAtCentroidProps {
+  faces: number[];
+  zoom: number;
+  scale?: number;
+  orientation?: number;
+  reflection?: number;
+}
+function LookAtCentroid({faces, zoom, scale, orientation, reflection}: LookAtCentroidProps) {
   const { geometry } = useModel();
   const { camera } = useThree();
 
@@ -13,12 +20,18 @@ function LookAtCentroid({faces, zoom}: {faces: number[]; zoom: number}) {
     if (!geometry) return;
     const {centroid, normal} = getCentroidNormalFromFaces(faces, geometry);
 
-    camera.position.copy(centroid.clone().add(normal.multiplyScalar(1)));
+    const _scale = scale || 1;
+    const _reflection = reflection || 1;
+    const _orientation = (orientation || 0) * _reflection;
+
+    camera.position.copy(centroid.clone().add(normal.multiplyScalar(_reflection)));
     camera.lookAt(centroid);
-    camera.zoom = zoom;
+    // rotate camera z-axis based on orientation
+    camera.rotateZ(_orientation * Math.PI / 180);  
+    camera.zoom = zoom / _scale;
     camera.updateProjectionMatrix();
 
-  }, [geometry, camera, faces, zoom]);
+  }, [geometry, camera, faces, zoom, scale, orientation, reflection]);
 
   return null;
 }
@@ -27,12 +40,22 @@ export default function ArchetypeViewer({archetype, selectedEntity}: {archetype:
   const { geometry, material} = useModel();
   const [archetypeEntity, setArchetypeEntity] = useState<Entity | null>(null);
   const [zoom, setZoom] = useState(400);
+  const [scale, setScale] = useState(1);
+  const [reflection, setReflection] = useState(1);
+  const [orientation, setOrientation] = useState(1);
 
   useEffect(() => {
     const entityId = archetype.archetype;
     const entity = archetype.entities.find(entity => entity.id === entityId);
     setArchetypeEntity(entity || null);
   }, [archetype]);
+
+  useEffect(() => {
+    if (!selectedEntity) return;
+    setScale(selectedEntity.scale);
+    setOrientation(selectedEntity.orientation);
+    setReflection(selectedEntity.reflection ? -1 : 1);
+  }, [selectedEntity]);
 
   return (
     <section className='w-full'>
@@ -51,8 +74,15 @@ export default function ArchetypeViewer({archetype, selectedEntity}: {archetype:
             <Canvas orthographic camera={{ position: [0, 0, 1], zoom: zoom }} frameloop='demand' >
               <ambientLight intensity={5} />
               <pointLight position={[10, 10, 10]} />
-              { selectedEntity && <LookAtCentroid faces={selectedEntity.faces} zoom={zoom}/>}
-              { geometry && selectedEntity && <HighlightMesh geometry={geometry} indices={facesToIndex(selectedEntity.faces)} />}
+              { selectedEntity &&
+              <LookAtCentroid
+                faces={selectedEntity.faces}
+                zoom={zoom}
+                scale={scale}
+                orientation={orientation}
+                reflection={reflection}/>
+              }
+              { geometry && selectedEntity && <HighlightMesh geometry={geometry} indices={facesToIndex(selectedEntity.faces)} wireframe/>}
             </Canvas>
           </div>
         </div>

@@ -98,55 +98,75 @@ export default function Inspector() {
                         Unset as Archetype
                       </button>
                       : <>
-                        <span className='flex justify-between w-full'>
-                          <p>Scale</p>
-                          <input 
-                            type='range'
-                            min={0}
-                            max={2}
-                            step={0.05}
-                            value={selectedEntity.scale} 
-                            onChange={e => {
-                              const value = parseFloat(e.target.value);
-                              setSelectedEntity({ ...selectedEntity, scale: value });
-                            }}
-                            onMouseUp={() => {
-                              if (selectedArchetypeId && selectedEntityId)
-                                updateEntity(selectedArchetypeId, selectedEntityId, selectedEntity.scale, selectedEntity.orientation, selectedEntity.reflection);
-                            }}
-                          />
+                        <span className='flex justify-evenly w-full'>
+                          <div className='w-full text-right pr-4'>
+                            Scale
+                          </div>
+                          <div className='w-full'>
+                            <input 
+                              type='range'
+                              min={0}
+                              max={2}
+                              step={0.05}
+                              value={selectedEntity.scale} 
+                              onChange={e => {
+                                const value = parseFloat(e.target.value);
+                                setSelectedEntity({ ...selectedEntity, scale: value });
+                              }}
+                              onMouseUp={() => {
+                                if (selectedArchetypeId && selectedEntityId)
+                                  updateEntity(selectedArchetypeId, selectedEntityId, selectedEntity.scale, selectedEntity.orientation, selectedEntity.reflection);
+                              }}
+                            />
+                          </div>
+                          <div className='w-full text-center'>
+                            {selectedEntity.scale.toFixed(2)}
+                          </div>
                         </span>
                         <span className='flex justify-between w-full'>
-                          <p>Orientation</p>
-                          <input 
-                            type='range'
-                            min={-180}
-                            max={180}
-                            step={0.5}
+                          <div className='w-full text-right pr-4'>
+                            Orientation
+                          </div>
+                          <div className='w-full'>
+                            <input 
+                              type='range'
+                              min={-180}
+                              max={180}
+                              step={0.5}
 
-                            value={selectedEntity.orientation} 
-                            onChange={e => {
-                              const value = parseFloat(e.target.value);
-                              setSelectedEntity({ ...selectedEntity, orientation: value });
-                            }}
-                            onMouseUp={() => {
-                              if (selectedArchetypeId && selectedEntityId)
-                                updateEntity(selectedArchetypeId, selectedEntityId, selectedEntity.scale, selectedEntity.orientation, selectedEntity.reflection);
-                            }}
-                          />
+                              value={selectedEntity.orientation} 
+                              onChange={e => {
+                                const value = parseFloat(e.target.value);
+                                setSelectedEntity({ ...selectedEntity, orientation: value });
+                              }}
+                              onMouseUp={() => {
+                                if (selectedArchetypeId && selectedEntityId)
+                                  updateEntity(selectedArchetypeId, selectedEntityId, selectedEntity.scale, selectedEntity.orientation, selectedEntity.reflection);
+                              }}
+                            />
+                          </div>
+                          <div className='w-full text-center'>
+                            {selectedEntity.orientation.toFixed(2)}
+                          </div>
                         </span>
-                        <span className='flex justify-between w-full'>
-                          <p>Reflection</p>
-                          <input 
-                            type='checkbox' 
-                            checked={selectedEntity.reflection} 
-                            onChange={e => {
-                              const value = e.target.checked;
-                              setSelectedEntity({ ...selectedEntity, reflection: value });
-                              if (selectedArchetypeId && selectedEntityId)
-                                updateEntity(selectedArchetypeId, selectedEntityId, selectedEntity.scale, selectedEntity.orientation, value);
-                            }}
-                          />
+                        <span className='flex justify-evenly w-full'>
+                          <div className='w-full text-right pr-4'>
+                            Reflected
+                          </div>
+                          <div className='w-full justify-center'>
+                            <input 
+                              className='w-full'
+                              type='checkbox' 
+                              checked={selectedEntity.reflection} 
+                              onChange={e => {
+                                const value = e.target.checked;
+                                setSelectedEntity({ ...selectedEntity, reflection: value });
+                                if (selectedArchetypeId && selectedEntityId)
+                                  updateEntity(selectedArchetypeId, selectedEntityId, selectedEntity.scale, selectedEntity.orientation, value);
+                              }}
+                            />
+                          </div>
+                          <div className='w-full' />
                         </span>
                         <button 
                           onClick={() => {
