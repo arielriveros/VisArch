@@ -1,7 +1,7 @@
 import { FormEvent } from 'react';
 import { useNavigate } from 'react-router-dom';
 import ConfirmButton from '@/components/ConfirmButton';
-import ModelInput from '@/features/model-input/ModelInput';
+import ModelInput from '@/components/model-input/ModelInput';
 import '@/styles/components/Form.css';
 
 interface TaskFormProps {

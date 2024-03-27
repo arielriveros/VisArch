@@ -28,7 +28,7 @@ const TaskSchema = new Schema({
 TaskSchema.pre('deleteOne', async function(next) {
   const task = await this.model.findOne(this.getQuery());
   if(!task)
-      return next();
+    return next();
 
   fs.unlinkSync(`files/${task.model}`);
   fs.unlinkSync(`files/${task.thumbnail}`);
@@ -36,11 +36,24 @@ TaskSchema.pre('deleteOne', async function(next) {
   // Find project this task belongs to
   const project = await Project.findOne({ tasks: task._id });
   if(!project)
-      return next();
+    return next();
 
   // Remove task from project
   project.tasks.pull(task._id);
   await project.save();
+
+  return next();
+});
+
+TaskSchema.pre('deleteMany', async function(next) {
+  const tasks = await this.model.find(this.getQuery());
+  if(!tasks)
+    return next();
+
+  tasks.forEach(task => {
+    fs.unlinkSync(`files/${task.model}`);
+    fs.unlinkSync(`files/${task.thumbnail}`);
+  });
 
   return next();
 });

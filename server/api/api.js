@@ -1,14 +1,14 @@
 const express = require('express');
 const cors = require('cors');
-const LoginRoutes = require('./routes/login');
-const UserRoutes = require('./routes/users');
-const ProjectRoutes = require('./routes/projects');
-const TaskRoutes = require('./routes/tasks');
-const FileRoutes = require('./routes/files');
-const requireAuth = require('./middleware/auth');
+const cookieSession = require('cookie-session');
+const LoginRoutes = require('./routes/login.routes');
+const UserRoutes = require('./routes/users.routes');
+const ProjectRoutes = require('./routes/projects.routes');
+const TaskRoutes = require('./routes/tasks.routes');
+const FileRoutes = require('./routes/files.routes');
 const googlePassport = require('./auth/passportGoogle');
 const githubPassport = require('./auth/passportGithub');
-const cookieSession = require('cookie-session');
+const requireAuth = require('./middleware/auth');
 
 // Entry point for the application
 const api = express();  
@@ -33,11 +33,18 @@ api.use(googlePassport.session());
 api.use(githubPassport.initialize());
 api.use(githubPassport.session());
 
-// Routes
-api.use('/api/auth', LoginRoutes);
-api.use('/api/users', requireAuth, UserRoutes);
-api.use('/api/projects', requireAuth, ProjectRoutes);
-api.use('/api/tasks', requireAuth, TaskRoutes);
-api.use('/api/files', requireAuth, FileRoutes);
- 
+// API Routes
+const apiRouter = express.Router();
+
+// Set up routes
+apiRouter.use('/auth', LoginRoutes);
+apiRouter.use(requireAuth);
+apiRouter.use('/users', UserRoutes);
+apiRouter.use('/projects', ProjectRoutes);
+apiRouter.use('/tasks', TaskRoutes);
+apiRouter.use('/files', FileRoutes);
+
+// Mount the API router
+api.use('/api', apiRouter);
+
 module.exports = api;

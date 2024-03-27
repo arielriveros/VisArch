@@ -27,19 +27,21 @@ export interface ProjectApiResponse {
 export interface ProjectsApiResponse extends Array<ProjectApiResponse> {}
 
 export interface Entity {
-  id: string;
+  id: ID;
   faces: number[];
   scale: number;
   orientation: number;
   reflection: boolean;
+  addedBy: ID;
 }
 
 export interface Archetype {
-  id: string;
+  id: ID;
   label: string;
   entities: Entity[];
   archetype: string | null;
   color: string;
+  addedBy: ID;
 }
 
 export interface TaskApiResponse {
@@ -49,6 +51,8 @@ export interface TaskApiResponse {
   model: string;
   thumbnail: string;
   annotations: Archetype[];
+  owner: UserApiResponse;
+  collaborators: UserApiResponse[];
 }
 
 export interface TasksApiResponse extends Array<TaskApiResponse> {}

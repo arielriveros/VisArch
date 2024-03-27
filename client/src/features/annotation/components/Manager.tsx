@@ -1,8 +1,8 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { API_BASE_URL } from '@/api/config';
-import { Archetype, Entity, TaskApiResponse } from '@/api/types';
+import { Archetype, Entity, TaskApiResponse, UserApiResponse } from '@/api/types';
 import { useModel } from '../hooks/useModel';
-import { useSocket } from '../hooks/useSocket';
+import { useSocket } from '@/features/socket/hooks/useSocket';
 import Center from './Center';
 import Sidebar from './Sidebar';
 import Viewport from './Viewport';
@@ -10,6 +10,9 @@ import Annotations from './Annotations';
 import Inspector from './Inspector';
 import useAnnotation from '../hooks/useAnnotation';
 import Emitter from '../utils/emitter';
+import Progress from './Progress';
+import Overview from './Overview';
+import useConfig from '../hooks/useConfig';
 
 interface ManagerProps {
   taskId?: string;
@@ -18,14 +21,11 @@ export default function  Manager(props: ManagerProps) {
   const { taskId } = props;
   const [task, setTask] = useState<TaskApiResponse | null>(null);
   const [roomId, setRoomId] = useState<string | null>(null);
-  const { annotations, setAnnotations, dispatch } = useAnnotation();
-  const { connect, disconnect, registerEvent, unregisterEvent, join, leave } = useSocket();
-  const { loadModel, dispose } = useModel();
-  const loadmodelRef = useRef(loadModel);
-  const disposeRef = useRef(dispose);
-
-  useEffect(() => { loadmodelRef.current = loadModel; }, [loadModel]);
-  useEffect(() => { disposeRef.current = dispose; }, [dispose]);
+  const [lockedAnnotations, setLockedAnnotations] = useState(false);
+  const { annotations, setAnnotations, setUsers, dispatch } = useAnnotation();
+  const { registerEvent, unregisterEvent, join, leave, emit } = useSocket();
+  const { loadModel } = useModel();
+  const { unwrapping } = useConfig();
 
   useEffect(() => {
     fetch(`${API_BASE_URL}/api/tasks/${taskId}`, { credentials: 'include' })
@@ -48,11 +48,13 @@ export default function  Manager(props: ManagerProps) {
 
   useEffect(() => {
     if (task) {
-      loadmodelRef.current(`${API_BASE_URL}/api/files/models/${task.model}`);
+      loadModel(`${API_BASE_URL}/api/files/models/${task.model}`);
       const annotations = task.annotations || [];
-      setAnnotations(annotations);
+      if (!lockedAnnotations)
+        setAnnotations(annotations);
+      setUsers(task.owner, task.collaborators);
     }
-  }, [task, setAnnotations]);
+  }, [task, lockedAnnotations, setAnnotations, loadModel, setUsers]);
 
   const onSave = useCallback(() => {
     const updatedTask = { ...task, annotations };
@@ -73,40 +75,64 @@ export default function  Manager(props: ManagerProps) {
     return () => Emitter.off('SAVE', onSave);
   }, [onSave]);
 
-  useEffect(() => {
-    connect();
-    return () => {
-      disposeRef.current();
-      disconnect();
-    };
-  }, [taskId, connect, disconnect]);
 
   // Websocket events
   useEffect(() => {
-    const onUserJoined = (user: string) => console.log(`${user} joined`);
+    const onUserJoined = () => {
+      emit('setAnnotations', annotations);
+    };
+    const onUserLeft = (user: UserApiResponse) => console.log(`${user?.name} left`, user);
+    const onSetAnnotations = (annotations: Archetype[]) => {
+      setLockedAnnotations(true);
+      setAnnotations(annotations);
+    };
+
+    const onAddArchetype = (archetype: Archetype) => {
+      dispatch({ type: 'ADD_ARCHETYPE', payload: archetype });
+    };
+    const onRemoveArchetype = (id: string) => {
+      dispatch({ type: 'REMOVE_ARCHETYPE', payload: id });
+    };
+    const onUpdateArchetype = (archetype: Archetype) => {
+      dispatch({ type: 'UPDATE_ARCHETYPE', payload: archetype });
+    };
+    
+    const onAddEntity = (payload: { archetypeId: string, entity: Entity }) => {
+      dispatch({ type: 'ADD_ENTITY', payload });
+    };
+    const onRemoveEntity = (payload: { archetypeId: string, entityId: string }) => {
+      dispatch({ type: 'REMOVE_ENTITY', payload });
+    };
+    const onUpdateEntity = (payload: { archetypeId: string, entityId: string, entity: Entity }) => {
+      dispatch({ type: 'UPDATE_ENTITY', payload });
+    };
+    const onSetEntityAsArchetype = (payload: { archetypeId: string, entityId: string | null }) => {
+      dispatch({ type: 'SET_ENTITY_AS_ARCHETYPE', payload });
+    };
+
     registerEvent('userJoined', onUserJoined);
-    const onAddArchetype = (archetype: Archetype) => dispatch({ type: 'ADD_ARCHETYPE', payload: archetype });
+    registerEvent('userLeft', onUserLeft);
+    registerEvent('setAnnotations', onSetAnnotations);
     registerEvent('addArchetype', onAddArchetype);
-    const onRemoveArchetype = (id: string) => dispatch({ type: 'REMOVE_ARCHETYPE', payload: id });
     registerEvent('removeArchetype', onRemoveArchetype);
-    const onUpdateArchetype = (archetype: Archetype) => dispatch({ type: 'UPDATE_ARCHETYPE', payload: archetype });
     registerEvent('updateArchetype', onUpdateArchetype);
-    const onAddEntity = (payload: { archetypeId: string, entity: Entity }) => dispatch({ type: 'ADD_ENTITY', payload });
     registerEvent('addEntity', onAddEntity);
-    const onRemoveEntity = (payload: { archetypeId: string, entityId: string }) => dispatch({ type: 'REMOVE_ENTITY', payload });
     registerEvent('removeEntity', onRemoveEntity);
-    const onUpdateEntity = (payload: { archetypeId: string, entityId: string, entity: Entity }) => dispatch({ type: 'UPDATE_ENTITY', payload });
     registerEvent('updateEntity', onUpdateEntity);
+    registerEvent('setEntityAsArchetype', onSetEntityAsArchetype);
     return () => {
       unregisterEvent('userJoined', onUserJoined);
+      unregisterEvent('userLeft', onUserLeft);
+      unregisterEvent('setAnnotations', onSetAnnotations);
       unregisterEvent('addArchetype', onAddArchetype);
       unregisterEvent('removeArchetype', onRemoveArchetype);
       unregisterEvent('updateArchetype', onUpdateArchetype);
       unregisterEvent('addEntity', onAddEntity);
       unregisterEvent('removeEntity', onRemoveEntity);
       unregisterEvent('updateEntity', onUpdateEntity);
+      unregisterEvent('setEntityAsArchetype', onSetEntityAsArchetype);
     };
-  }, [registerEvent, unregisterEvent, dispatch]);
+  }, [registerEvent, unregisterEvent, dispatch, emit, annotations, setLockedAnnotations, setAnnotations]);
 
   return (
     <section className='flex h-svh w-full pt-8'>
@@ -114,7 +140,9 @@ export default function  Manager(props: ManagerProps) {
         <Annotations />
       </Sidebar>
       <Center>
+        <Progress />
         <Viewport />
+        { unwrapping !== 'none' && <Overview /> }
       </Center>
       <Sidebar width='30%'>
         <Inspector />

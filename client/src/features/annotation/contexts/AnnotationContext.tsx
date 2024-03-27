@@ -1,10 +1,11 @@
 import { createContext, useReducer } from 'react';
-import { Archetype, Entity } from '@/api/types';
+import { Archetype, Entity, UserApiResponse } from '@/api/types';
 
 interface AnnotationState {
   annotations: Archetype[];
   selectedArchetype: string | null;
   selectedEntity: string | null;
+  users: UserApiResponse[];
 }
 
 interface SetAnnotationsAction {
@@ -52,10 +53,24 @@ interface UpdateEntityAction {
   payload: { archetypeId: string, entityId: string, entity: Entity };
 }
 
+interface SetEntityAsArchetypeAction {
+  type: 'SET_ENTITY_AS_ARCHETYPE';
+  payload: { archetypeId: string, entityId: string | null };
+}
+
+interface SetUsersAction {
+  type: 'SET_USERS';
+  payload: {
+    owner: UserApiResponse;
+    collaborators: UserApiResponse[];
+  };
+}
+
     
 type AnnotationAction = SetAnnotationsAction |
   AddArchetypeAction | RemoveArchetypeAction | SelectArchetypeAction | UpdateArchetypeAction |
-  AddEntityAction | RemoveEntityAction | SelectEntityAction | UpdateEntityAction;
+  AddEntityAction | RemoveEntityAction | SelectEntityAction | UpdateEntityAction | SetEntityAsArchetypeAction |
+  SetUsersAction;
 
 interface AnnotationContextProps extends AnnotationState {
   dispatch: React.Dispatch<AnnotationAction>;
@@ -64,7 +79,8 @@ interface AnnotationContextProps extends AnnotationState {
 const defaultState: AnnotationState = {
   annotations: [],
   selectedArchetype: null,
-  selectedEntity: null
+  selectedEntity: null,
+  users: []
 };
 
 export const AnnotationContext = createContext<AnnotationContextProps>({ ...defaultState, dispatch: () => {} });
@@ -126,6 +142,7 @@ function AnnotationReducer(state: AnnotationState, action: AnnotationAction): An
         if (archetype.id === archetypeId)
           return {
             ...archetype,
+            archetype: archetype.archetype === entityId ? null : archetype.archetype, // Unset the archetype if it is the entity being removed
             entities: archetype.entities.filter(entity => entity.id !== entityId) ,
           };
         return archetype;
@@ -154,6 +171,24 @@ function AnnotationReducer(state: AnnotationState, action: AnnotationAction): An
       })
     };
   }
+
+  case 'SET_ENTITY_AS_ARCHETYPE': {
+    const { archetypeId, entityId } = action.payload;
+    return {
+      ...state,
+      annotations: state.annotations.map(archetype => {
+        if (archetype.id === archetypeId)
+          return {
+            ...archetype,
+            archetype: entityId
+          };
+        return archetype;
+      })
+    };
+  }
+
+  case 'SET_USERS':
+    return { ...state, users: [action.payload.owner, ...action.payload.collaborators] };
 
   default:
     return state;

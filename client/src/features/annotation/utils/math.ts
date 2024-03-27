@@ -78,6 +78,25 @@ export function getTriangleFromIndex(faceIndex: number, geometry: BufferGeometry
   return { a, b, c, normal, centroid};
 }
 
+export function getCentroidNormalFromFaces(faces: number[], geometry: BufferGeometry): { normal: Vector3, centroid: Vector3 } {
+  const indices = facesToIndex(faces);
+  const positions = geometry.attributes.position.array;
+  const centroid = indices.reduce((acc, index) => {
+    const x = positions[index * 3];
+    const y = positions[index * 3 + 1];
+    const z = positions[index * 3 + 2];
+    return acc.add(new Vector3(x, y, z));
+  }, new Vector3()).divideScalar(indices.length);
+  const normals = geometry.attributes.normal.array;
+  const normal = indices.reduce((acc, index) => {
+    const x = normals[index * 3];
+    const y = normals[index * 3 + 1];
+    const z = normals[index * 3 + 2];
+    return acc.add(new Vector3(x, y, z));
+  }, new Vector3()).divideScalar(indices.length);
+  return { normal, centroid };
+}
+
 export function indexToFaces(indices: number[]): number[] {
   return indices
     .filter((_, i) => i % 3 === 0)

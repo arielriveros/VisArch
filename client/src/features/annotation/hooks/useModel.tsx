@@ -1,25 +1,26 @@
-import { useContext, useState } from 'react';
+import { useCallback, useContext, useState } from 'react';
 import { Material } from 'three';
 import { ModelContext } from '../contexts/ModelContext';
 import { loadModelFromUrl } from '../utils/glbLoader';
+import Emitter from '../utils/emitter';
 
 export function useModel() {
   const context = useContext(ModelContext);
   const [loading, setLoading] = useState(false);
+  const { dispatch } = context;
 
   if (!context)
     throw new Error('useModelContext must be used within a ModelContextProvider');
-
-  const loadModel = async (url: string) => {
-    const { dispatch } = context;
+  
+  const loadModel = useCallback(async (url: string) => {
     setLoading(true);
   
     try {
-      dispose();
-      const model = await loadModelFromUrl(url);
-      // TODO: Remove this after fixing the uploaded models
-      if (!model.geometry.index)
-        model.geometry.computeBoundsTree();
+      const onProgress = (current: number, total: number, text: string) => {
+        Emitter.emit('PROGRESS', current, total, text);
+      };
+      const onLoaded = () => Emitter.emit('READY');
+      const model = await loadModelFromUrl(url, onLoaded, onProgress);
       dispatch({ type: 'SET_GEOMETRY', payload: model.geometry });
       dispatch({ type: 'SET_MATERIAL', payload: model.material as Material });
     }
@@ -29,17 +30,7 @@ export function useModel() {
     finally {
       setLoading(false);
     }
-  };
+  }, [dispatch]);
 
-  const dispose = () => {
-    const { geometry, material, dispatch } = context;
-    if (geometry)
-      geometry.dispose();
-    if (material)
-      material.dispose();
-    dispatch({ type: 'SET_GEOMETRY', payload: null });
-    dispatch({ type: 'SET_MATERIAL', payload: null });
-  };
-
-  return { ...context, loadModel, loading, dispose };
+  return { ...context, loadModel, loading };
 }
