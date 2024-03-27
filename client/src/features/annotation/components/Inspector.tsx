@@ -87,7 +87,11 @@ export default function Inspector() {
                   Set as Archetype
                 </button> :
                 <>
-                  {selectedArchetype && <ArchetypeViewer archetype={selectedArchetype} />}
+                  {selectedArchetype && 
+                    <ArchetypeViewer 
+                      archetype={selectedArchetype}
+                      selectedEntity={selectedArchetype.archetype !== selectedEntity.id ? selectedEntity : null}
+                    />}
                   {
                     selectedArchetype?.archetype === selectedEntity.id ?
                       <button onClick={() => setEntityAsArchetype(selectedArchetype.id, null)}>

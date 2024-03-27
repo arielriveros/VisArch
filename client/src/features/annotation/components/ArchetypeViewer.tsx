@@ -23,7 +23,7 @@ function LookAtCentroid({faces, zoom}: {faces: number[]; zoom: number}) {
   return null;
 }
 
-export default function ArchetypeViewer({archetype}: {archetype: Archetype}) {
+export default function ArchetypeViewer({archetype, selectedEntity}: {archetype: Archetype; selectedEntity: Entity | null}) {
   const { geometry, material} = useModel();
   const [archetypeEntity, setArchetypeEntity] = useState<Entity | null>(null);
   const [zoom, setZoom] = useState(400);
@@ -35,15 +35,27 @@ export default function ArchetypeViewer({archetype}: {archetype: Archetype}) {
   }, [archetype]);
 
   return (
-    <section>
-      <div className='aspect-square bg-gray-800 flex justify-center items-center'>
-        <Canvas orthographic camera={{ position: [0, 0, 1], zoom: zoom }} frameloop='demand'>
-          <ambientLight intensity={5} />
-          <pointLight position={[10, 10, 10]} />
-          { archetypeEntity && <LookAtCentroid faces={archetypeEntity.faces} zoom={zoom}/>}
-          { geometry && material && <mesh geometry={geometry.clone()} material={material.clone()} /> }
-          { geometry && archetypeEntity && <HighlightMesh geometry={geometry} indices={facesToIndex(archetypeEntity.faces)} color={archetype.color} />}
-        </Canvas>
+    <section className='w-full'>
+      <div className='aspect-square flex pointer-events-none'>
+        <div className='w-full h-full relative'>
+          <div className='w-full h-full absolute flex items-center justify-center'>
+            <Canvas orthographic camera={{ position: [0, 0, 1], zoom: zoom }} frameloop='demand'>
+              <ambientLight intensity={5} />
+              <pointLight position={[10, 10, 10]} />
+              { archetypeEntity && <LookAtCentroid faces={archetypeEntity.faces} zoom={zoom}/>}
+              { geometry && material && <mesh geometry={geometry.clone()} material={material.clone()} /> }
+              { geometry && archetypeEntity && <HighlightMesh geometry={geometry} indices={facesToIndex(archetypeEntity.faces)} color={archetype.color} />}
+            </Canvas>
+          </div>
+          <div className='w-full h-full absolute flex items-center justify-center'>
+            <Canvas orthographic camera={{ position: [0, 0, 1], zoom: zoom }} frameloop='demand' >
+              <ambientLight intensity={5} />
+              <pointLight position={[10, 10, 10]} />
+              { selectedEntity && <LookAtCentroid faces={selectedEntity.faces} zoom={zoom}/>}
+              { geometry && selectedEntity && <HighlightMesh geometry={geometry} indices={facesToIndex(selectedEntity.faces)} />}
+            </Canvas>
+          </div>
+        </div>
       </div>
       <input
         className='w-full'
