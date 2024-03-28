@@ -55,12 +55,12 @@ export default function Tasks() {
       <div className='flex flex-col w-1/3 m-2 pl-4 justify-center items-center float-left bg-dark-blue rounded-sm'>
         <span className='flex flex-col w-full mb-4 justify-evenly'>
           <span className='text-2xl font-bold mb-4'>{project?.name}</span>
-          <span><b>Owner:</b> {project?.owner.name} ({user?.id === project?.owner._id ? 'You' : project?.owner.email})</span>
+          <span><b>Owner:</b> {project?.owner.displayName} ({user?.id === project?.owner._id ? 'You' : project?.owner.email})</span>
           <span>
             <span><b>Collaborators:</b></span>
             <ul className='list-disc list-inside'>
               {project?.collaborators.map((collaborator) => (
-                <li key={collaborator._id}>{collaborator.name} ({collaborator._id === project?.owner._id ? 'Owner' : collaborator.email})</li>
+                <li key={collaborator._id}>{collaborator.displayName} ({collaborator._id === project?.owner._id ? 'Owner' : collaborator.email})</li>
               ))}
             </ul>
           </span>

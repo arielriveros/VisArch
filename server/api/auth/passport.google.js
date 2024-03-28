@@ -1,12 +1,12 @@
 const passport = require('passport');
-const GitHubStrategy = require('passport-github').Strategy;
+const GoogleStrategy = require('passport-google-oauth20').Strategy;
 const UserModel = require('../models/User');
 
-const callbackURL = process.env.NODE_ENV === 'production' ? `${process.env.APP_URL}/api/auth/callback/github` : 'http://localhost:5000/api/auth/callback/github';
+const callbackURL = process.env.NODE_ENV === 'production' ? `${process.env.APP_URL}/api/auth/callback/google` : 'http://localhost:5000/api/auth/callback/google';
 
-passport.use(new GitHubStrategy({
-    clientID: process.env.GITHUB_ID,
-    clientSecret: process.env.GITHUB_SECRET,
+passport.use(new GoogleStrategy({
+    clientID: process.env.GOOGLE_ID,
+    clientSecret: process.env.GOOGLE_SECRET,
     callbackURL: callbackURL,
     passReqToCallback: true
   },
@@ -17,7 +17,8 @@ passport.use(new GitHubStrategy({
         return cb(null, user);
 
       const newUser = new UserModel({
-        name: profile.displayName,
+        userName: profile.emails[0].value,
+        displayName: profile.displayName,
         email: profile.emails[0].value,
         providerId: profile.id,
         picture: profile.photos[0].value
@@ -26,7 +27,7 @@ passport.use(new GitHubStrategy({
       return cb(null, newUser);
 
     } catch (error) {
-      console.error('Error in passport-github', error);
+      console.error('Error in passport-google', error);
       return cb(error);
     }
   }

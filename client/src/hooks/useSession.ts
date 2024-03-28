@@ -24,7 +24,8 @@ export default function useSession() {
         if (data) {
           const user = {
             id: data._id,
-            name: data.name,
+            userName: data.userName,
+            displayName: data.displayName,
             email: data.email,
             picture: data.picture
           };

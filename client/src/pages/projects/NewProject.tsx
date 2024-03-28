@@ -7,7 +7,7 @@ import useSession from '@/hooks/useSession';
 export default function NewProject() {
   const navigate = useNavigate();
   const { user } = useSession();
-  const [usersList, setUsersList] = useState<{name: string, email: string, id: string}[]>();
+  const [usersList, setUsersList] = useState<{displayName: string, email: string, id: string}[]>();
   const [project, setProject] = useState<{name: string; description: string, collaboratorsIds: string[]}>({
     name: '',
     description: '',
@@ -48,10 +48,10 @@ export default function NewProject() {
   const populateUsersList = async () => {
     const res = await fetch(API_BASE_URL+'/api/users/', { credentials: 'include' });
     const data = await res.json();
-    const usersList = data.map((user: {name: string, email: string, _id: string}) => {
+    const usersList = data.map((user: {displayName: string, email: string, _id: string}) => {
       return {
         id: user._id,
-        name: user.name,
+        displayName: user.displayName,
         email: user.email
       };
     });

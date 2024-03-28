@@ -2,7 +2,8 @@ type ID = string;
 
 export interface UserApiResponse {
   _id: ID;
-  name: string;
+  userName: string;
+  displayName: string;
   email: string;
   picture?: string;
 }
@@ -13,12 +14,12 @@ export interface ProjectApiResponse {
   description: string;
   owner: {
     _id: ID;
-    name: string;
+    displayName: string;
     email: string;
   };
   collaborators: {
     _id: ID;
-    name: string;
+    displayName: string;
     email: string;
   }[];
   tasks: ID[]
