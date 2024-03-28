@@ -27,26 +27,26 @@ io.on('connection', (socket) => {
 
   socket.on('setUser', (incUser) => {
     if (user) return;
-    console.log(`User connected: ${incUser.name}`);
+    console.log(`User connected: ${incUser.displayName}`);
     user = incUser;
   });
 
   socket.on('join', (room) => {
-    console.log(`User ${user?.name} joined room: ${room}`);
+    console.log(`User ${user?.displayName} joined room: ${room}`);
     socket.join(room);
     socketRoom = room;
     socket.broadcast.to(room).emit('userJoined', user);
   });
 
   socket.on('leave', (room) => {
-    console.log(`User ${user?.name} left room: ${room}`);
+    console.log(`User ${user?.displayName} left room: ${room}`);
     socket.broadcast.to(room).emit('userLeft', user);
     socket.leave(room);
     socketRoom = null;
   });
 
   socket.on('disconnect', () => {
-    console.log(`User ${user?.name} disconnected`);
+    console.log(`User ${user?.displayName} disconnected`);
   });
 
   function broadcastMessage(event, payload) {

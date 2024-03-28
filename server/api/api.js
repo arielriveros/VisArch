@@ -6,8 +6,8 @@ const UserRoutes = require('./routes/users.routes');
 const ProjectRoutes = require('./routes/projects.routes');
 const TaskRoutes = require('./routes/tasks.routes');
 const FileRoutes = require('./routes/files.routes');
-const googlePassport = require('./auth/passportGoogle');
-const githubPassport = require('./auth/passportGithub');
+const GooglePassport = require('./auth/passport.google');
+const GithubPassport = require('./auth/passport.github');
 const requireAuth = require('./middleware/auth');
 
 // Entry point for the application
@@ -28,10 +28,10 @@ api.use(cookieSession({
 }));
 
 // Passport
-api.use(googlePassport.initialize());
-api.use(googlePassport.session());
-api.use(githubPassport.initialize());
-api.use(githubPassport.session());
+api.use(GooglePassport.initialize());
+api.use(GooglePassport.session());
+api.use(GithubPassport.initialize());
+api.use(GithubPassport.session());
 
 // API Routes
 const apiRouter = express.Router();

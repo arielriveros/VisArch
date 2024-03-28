@@ -35,7 +35,7 @@ export default function Inspector() {
             <div className='flex flex-col items-center px-2'>
               <span className='flex justify-between w-full'>
                 <p>Added By</p>
-                <p>{users.find(user => user._id === selectedArchetype.addedBy)?.name}</p>
+                <p>{users.find(user => user._id === selectedArchetype.addedBy)?.displayName}</p>
               </span>
               <span className='flex justify-between w-full'>
                 <p>Label</p>
@@ -76,7 +76,7 @@ export default function Inspector() {
             <div className='flex flex-col items-center px-2'>
               <span className='flex justify-between w-full'>
                 <p>Added By</p>
-                <p>{users.find(user => user._id === selectedEntity.addedBy)?.name}</p>
+                <p>{users.find(user => user._id === selectedEntity.addedBy)?.displayName}</p>
               </span>
               <span className='flex justify-between w-full'>
                 <p>Faces</p>
@@ -105,7 +105,7 @@ export default function Inspector() {
                           <div className='w-full'>
                             <input 
                               type='range'
-                              min={0}
+                              min={0.1}
                               max={2}
                               step={0.05}
                               value={selectedEntity.scale} 

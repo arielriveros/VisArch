@@ -81,7 +81,7 @@ export default function  Manager(props: ManagerProps) {
     const onUserJoined = () => {
       emit('setAnnotations', annotations);
     };
-    const onUserLeft = (user: UserApiResponse) => console.log(`${user?.name} left`, user);
+    const onUserLeft = (user: UserApiResponse) => console.log(`${user?.displayName} left`, user);
     const onSetAnnotations = (annotations: Archetype[]) => {
       setLockedAnnotations(true);
       setAnnotations(annotations);

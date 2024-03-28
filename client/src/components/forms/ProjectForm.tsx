@@ -15,14 +15,14 @@ interface ProjectFormProps {
     collaboratorsIds: string[];
   }) => void;
   handleSubmit: (e: React.FormEvent<HTMLFormElement>) => void;
-  usersList: {name: string, email: string, id: string}[];
+  usersList: {displayName: string, email: string, id: string}[];
 }
 
 export default function ProjectForm(props: ProjectFormProps) {
   const { project, setProject, handleSubmit } = props;
   const [search, setSearch] = useState<string>('');
-  const [addedCollaborators, setAddedCollaborators] = useState<{id: string, name: string, email: string}[]>([]);
-  const [filteredUsersList, setFilteredUsersList] = useState<{name: string, email: string, id: string}[]>(props.usersList);
+  const [addedCollaborators, setAddedCollaborators] = useState<{id: string, displayName: string, email: string}[]>([]);
+  const [filteredUsersList, setFilteredUsersList] = useState<{displayName: string, email: string, id: string}[]>(props.usersList);
 
   useEffect(() => {
     const handleSearch = async (search: string) => {
@@ -32,7 +32,7 @@ export default function ProjectForm(props: ProjectFormProps) {
       const filteredList = props.usersList.filter( user => {
         return (
           // search by name
-          user.name.toLowerCase().includes(search.toLowerCase()) ||
+          user.displayName.toLowerCase().includes(search.toLowerCase()) ||
           // search by email
           user.email.toLowerCase().includes(search.toLowerCase())
         );
@@ -44,7 +44,7 @@ export default function ProjectForm(props: ProjectFormProps) {
     handleSearch(search);
   }, [props.usersList, search]);
 
-  const handleSetCollaborators = (collaborators: {id: string, name: string, email: string}[]) => {
+  const handleSetCollaborators = (collaborators: {id: string, displayName: string, email: string}[]) => {
     setAddedCollaborators(collaborators);
     setProject({
       ...project,
@@ -101,10 +101,10 @@ export default function ProjectForm(props: ProjectFormProps) {
             // return if collaborator is already added
             addedCollaborators.find(c => c.id === user.id) ? null :
               <div key={user.id} className='flex  justify-between text-black bg-gray-100 hover:bg-gray-400 p-1 cursor-pointer' onClick={() => {
-                handleSetCollaborators([...addedCollaborators, { id: user.id, name: user.name, email: user.email }]);
+                handleSetCollaborators([...addedCollaborators, { id: user.id, displayName: user.displayName, email: user.email }]);
                 setSearch(''); }}
               >
-                <p className='w-1/2 truncate'>{user.name}</p>
+                <p className='w-1/2 truncate'>{user.displayName}</p>
                 <p className='w-1/2 truncate text-sm'>{user.email}</p>
               </div>
           ))}
@@ -112,7 +112,7 @@ export default function ProjectForm(props: ProjectFormProps) {
         { addedCollaborators && <div>
           {addedCollaborators.map((collaborator) => (
             <div key={collaborator.id} className='flex w-full justify-between py-2 px-5'>
-              <p className='wrap-text text-sm'>{collaborator.name}</p>
+              <p className='wrap-text text-sm'>{collaborator.displayName}</p>
               <button className='bg-red-500 text-white text-xs p-1 rounded-full w-5 max-h-5 border-none' onClick={() => {
                 handleSetCollaborators(addedCollaborators.filter((c) => c.id !== collaborator.id));
               }}>X</button>

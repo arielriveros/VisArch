@@ -2,7 +2,8 @@ import { createContext, useReducer } from 'react';
 
 interface User {
   id: string;
-  name: string;
+  userName: string;
+  displayName: string;
   email: string;
   picture?: string;
 }

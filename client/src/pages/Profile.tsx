@@ -6,18 +6,14 @@ import Resitricted from '@/components/Restricted';
 export default function Profile() {
   const { logout, user } = useSession();
 
-  if (!user) {
+  if (!user)
     return <Resitricted />;
-  }
 
   const handleDelete = async () => {
     const res = await fetch(`${API_BASE_URL}/api/users/${user.id}` , { credentials: 'include', method: 'DELETE'});
-    if (res.ok) {
+    if (res.ok)
       logout();
-    }
   };
-
-  
 
   return (
     <section className='flex flex-col w-full items-center justify-center'>
@@ -39,7 +35,7 @@ export default function Profile() {
             </div>
             <div className='flex flex-col justify-center ml-4'>
               <div className='flex flex-col ml-4'>
-                <p className='text-xl font-bold'>{user.name}</p>
+                <p className='text-xl font-bold'>{user.displayName}</p>
                 <p>{user.email}</p>
               </div>
               <div className='flex flex-col'>
