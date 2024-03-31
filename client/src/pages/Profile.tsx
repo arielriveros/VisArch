@@ -1,5 +1,5 @@
 import { API_BASE_URL } from '@/api/config';
-import ConfirmButton from '@/components/ConfirmButton';
+import ConfirmButton from '@/components/buttons/ConfirmButton';
 import useSession from '@/hooks/useSession';
 import Resitricted from '@/components/Restricted';
 

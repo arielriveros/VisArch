@@ -7,6 +7,7 @@ const uploadModel = require('../middleware/upload');
 router.get('/', ProjectController.index);
 router.get('/:id', validateID, ProjectController.get);
 router.post('/', ProjectController.create);
+router.put('/:id', validateID, ProjectController.update);
 router.delete('/:id', validateID, ProjectController.remove);
 
 router.get('/:id/tasks', validateID, ProjectController.getTasks);

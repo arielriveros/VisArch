@@ -94,6 +94,25 @@ async function remove(req, res) {
   }
 }
 
+async function update(req, res) {
+  try {
+    const project = await Project.findById(req.params.id);
+    if (!project) {
+      return res.status(404).json({msg: 'Project not found'});
+    }
+    const { name, description, owner, collaborators } = req.body;
+    if (name) project.name = name;
+    if (description) project.description = description;
+    if (owner) project.owner = owner;
+    if (collaborators) project.collaborators = collaborators;
+    await project.save();
+    res.status(200).json(project);
+  }
+  catch (error) {
+    res.status(500).json({ msg: error.message });
+  }
+}
+
 async function getTasks(req, res) {
   try {
     const project = await Project.findById(req.params.id);
@@ -159,6 +178,7 @@ module.exports = {
   index,
   get,
   create,
+  update,
   remove,
   getTasks,
   createTask

@@ -1,7 +1,8 @@
 import { API_BASE_URL } from '@/api/config';
 import { TaskApiResponse } from '@/api/types';
 import { useNavigate } from 'react-router-dom';
-import ConfirmButton from '../ConfirmButton';
+import ConfirmButton from '../buttons/ConfirmButton';
+import Button from '../buttons/Button';
 
 interface TaskTableRowProps {
   task: TaskApiResponse;
@@ -49,8 +50,8 @@ export default function TaskTableRow(props: TaskTableRowProps) {
       <td className='text-white border-r border-white items-center justify-center'>
         <img src={`${API_BASE_URL}/api/files/images/${task.thumbnail}`} alt='thumbnail' />
       </td>
-      <td className='px-4 text-white bg-dark-blue text-center border-r border-white'>
-        <button className='bg-blue rounded-md p-1 mt-3 m-2' onClick={handleGoToTask}>Annotate</button>
+      <td className='px-4 text-white bg-dark-blue text-center border-r border-white items-center justify-center'>
+        <Button onClick={handleGoToTask}>Annotate</Button>
         <ConfirmButton label='Delete' onConfirm={() => handleDeleteTask()} />
       </td>
     </tr>

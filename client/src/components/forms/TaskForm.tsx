@@ -1,6 +1,6 @@
 import { FormEvent } from 'react';
 import { useNavigate } from 'react-router-dom';
-import ConfirmButton from '@/components/ConfirmButton';
+import ConfirmButton from '@/components/buttons/ConfirmButton';
 import ModelInput from '@/components/model-input/ModelInput';
 import '@/styles/components/Form.css';
 
