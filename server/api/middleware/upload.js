@@ -13,7 +13,7 @@ const storage = multer.diskStorage({
   }
 });
 
-const uploadModel = multer({
+const uploadMesh = multer({
   storage: storage,
   fileFilter: (req, file, cb) => {
     let extension = path.extname(file.originalname);
@@ -27,4 +27,4 @@ const uploadModel = multer({
   }
 });
 
-module.exports = uploadModel
+module.exports = uploadMesh

@@ -12,7 +12,7 @@ const TaskSchema = new Schema({
   description: {
     type: String
   },
-  model: {
+  mesh: {
     type: String,
     required: true
   },
@@ -30,7 +30,7 @@ TaskSchema.pre('deleteOne', async function(next) {
   if(!task)
     return next();
 
-  fs.unlinkSync(`files/${task.model}`);
+  fs.unlinkSync(`files/${task.mesh}`);
   fs.unlinkSync(`files/${task.thumbnail}`);
 
   // Find project this task belongs to
@@ -51,7 +51,7 @@ TaskSchema.pre('deleteMany', async function(next) {
     return next();
 
   tasks.forEach(task => {
-    fs.unlinkSync(`files/${task.model}`);
+    fs.unlinkSync(`files/${task.mesh}`);
     fs.unlinkSync(`files/${task.thumbnail}`);
   });
 

@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Canvas, useThree } from '@react-three/fiber';
 import { Archetype, Entity } from '@/api/types';
-import { useModel } from '../hooks/useModel';
+import { useMesh } from '../hooks/useMesh';
 import { facesToIndex, getCentroidNormalFromFaces } from '../utils/math';
 import HighlightMesh from './HighlightMesh';
 
@@ -13,7 +13,7 @@ interface LookAtCentroidProps {
   reflection?: number;
 }
 function LookAtCentroid({faces, zoom, scale, orientation, reflection}: LookAtCentroidProps) {
-  const { geometry } = useModel();
+  const { geometry } = useMesh();
   const { camera } = useThree();
 
   useEffect(() => {
@@ -37,7 +37,7 @@ function LookAtCentroid({faces, zoom, scale, orientation, reflection}: LookAtCen
 }
 
 export default function ArchetypeViewer({archetype, selectedEntity}: {archetype: Archetype; selectedEntity: Entity | null}) {
-  const { geometry, material} = useModel();
+  const { geometry, material} = useMesh();
   const [archetypeEntity, setArchetypeEntity] = useState<Entity | null>(null);
   const [zoom, setZoom] = useState(400);
   const [scale, setScale] = useState(1);

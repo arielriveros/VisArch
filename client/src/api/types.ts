@@ -49,7 +49,7 @@ export interface TaskApiResponse {
   _id: ID;
   name: string;
   description: string;
-  model: string;
+  mesh: string;
   thumbnail: string;
   annotations: Archetype[];
   owner: UserApiResponse;

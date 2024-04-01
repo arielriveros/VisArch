@@ -1,6 +1,6 @@
 const fs = require('fs');
 
-async function getModel(req, res) {
+async function getMesh(req, res) {
   try {
     const filePath = `files/${req.params.id}`;
     const readStream = fs.createReadStream(filePath);
@@ -38,6 +38,6 @@ async function getImage(req, res) {
 }
 
 module.exports = {
-  getModel,
+  getMesh,
   getImage
 }

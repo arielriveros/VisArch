@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import { API_BASE_URL } from '@/api/config';
 import { Archetype, Entity, TaskApiResponse, UserApiResponse } from '@/api/types';
-import { useModel } from '../hooks/useModel';
+import { useMesh } from '../hooks/useMesh';
 import { useSocket } from '@/features/socket/hooks/useSocket';
 import Center from './Center';
 import Sidebar from './Sidebar';
@@ -24,7 +24,7 @@ export default function  Manager(props: ManagerProps) {
   const [lockedAnnotations, setLockedAnnotations] = useState(false);
   const { annotations, setAnnotations, setUsers, dispatch } = useAnnotation();
   const { registerEvent, unregisterEvent, join, leave, emit } = useSocket();
-  const { loadModel } = useModel();
+  const { loadMesh } = useMesh();
   const { unwrapping } = useConfig();
 
   useEffect(() => {
@@ -48,13 +48,13 @@ export default function  Manager(props: ManagerProps) {
 
   useEffect(() => {
     if (task) {
-      loadModel(`${API_BASE_URL}/api/files/models/${task.model}`);
+      loadMesh(`${API_BASE_URL}/api/files/meshes/${task.mesh}`);
       const annotations = task.annotations || [];
       if (!lockedAnnotations)
         setAnnotations(annotations);
       setUsers(task.owner, task.collaborators);
     }
-  }, [task, lockedAnnotations, setAnnotations, loadModel, setUsers]);
+  }, [task, lockedAnnotations, setAnnotations, loadMesh, setUsers]);
 
   const onSave = useCallback(() => {
     const updatedTask = { ...task, annotations };

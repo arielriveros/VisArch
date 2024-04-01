@@ -12,9 +12,9 @@ export default function NewTask() {
     name: string;
     description:
     string,
-    model: File | null; 
+    mesh: File | null; 
     thumbnail: File | null;
-  }>({name: '', description: '', model: null, thumbnail: null});
+  }>({name: '', description: '', mesh: null, thumbnail: null});
   const [loading, setLoading] = useState(false);
   const [stateText, setStateText] = useState('');
 
@@ -23,13 +23,13 @@ export default function NewTask() {
     if (!user) return;
   
     try {
-      if (!task.model || !task.thumbnail) return;
+      if (!task.mesh || !task.thumbnail) return;
       setLoading(true);
       setStateText('Setting up data');
       const formData = new FormData();
       formData.append('name', task.name);
       formData.append('description', task.description);
-      formData.append('model', task.model);
+      formData.append('mesh', task.mesh);
       formData.append('thumbnail', task.thumbnail);
   
       setStateText('Uploading data');

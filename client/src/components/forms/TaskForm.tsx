@@ -1,20 +1,20 @@
 import { FormEvent } from 'react';
 import { useNavigate } from 'react-router-dom';
 import ConfirmButton from '@/components/buttons/ConfirmButton';
-import ModelInput from '@/components/model-input/ModelInput';
+import MeshInput from '@/components/mesh-input/MeshInput';
 import '@/styles/components/Form.css';
 
 interface TaskFormProps {
   task: {
     name: string;
     description: string;
-    model: File | null;
+    mesh: File | null;
     thumbnail: File | null;
   };
   setTask: (task: {
     name: string;
     description: string;
-    model: File | null;
+    mesh: File | null;
     thumbnail: File | null;
   }) => void;
   handleSubmit: (e: React.FormEvent<HTMLFormElement>) => void;
@@ -33,8 +33,8 @@ export default function TaskForm(props: TaskFormProps) {
     navigate(-1);
   };
 
-  const handleModel = (glbFile: File, screenshot: File) => {
-    setTask({ ...task, model: glbFile, thumbnail: screenshot });
+  const handleMesh = (glbFile: File, screenshot: File) => {
+    setTask({ ...task, mesh: glbFile, thumbnail: screenshot });
   };
 
   return (
@@ -67,7 +67,7 @@ export default function TaskForm(props: TaskFormProps) {
           maxLength={100}
         />
 
-        <ModelInput handleModel={handleModel} />
+        <MeshInput handleMesh={handleMesh} />
 
         <div className='flex justify-center items-center mt-5'>
           <button onClick={goBack} className='m-2 flex justify-center'>
