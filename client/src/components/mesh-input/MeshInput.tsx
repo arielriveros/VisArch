@@ -16,6 +16,7 @@ export default function MeshInput(props: MeshInputProps) {
   const [textureImage, setTextureImage] = useState<HTMLImageElement | null>(null);
   const [meshData, setMeshData] = useState<{meshPath: string, texturePath: string, format: SupportedMeshInput}>({meshPath: '', texturePath: '', format: null});
   const [loading, setLoading] = useState(false);
+  const [rotation, setRotation] = useState(0);
   const meshRef = useRef<Mesh>(null);
   const handleMeshRef = useRef(props.handleMesh);
 
@@ -74,6 +75,9 @@ export default function MeshInput(props: MeshInputProps) {
 
   const handleMeshData = async () => {
     if (meshRef.current) {
+      // Reset preview rotation
+      setRotation(0);
+
       // Normalize mesh and center it
       adjustMesh(meshRef.current);
 
@@ -94,6 +98,11 @@ export default function MeshInput(props: MeshInputProps) {
     handleMeshData();
   }, [loading]);
 
+  useEffect(() => {
+    setInterval(() => {
+      setRotation(prev => prev + 0.005);
+    }, 1000 / 60);
+  },[]);
 
   return (
     <div className='flex flex-row w-full justify-between'>
@@ -102,7 +111,7 @@ export default function MeshInput(props: MeshInputProps) {
         <div className='flex flex-col w-full h-full'>
           <Canvas camera={{position: [0, 0, 2]}} gl={{ preserveDrawingBuffer: true }} >
             <ambientLight />
-            <PreviewMesh meshRef={meshRef} />
+            <PreviewMesh meshRef={meshRef} rotation={rotation} />
           </Canvas>
           <label
             htmlFor='mesh_input'

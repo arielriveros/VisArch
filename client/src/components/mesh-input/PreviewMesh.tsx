@@ -3,6 +3,7 @@ import { Mesh } from 'three';
 
 interface MeshInputProps {
  meshRef: React.MutableRefObject<Mesh | null>;
+ rotation: number;
 }
 
 export default function PreviewMesh(props: MeshInputProps) {
@@ -11,7 +12,7 @@ export default function PreviewMesh(props: MeshInputProps) {
 
   useFrame(() => {
     // Rotate scene
-    scene.rotation.y += 0.005;
+    scene.rotation.y = props.rotation;
   });
 
   return (

@@ -32,6 +32,30 @@ export default function TaskTableRow(props: TaskTableRowProps) {
         console.error('Error: ', error);
       });
   };
+
+  const handleDownload = () => {
+    fetch(`${API_BASE_URL}/api/files/tasks/${task._id}`, {
+      method: 'GET',
+      credentials: 'include',
+    })
+      .then((response) => {
+        if (response.ok) {
+          return response.blob();
+        } else {
+          throw new Error('Failed to download task');
+        }
+      })
+      .then((blob) => {
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `${task.name}.zip`;
+        a.click();
+      })
+      .catch((error) => {
+        console.error('Error: ', error);
+      });
+  };
  
   return (
     <tr className='border border-white'>
@@ -53,6 +77,7 @@ export default function TaskTableRow(props: TaskTableRowProps) {
       <td className='px-4 text-white bg-dark-blue text-center border-r border-white items-center justify-center'>
         <Button onClick={handleGoToTask}>Annotate</Button>
         <ConfirmButton label='Delete' onConfirm={() => handleDeleteTask()} />
+        <Button onClick={handleDownload}>Download</Button>
       </td>
     </tr>
   );

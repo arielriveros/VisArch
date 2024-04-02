@@ -5,7 +5,7 @@ interface ButtonProps {
 }
 export default function Button({onClick, children}: ButtonProps) {
   return (
-    <button className='mx-2 p-1 w-full text-white bg-light-blue border border-blue rounded hover:bg-blue' onClick={onClick}>
+    <button className='mx-1 p-1 w-full text-white bg-light-blue border border-blue rounded hover:bg-blue' onClick={onClick}>
       {children}
     </button>
   );

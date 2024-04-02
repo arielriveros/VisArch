@@ -9,6 +9,7 @@
   "author": "Ariel Riveros",
   "license": "ISC",
   "dependencies": {
+    "adm-zip": "^0.5.12",
     "bcrypt": "^5.1.0",
     "cookie-session": "^2.1.0",
     "cors": "^2.8.5",
