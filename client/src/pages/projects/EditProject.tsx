@@ -1,10 +1,11 @@
 import { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { API_BASE_URL } from '@/api/config';
 import ProjectForm from '@/components/forms/ProjectForm';
 import useSession from '@/hooks/useSession';
 
-export default function NewProject() {
+export default function EditProject() {
+  const { projectId } = useParams();
   const navigate = useNavigate();
   const { user } = useSession();
   const [usersList, setUsersList] = useState<{displayName: string, email: string, id: string}[]>();
@@ -14,14 +15,46 @@ export default function NewProject() {
     collaborators: []
   });
 
-  const createProject = async (e: React.FormEvent<HTMLFormElement>) => {
+  useEffect(() => {
+    if (!projectId) return;
+    const populateProject = async () => {
+      try {
+        const response = await fetch(API_BASE_URL + '/api/projects/' + projectId, { credentials: 'include' });
+        if (response.ok) {
+          const project = await response.json();
+          setProject({
+            name: project.name,
+            description: project.description,
+            collaborators: project.collaborators.map((collaborator: {displayName: string, email: string, _id: string}) => 
+            {
+              return {
+                id: collaborator._id,
+                displayName: collaborator.displayName,
+                email: collaborator.email
+              };
+            })
+          });
+        } 
+        else
+          throw new Error('Failed to fetch project');
+      }
+      catch (error) {
+        console.error('Error: ', error);
+      }
+    };
+
+    populateProject();
+    populateUsersList();
+  }, [projectId]);
+
+  const updateProject = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!user) return;
-
+    
     try {
-      const response = await fetch(API_BASE_URL + '/api/projects/', { 
+      const response = await fetch(API_BASE_URL + '/api/projects/' + projectId, {
         credentials: 'include',
-        method: 'POST',
+        method: 'PUT',
         headers: {
           'Accept': 'application/json',
           'Content-Type': 'application/json'
@@ -36,7 +69,7 @@ export default function NewProject() {
 
       if (response.ok) {
         const project = await response.json();
-        navigate(`/projects/${project._id}/tasks`, { replace: true });
+        navigate(`/projects/${project._id}/details`, { replace: true });
       }
       else
         throw new Error('Failed to create project');
@@ -58,20 +91,16 @@ export default function NewProject() {
     setUsersList(usersList);
   };
 
-  useEffect(() => {
-    populateUsersList();
-  }, []);
-
   return (
     <div className='flex justify-center align-middle w-full'>
       <div className='flex flex-col w-full'>
         { usersList && user &&
           <ProjectForm
-            title={'Create New Project'}
+            title={'Edit Project'}
             project={project}
             usersList={usersList.filter(u => u.id !== user.id)}
             setProject={setProject}
-            handleSubmit={createProject}
+            handleSubmit={updateProject}
           />
         }
       </div>

@@ -18,7 +18,7 @@ export default function CameraController() {
     cameraController.add(camera);
     const dirLight = new DirectionalLight(0xffffff, 3);
     dirLight.position.set(0, 0, 2);
-    camera.add(dirLight); // Camera always will have a light pointing towards the model
+    camera.add(dirLight); // Camera always will have a light pointing towards the mesh
     scene?.add(cameraController);
     
   }, [scene, camera]);

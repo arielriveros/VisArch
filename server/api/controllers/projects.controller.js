@@ -94,6 +94,25 @@ async function remove(req, res) {
   }
 }
 
+async function update(req, res) {
+  try {
+    const project = await Project.findById(req.params.id);
+    if (!project) {
+      return res.status(404).json({msg: 'Project not found'});
+    }
+    const { name, description, owner, collaborators } = req.body;
+    if (name) project.name = name;
+    if (description) project.description = description;
+    if (owner) project.owner = owner;
+    if (collaborators) project.collaborators = collaborators;
+    await project.save();
+    res.status(200).json(project);
+  }
+  catch (error) {
+    res.status(500).json({ msg: error.message });
+  }
+}
+
 async function getTasks(req, res) {
   try {
     const project = await Project.findById(req.params.id);
@@ -125,7 +144,7 @@ async function createTask(req, res) {
     const task = await Task.create({
       name: req.body.name,
       description: req.body.description,
-      model: req.files.model[0].filename,
+      mesh: req.files.mesh[0].filename,
       thumbnail: req.files.thumbnail[0].filename,
     });
     project.tasks.push(task);
@@ -135,9 +154,9 @@ async function createTask(req, res) {
   catch (error) {
     console.error('Error in postTask:', error);
     // Remove uploaded files if error occurs
-    if (req.files.model && req.files.model[0].path) {
+    if (req.files.mesh && req.files.mesh[0].path) {
       try {
-        fs.unlinkSync(req.files.model[0].path);
+        fs.unlinkSync(req.files.mesh[0].path);
         console.log('File deleted successfully.');
       } catch (unlinkError) {
         console.error('Error deleting file:', unlinkError);
@@ -159,6 +178,7 @@ module.exports = {
   index,
   get,
   create,
+  update,
   remove,
   getTasks,
   createTask

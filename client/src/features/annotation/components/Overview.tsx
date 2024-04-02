@@ -1,15 +1,15 @@
 import { useCallback, useEffect, useRef } from 'react';
 import { Vector3 } from 'three';
 import { Canvas, useFrame } from '@react-three/fiber';
-import { useModel } from '../hooks/useModel';
+import { useMesh } from '../hooks/useMesh';
 import { getTriangleFromIndex } from '../utils/math';
 import Emitter from '../utils/emitter';
 import HighlightGroup from './HighlightGroup';
 
 interface FaceData { a: number, b: number, c: number, normal: Vector3, materialIndex: number }
 
-function OverviewModel() {
-  const { geometry, material } = useModel();
+function OverviewMesh() {
+  const { geometry, material } = useMesh();
   const targetRef = useRef<Vector3>(new Vector3());
   const targetViewRef = useRef<Vector3>(new Vector3());
 
@@ -52,7 +52,7 @@ export default function Overview() {
     <div className='absolute bg-slate-700 bg-opacity-50 border'>
       <Canvas camera={{ position: [0, 0, 1.5] }}>
         <ambientLight intensity={2} />
-        <OverviewModel />
+        <OverviewMesh />
       </Canvas>
       <svg className='absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2' width='50' height='50'>
         <circle cx='25' cy='25' r='10' fill='none' stroke='white' strokeWidth='1.25' />

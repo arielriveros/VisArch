@@ -3,12 +3,12 @@ import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader';
 import { PLYLoader } from 'three/examples/jsm/loaders/PLYLoader';
 import { GLTFExporter } from 'three/examples/jsm/exporters/GLTFExporter';
 
-export async function loadGeometry(modelPath: string, format: string): Promise<BufferGeometry> {
+export async function loadGeometry(meshPath: string, format: string): Promise<BufferGeometry> {
   let geometry: BufferGeometry<NormalBufferAttributes> = new BufferGeometry();
   if (format === 'obj') {
     // Load OBJ
     const objLoader = new OBJLoader();
-    const group = await objLoader.loadAsync(modelPath);
+    const group = await objLoader.loadAsync(meshPath);
     group.traverse(child => {
       if (child instanceof Mesh) {
         geometry = child.geometry;
@@ -17,7 +17,7 @@ export async function loadGeometry(modelPath: string, format: string): Promise<B
   }
   else if (format === 'ply') {
     const plyLoader = new PLYLoader();
-    geometry = await plyLoader.loadAsync(modelPath);
+    geometry = await plyLoader.loadAsync(meshPath);
   }
   else
     throw new Error('Invalid format');
@@ -85,7 +85,7 @@ export async function convertToGLB(mesh: Mesh): Promise<File> {
       mesh,
       gltf => {
         const blob = new Blob([gltf as BlobPart], { type: 'application/octet-stream' });
-        const glbFile = new File([blob], `${mesh.name}.glb`, { type: 'model/gltf-binary' });
+        const glbFile = new File([blob], `${mesh.name}.glb`, { type: 'mesh/gltf-binary' });
         resolve(glbFile);
       },
       error => reject(error),

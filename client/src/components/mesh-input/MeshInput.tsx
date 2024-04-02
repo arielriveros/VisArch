@@ -2,78 +2,82 @@ import { useEffect, useRef, useState } from 'react';
 import { Mesh, MeshStandardMaterial, TextureLoader } from 'three';
 import { Canvas } from '@react-three/fiber';
 import { adjustMesh, convertToGLB, loadGeometry, pngFromMesh } from '@/utils/utils';
-import PreviewModel from './PreviewModel';
+import PreviewMesh from './PreviewMesh';
 
-type SupportedModelInput = null | 'obj' | 'ply';
+type SupportedMeshInput = null | 'obj' | 'ply';
 
-interface ModelInputProps {
-  handleModel: (glbFile: File, screenshot: File) => void;
+interface MeshInputProps {
+  handleMesh: (glbFile: File, screenshot: File) => void;
 }
 
-export default function ModelInput(props: ModelInputProps) {
-  const [modelFile, setModelFile] = useState<File | null>(null);
+export default function MeshInput(props: MeshInputProps) {
+  const [meshFile, setMeshFile] = useState<File | null>(null);
   const [textureFile, setTextureFile] = useState<File | null>(null);
   const [textureImage, setTextureImage] = useState<HTMLImageElement | null>(null);
-  const [modelData, setModelData] = useState<{modelPath: string, texturePath: string, format: SupportedModelInput}>({modelPath: '', texturePath: '', format: null});
+  const [meshData, setMeshData] = useState<{meshPath: string, texturePath: string, format: SupportedMeshInput}>({meshPath: '', texturePath: '', format: null});
   const [loading, setLoading] = useState(false);
+  const [rotation, setRotation] = useState(0);
   const meshRef = useRef<Mesh>(null);
-  const handleModelRef = useRef(props.handleModel);
+  const handleMeshRef = useRef(props.handleMesh);
 
   useEffect(() => {
-    handleModelRef.current = props.handleModel;
-  }, [props.handleModel]);
+    handleMeshRef.current = props.handleMesh;
+  }, [props.handleMesh]);
 
   // Handle file upload
   useEffect(() => {
-    if (modelFile) {
-      const extension = modelFile.name.split('.').pop();
+    if (meshFile) {
+      const extension = meshFile.name.split('.').pop();
       if (!extension) return;
-      setModelData(prev => ({...prev, modelPath: URL.createObjectURL(modelFile), format: extension as SupportedModelInput}));
+      setMeshData(prev => ({...prev, meshPath: URL.createObjectURL(meshFile), format: extension as SupportedMeshInput}));
     }
-  }, [modelFile]);
+  }, [meshFile]);
 
   // Handle texture upload
   useEffect(() => {
     if (textureFile) {
       const urlPath = URL.createObjectURL(textureFile);
-      setModelData(prev => ({...prev, texturePath: urlPath}));
+      setMeshData(prev => ({...prev, texturePath: urlPath}));
       const image = new Image();
       image.src = urlPath;
       setTextureImage(image);
     }
   }, [textureFile]);
 
-  // Load model on format or modelPath change
+  // Load mesh on format or meshPath change
   useEffect(() => {
-    if (!modelData.format) return;
+    if (!meshData.format) return;
     setLoading(true);
-    loadGeometry(modelData.modelPath, modelData.format).then(
+    loadGeometry(meshData.meshPath, meshData.format).then(
       geometry => {
         if (meshRef.current) {
-          meshRef.current.name = modelData.modelPath.split('/').pop()?.split('.').shift() || 'model';
+          meshRef.current.name = meshData.meshPath.split('/').pop()?.split('.').shift() || 'mesh';
           meshRef.current.geometry = geometry;
         }
 
         setLoading(false);
       }
     );
-  }, [modelData.format, modelData.modelPath]);
+  }, [meshData.format, meshData.meshPath]);
 
   // Load texture on texturePath change
   useEffect(() => {
-    if (modelData.texturePath && meshRef.current) {
+    if (meshData.texturePath && meshRef.current) {
       setLoading(true);
       const texture = new TextureLoader().load(
-        modelData.texturePath,
+        meshData.texturePath,
         () => setLoading(false)
       );
       meshRef.current.material = new MeshStandardMaterial({map: texture});
     }
-  }, [modelData.texturePath]);
+  }, [meshData.texturePath]);
 
 
-  const handleModelData = async () => {
+  const handleMeshData = async () => {
     if (meshRef.current) {
+      // Reset preview rotation
+      setRotation(0);
+
       // Normalize mesh and center it
       adjustMesh(meshRef.current);
 
@@ -84,38 +88,43 @@ export default function ModelInput(props: ModelInputProps) {
       const pngFile = await pngFromMesh(meshRef.current);
 
       if (glbFile && pngFile)
-        handleModelRef.current(glbFile, pngFile);
+        handleMeshRef.current(glbFile, pngFile);
     }
   };
 
   // On loading, export the mesh to glb and get a screenshot
   useEffect(() => {
     if (loading) return;
-    handleModelData();
+    handleMeshData();
   }, [loading]);
 
+  useEffect(() => {
+    setInterval(() => {
+      setRotation(prev => prev + 0.005);
+    }, 1000 / 60);
+  },[]);
 
   return (
     <div className='flex flex-row w-full justify-between'>
       <div className='flex flex-col w-1/2'>
-        <label> Model </label>
+        <label> Mesh </label>
         <div className='flex flex-col w-full h-full'>
           <Canvas camera={{position: [0, 0, 2]}} gl={{ preserveDrawingBuffer: true }} >
             <ambientLight />
-            <PreviewModel meshRef={meshRef} />
+            <PreviewMesh meshRef={meshRef} rotation={rotation} />
           </Canvas>
           <label
-            htmlFor='model_input'
+            htmlFor='mesh_input'
             className='cursor-pointer text-center border border-black bg-gray-700 text-white'
           >
-            Upload Model
+            Upload Mesh
           </label>
           <input
-            id='model_input'
+            id='mesh_input'
             className='hidden'
             type='file'
             accept='.obj, .ply'
-            onChange={e => setModelFile(e.target.files?.item(0) || null) }
+            onChange={e => setMeshFile(e.target.files?.item(0) || null) }
           />
         </div>
       </div>

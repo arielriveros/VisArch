@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { BufferGeometry, Group, Mesh, NormalBufferAttributes }  from 'three';
-import { useModel } from '../hooks/useModel';
+import { useMesh } from '../hooks/useMesh';
 import { AVERAGE, MeshBVHHelper } from 'three-mesh-bvh';
 import { unwrap } from '../utils/math';
 import HighlightGroup from './HighlightGroup';
@@ -10,7 +10,7 @@ import useConfig from '../hooks/useConfig';
 const DEBUG_BVH = false;
 
 export default function ProxyScene() {
-  const { geometry, material, loading } = useModel();
+  const { geometry, material, loading } = useMesh();
   const { unwrapping } = useConfig();
   const [proxyGeometry, setProxyGeometry] = useState<BufferGeometry<NormalBufferAttributes> | null>(null);
   const debugGroupRef = useRef<Group>(new Group());

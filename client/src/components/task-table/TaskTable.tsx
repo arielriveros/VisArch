@@ -24,7 +24,7 @@ export default function TaskTable(props: TaskTableProps) {
           <th>Description</th>
           <th>Archetypes</th>
           <th>Entities</th>
-          <th>Model</th>
+          <th>Mesh</th>
           <th>Actions</th>
         </tr>
       </thead>

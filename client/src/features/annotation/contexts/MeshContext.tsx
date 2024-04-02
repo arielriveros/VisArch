@@ -1,21 +1,21 @@
 import { createContext, useReducer } from 'react';
 import { BufferGeometry, Material, NormalBufferAttributes } from 'three';
 
-interface ModelState {
+interface MeshState {
   geometry: BufferGeometry<NormalBufferAttributes> | null;
   material: Material | null;
 }
     
-interface ModelAction {
+interface MeshAction {
   type: 'SET_GEOMETRY' | 'SET_MATERIAL';
   payload?: BufferGeometry<NormalBufferAttributes> | Material | null;
 }
 
-interface ModelContextProps extends ModelState {
-  dispatch: React.Dispatch<ModelAction>;
+interface MeshContextProps extends MeshState {
+  dispatch: React.Dispatch<MeshAction>;
 }
 
-export const ModelContext = createContext<ModelContextProps>(
+export const MeshContext = createContext<MeshContextProps>(
   {
     geometry: null,
     material: null,
@@ -23,7 +23,7 @@ export const ModelContext = createContext<ModelContextProps>(
   }
 );
 
-function ModelReducer(state: ModelState, action: ModelAction): ModelState {
+function MeshReducer(state: MeshState, action: MeshAction): MeshState {
   switch (action.type) {
   case 'SET_GEOMETRY':
     return { ...state, geometry: (Object.freeze(action.payload) as BufferGeometry<NormalBufferAttributes>) };
@@ -34,11 +34,11 @@ function ModelReducer(state: ModelState, action: ModelAction): ModelState {
   }
 }
 
-export default function ModelContextProvider({ children }: { children: React.ReactNode}) {
-  const [state, dispatch] = useReducer(ModelReducer, { geometry: null, material: null });
+export default function MeshContextProvider({ children }: { children: React.ReactNode}) {
+  const [state, dispatch] = useReducer(MeshReducer, { geometry: null, material: null });
   return (
-    <ModelContext.Provider value={{ ...state, dispatch }}>
+    <MeshContext.Provider value={{ ...state, dispatch }}>
       {children}
-    </ModelContext.Provider>
+    </MeshContext.Provider>
   );
 }

@@ -1,35 +1,37 @@
 import { FormEvent, useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
-import ConfirmButton from '@/components/ConfirmButton';
+import { useNavigate } from 'react-router-dom';
+import ConfirmButton from '@/components/buttons/ConfirmButton';
+import Button from '../buttons/Button';
 import '@/styles/components/Form.css';
 
 interface ProjectFormProps {
+  title: string;
   project: {
     name: string;
     description: string;
-    collaboratorsIds: string[];
+    collaborators: {displayName: string, email: string, id: string}[];
   };
   setProject: (project: {
     name: string;
     description: string;
-    collaboratorsIds: string[];
+    collaborators: {displayName: string, email: string, id: string}[];
   }) => void;
   handleSubmit: (e: React.FormEvent<HTMLFormElement>) => void;
   usersList: {displayName: string, email: string, id: string}[];
 }
 
 export default function ProjectForm(props: ProjectFormProps) {
-  const { project, setProject, handleSubmit } = props;
+  const { title, project, usersList, setProject, handleSubmit } = props;
   const [search, setSearch] = useState<string>('');
-  const [addedCollaborators, setAddedCollaborators] = useState<{id: string, displayName: string, email: string}[]>([]);
-  const [filteredUsersList, setFilteredUsersList] = useState<{displayName: string, email: string, id: string}[]>(props.usersList);
+  const [filteredUsersList, setFilteredUsersList] = useState<{displayName: string, email: string, id: string}[]>(usersList);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const handleSearch = async (search: string) => {
-      if (!props.usersList) return;
+      if (!usersList) return;
       
       // filter by search
-      const filteredList = props.usersList.filter( user => {
+      const filteredList = usersList.filter( user => {
         return (
           // search by name
           user.displayName.toLowerCase().includes(search.toLowerCase()) ||
@@ -42,13 +44,12 @@ export default function ProjectForm(props: ProjectFormProps) {
     };
 
     handleSearch(search);
-  }, [props.usersList, search]);
+  }, [usersList, search]);
 
   const handleSetCollaborators = (collaborators: {id: string, displayName: string, email: string}[]) => {
-    setAddedCollaborators(collaborators);
     setProject({
       ...project,
-      collaboratorsIds: collaborators.map((collaborator) => collaborator.id)
+      collaborators
     });
   };
 
@@ -58,7 +59,7 @@ export default function ProjectForm(props: ProjectFormProps) {
 
   return (
     <section className='form-container'>
-      <div className='form-title'> Create New Project </div>
+      <div className='form-title'> {title} </div>
       <form className='form'>
         <label htmlFor='name'>Name</label>
         <input
@@ -99,9 +100,9 @@ export default function ProjectForm(props: ProjectFormProps) {
         <div className='flex flex-col w-full max-h-40 overflow-y-auto border-2'>
           {filteredUsersList.map(user => (
             // return if collaborator is already added
-            addedCollaborators.find(c => c.id === user.id) ? null :
+            project.collaborators.find(c => c.id === user.id) ? null :
               <div key={user.id} className='flex  justify-between text-black bg-gray-100 hover:bg-gray-400 p-1 cursor-pointer' onClick={() => {
-                handleSetCollaborators([...addedCollaborators, { id: user.id, displayName: user.displayName, email: user.email }]);
+                handleSetCollaborators([...project.collaborators, { id: user.id, displayName: user.displayName, email: user.email }]);
                 setSearch(''); }}
               >
                 <p className='w-1/2 truncate'>{user.displayName}</p>
@@ -109,20 +110,18 @@ export default function ProjectForm(props: ProjectFormProps) {
               </div>
           ))}
         </div>}
-        { addedCollaborators && <div>
-          {addedCollaborators.map((collaborator) => (
+        <div>
+          {project.collaborators.map((collaborator) => (
             <div key={collaborator.id} className='flex w-full justify-between py-2 px-5'>
               <p className='wrap-text text-sm'>{collaborator.displayName}</p>
               <button className='bg-red-500 text-white text-xs p-1 rounded-full w-5 max-h-5 border-none' onClick={() => {
-                handleSetCollaborators(addedCollaborators.filter((c) => c.id !== collaborator.id));
+                handleSetCollaborators(project.collaborators.filter((c) => c.id !== collaborator.id));
               }}>X</button>
             </div>
           ))}
-        </div>}
+        </div>
         <div className='flex justify-center items-center mt-5'>
-          <Link to='/projects' className='m-2 flex justify-center'>
-            Cancel
-          </Link>
+          <Button onClick={() => navigate(-1)}>Cancel</Button>
           <ConfirmButton label='Submit' onConfirm={
             (e: FormEvent<HTMLFormElement>) => handleSubmitConfirm(e)
           } />
