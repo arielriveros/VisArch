@@ -1,3 +1,4 @@
+const { Readable } = require('stream');
 const fs = require('fs');
 const AdmZip = require('adm-zip');
 const Task = require('../models/Task');
@@ -68,10 +69,17 @@ async function getTask(req, res) {
     zip.addLocalFile(`files/${task.thumbnail}`, undefined, `${task.name}.png`);
     // get everything as a buffer
     const zipBuffer = zip.toBuffer();
+
     res.set('Content-Type', 'application/zip');
-    res.set('Content-Disposition', `attachment; filename=${task.name}.zip`);
     res.set('Content-Length', zipBuffer.length);
-    res.send(zipBuffer);
+    
+    const readStream = Readable.from(zipBuffer);
+    // pipe the read stream to the response
+    readStream.pipe(res);
+    readStream.on('error', (err) => {
+      console.error(err);
+      res.status(500).json({ msg: err.message });
+    });
   }
   catch (error) {
     console.error('Error in downloadTask:', error);

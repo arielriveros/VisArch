@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import ProgressBar from '@/components/ProgressBar';
 import Emitter from '../utils/emitter';
 import '../styles/Progress.css';
 
@@ -27,7 +28,9 @@ export default function Progress() {
     visible &&
     <section className='progress-container'>
       <p>{text}</p>
-      <progress value={current} max={total}></progress>
+      <div className='progress-bar'>
+        <ProgressBar current={current === 0 ? null : current} total={total} />
+      </div>
     </section>
   );
 }

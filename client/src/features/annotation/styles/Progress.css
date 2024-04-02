@@ -9,3 +9,7 @@
   background-color: rgba(0, 0, 0, 0.5);
   pointer-events: none;
 }
+
+.progress-bar {
+  width: 25%;
+}
