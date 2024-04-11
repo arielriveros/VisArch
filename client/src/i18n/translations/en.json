@@ -1,0 +1,118 @@
+{
+  "home": {
+    "welcome": "VisArch is a 3D annotation tool for the web designed to provide the user the ability to annotate 3D surfaces with ease.",
+    "description1": "Annotate a surface by interacting with the 3D model. The annotation will be displayed in the 3D model and the 2D image.",
+    "description2": "If your project is big or just want to make the process faster, you can invite your team to work together in the same project and annotate the 3D model at the same time.",
+    "description3": "Manage your projects and tasks in a single place. You can create, edit, and delete projects and tasks. You can also assign tasks to your team members.",
+    "get-started": "Get Started"
+  },
+
+  "profile": {
+    "title": "Profile",
+    "logout": "Logout",
+    "delete-profile": "Delete Profile"
+  },
+
+  "login": {
+    "title": "Login",
+    "google": "Login with Google",
+    "github": "Login with GitHub"
+  },
+
+  "navbar": {
+    "home": "Home",
+    "projects": "Projects",
+    "profile": "Profile",
+    "login": "Login"
+  },
+
+  "projects": {
+    "title": "Projects",
+    "tasks": "Tasks",
+    "name": "Name",
+    "description": "Description",
+    "no-description": "No Description",
+    "owner": "Owner",
+    "owner-you": "You",
+    "collaborators": "Collaborators",
+    "details": "Details",
+    "edit": "Edit",
+    "form": {
+      "name-placeholder": "Project's name",
+      "description-placeholder": "Project's description",
+      "collaborators-placeholder": "Search for collaborators",
+      "submit": "Submit",
+      "cancel": "Cancel",
+      "new-project": "Create New Project",
+      "edit-project": "Edit Project",
+      "delete-project": "Delete Project"
+    }
+  },
+
+  "tasks": {
+    "loading": "Loading tasks...",
+    "no-tasks": "No tasks found",
+    "details": "Details",
+    "add-task": "Add task",
+    "uploading": "Uploading Data...",
+    "create-task": "Create New Task",
+    "name": "Name",
+    "description": "Description",
+    "no-description": "No Description",
+    "mesh": "Mesh",
+    "actions": "Actions",
+    "annotate": "Annotate",
+    "delete": "Delete",
+    "download": "Download",
+    "form": {
+      "name-placeholder": "Task's name",
+      "description-placeholder": "Task's description",
+      "cancel": "Cancel",
+      "submit": "Submit"
+    }
+  },
+
+  "components": {
+    "confirm-button": {
+      "confirm": "Confirm",
+      "cancel": "Cancel"
+    },
+    "mesh-input": {
+      "mesh": "Mesh",
+      "upload-mesh": "Upload Mesh",
+      "texture": "Texture",
+      "upload-texture": "Upload Texture",
+      "no-texture": "No Texture"
+    }
+  },
+
+  "toolbar": {
+    "save": "Save",
+    "controls": "Controls",
+    "drag": "Drag",
+    "rotate": "Rotate",
+    "zoom": "Zoom",
+    "reset": "Reset",
+    "tools": "Selection Tools",
+    "lasso": "Lasso",
+    "unwrapping": "Unwrapping"
+  },
+
+  "annotation": {
+    "archetypes": "Archetypes",
+    "archetype": "Archetype",
+    "add-archetype": "Add Archetype",
+    "select-archetype": "Select an Archetype",
+    "entities": "Entities",
+    "entity": "Entity",
+    "select-entity": "Select an Entity",
+    "added-by": "Added By",
+    "faces": "Faces",
+    "set-archetype": "Set as Archetype",
+    "unset-archetype": "Unset as Archetype",
+    "scale": "Scale",
+    "orientation": "Orientation",
+    "reflected": "Reflected",
+    "reset": "Reset"
+  }
+}

@@ -1,4 +1,5 @@
 import { FormEvent, useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import ConfirmButton from '@/components/buttons/ConfirmButton';
 import Button from '../buttons/Button';
@@ -25,6 +26,7 @@ export default function ProjectForm(props: ProjectFormProps) {
   const [search, setSearch] = useState<string>('');
   const [filteredUsersList, setFilteredUsersList] = useState<{displayName: string, email: string, id: string}[]>(usersList);
   const navigate = useNavigate();
+  const { t } = useTranslation();
 
   useEffect(() => {
     const handleSearch = async (search: string) => {
@@ -61,13 +63,15 @@ export default function ProjectForm(props: ProjectFormProps) {
     <section className='form-container'>
       <div className='form-title'> {title} </div>
       <form className='form'>
-        <label htmlFor='name'>Name</label>
+        <label htmlFor='name'>
+          {t('projects.name')}
+        </label>
         <input
           className='text-input'
           type='text'
           id='name'
           value={project.name}
-          placeholder='Project Name'
+          placeholder={t('projects.form.name-placeholder')}
           onChange={(e) =>
             setProject({ ...project, name: e.target.value })
           }
@@ -75,25 +79,29 @@ export default function ProjectForm(props: ProjectFormProps) {
           maxLength={20}
         />
 
-        <label htmlFor='description'>Description</label>
+        <label htmlFor='description'>
+          {t('projects.description')}
+        </label>
         <textarea
           className='text-input'
           id='description'
           value={project.description}
-          placeholder='Project Description'
+          placeholder={t('projects.form.description-placeholder')}
           onChange={(e) =>
             setProject({ ...project, description: e.target.value })
           }
           maxLength={100}
         />
 
-        <label htmlFor='collaborators'>Collaborators</label>
+        <label htmlFor='collaborators'>
+          {t('projects.collaborators')}
+        </label>
         <input
           className='text-input'
           type='text'
           id='collaborators'
           value={search}
-          placeholder='Search for Collaborators'
+          placeholder={t('projects.form.collaborators-placeholder')}
           onChange={(e) => setSearch(e.target.value)}
         />
         { filteredUsersList && search &&
@@ -121,8 +129,10 @@ export default function ProjectForm(props: ProjectFormProps) {
           ))}
         </div>
         <div className='flex justify-center items-center mt-5'>
-          <Button onClick={() => navigate(-1)}>Cancel</Button>
-          <ConfirmButton label='Submit' onConfirm={
+          <Button onClick={() => navigate(-1)}>
+            {t('projects.form.cancel')}
+          </Button>
+          <ConfirmButton label={t('projects.form.submit')} onConfirm={
             (e: FormEvent<HTMLFormElement>) => handleSubmitConfirm(e)
           } />
         </div>

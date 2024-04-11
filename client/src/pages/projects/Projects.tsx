@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { ProjectsApiResponse } from '@/api/types';
 import useSession from '@/hooks/useSession';
 import ProjectList from '@/components/ProjectList';
@@ -25,13 +26,16 @@ function ProjectsContainer({userId} : {userId: string}) {
 
 export default function Projects() {
   const { user, signedIn } = useSession();
+  const { t } = useTranslation();
 
   if (!signedIn)
     return <Restricted />;
 
   return (
     <div className='flex flex-col w-full h-full p-4 justify-center items-center'>
-      <p className='text-2xl font-bold mb-4'>Projects</p>
+      <p className='text-2xl font-bold mb-4'>
+        {t('projects.title')}
+      </p>
       {user?.id && <ProjectsContainer userId={user.id} />}
     </div>
   );

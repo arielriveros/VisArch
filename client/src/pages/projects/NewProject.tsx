@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { API_BASE_URL } from '@/api/config';
 import ProjectForm from '@/components/forms/ProjectForm';
 import useSession from '@/hooks/useSession';
@@ -13,6 +14,7 @@ export default function NewProject() {
     description: '',
     collaborators: []
   });
+  const { t } = useTranslation();
 
   const createProject = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -67,7 +69,7 @@ export default function NewProject() {
       <div className='flex flex-col w-full'>
         { usersList && user &&
           <ProjectForm
-            title={'Create New Project'}
+            title={t('projects.form.new-project')}
             project={project}
             usersList={usersList.filter(u => u.id !== user.id)}
             setProject={setProject}

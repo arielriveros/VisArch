@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import { TasksApiResponse } from '@/api/types';
 import TaskTableRow from './TaskTableRow';
 
@@ -7,6 +8,7 @@ interface TaskTableProps {
 
 export default function TaskTable(props: TaskTableProps) {
   const { tasks } = props;
+  const { t } = useTranslation();
 
   return (
     <table className='border border-white w-full'>
@@ -20,12 +22,12 @@ export default function TaskTable(props: TaskTableProps) {
       </colgroup>
       <thead>
         <tr>
-          <th>Name</th>
-          <th>Description</th>
-          <th>Archetypes</th>
-          <th>Entities</th>
-          <th>Mesh</th>
-          <th>Actions</th>
+          <th>{t('tasks.name')}</th>
+          <th>{t('tasks.description')}</th>
+          <th>{t('annotation.archetypes')}</th>
+          <th>{t('annotation.entities')}</th>
+          <th>{t('tasks.mesh')}</th>
+          <th>{t('tasks.actions')}</th>
         </tr>
       </thead>
       <tbody>

@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { API_BASE_URL } from '@/api/config';
 import { TaskApiResponse } from '@/api/types';
@@ -16,6 +17,7 @@ export default function TaskTableRow(props: TaskTableRowProps) {
   const [current, setCurrent] = useState(0);
   const [total, setTotal] = useState(0);
   const navigate = useNavigate();
+  const { t } = useTranslation();
 
   const handleGoToTask = () => {
     navigate(`/task/${task._id}`);
@@ -94,7 +96,7 @@ export default function TaskTableRow(props: TaskTableRowProps) {
         {task.name}
       </td>
       <td className='px-4 text-white bg-dark-blue text-center border-r border-white'>
-        {task.description && task.description !=='' ? task.description : <i>No description</i> }
+        {task.description && task.description !=='' ? task.description : <i>{t('tasks.no-description')}</i> }
       </td>
       <td className='px-4 text-white bg-dark-blue text-center border-r border-white'>
         {task.annotations.length}
@@ -106,13 +108,13 @@ export default function TaskTableRow(props: TaskTableRowProps) {
         <img src={`${API_BASE_URL}/api/files/images/${task.thumbnail}`} alt='thumbnail' />
       </td>
       <td className='px-4 text-white bg-dark-blue text-center border-r border-white items-center justify-center'>
-        <Button onClick={handleGoToTask}>Annotate</Button>
-        <ConfirmButton label='Delete' onConfirm={() => handleDeleteTask()} />
+        <Button onClick={handleGoToTask}>{t('tasks.annotate')}</Button>
+        <ConfirmButton label={t('tasks.delete')} onConfirm={() => handleDeleteTask()} />
         {
           downloading ?
             <ProgressBar current={current === 0 ? null : current} total={total} />
             :
-            <Button onClick={handleDownload}>Download</Button>
+            <Button onClick={handleDownload}>{t('tasks.download')}</Button>
         }
       </td>
     </tr>

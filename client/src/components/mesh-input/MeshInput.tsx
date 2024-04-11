@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { Mesh, MeshStandardMaterial, TextureLoader } from 'three';
+import { useTranslation } from 'react-i18next';
 import { Canvas } from '@react-three/fiber';
 import { adjustMesh, convertToGLB, loadGeometry, pngFromMesh } from '@/utils/utils';
 import PreviewMesh from './PreviewMesh';
@@ -19,6 +20,7 @@ export default function MeshInput(props: MeshInputProps) {
   const [rotation, setRotation] = useState(0);
   const meshRef = useRef<Mesh>(null);
   const handleMeshRef = useRef(props.handleMesh);
+  const { t } = useTranslation();
 
   useEffect(() => {
     handleMeshRef.current = props.handleMesh;
@@ -107,7 +109,9 @@ export default function MeshInput(props: MeshInputProps) {
   return (
     <div className='flex flex-row w-full justify-between'>
       <div className='flex flex-col w-1/2'>
-        <label> Mesh </label>
+        <label>
+          {t('components.mesh-input.mesh')}
+        </label>
         <div className='flex flex-col w-full h-full'>
           <Canvas camera={{position: [0, 0, 2]}} gl={{ preserveDrawingBuffer: true }} >
             <ambientLight />
@@ -117,7 +121,7 @@ export default function MeshInput(props: MeshInputProps) {
             htmlFor='mesh_input'
             className='cursor-pointer text-center border border-black bg-gray-700 text-white'
           >
-            Upload Mesh
+            {t('components.mesh-input.upload-mesh')}
           </label>
           <input
             id='mesh_input'
@@ -129,18 +133,22 @@ export default function MeshInput(props: MeshInputProps) {
         </div>
       </div>
       <div className='flex flex-col w-1/2'>
-        <label> Texture </label>
+        <label>
+          {t('components.mesh-input.texture')}
+        </label>
         <div className='flex flex-col w-full'>
           { textureImage ?
             <img src={textureImage?.src} alt='texture' width='100%' height='100%' />
             :
-            <div> No texture </div>
+            <div>
+              {t('components.mesh-input.no-texture')}
+            </div>
           }
           <label
             htmlFor='texture_input'
             className='cursor-pointer text-center border border-black bg-gray-700 text-white'
           >
-            Upload Texture
+            {t('components.mesh-input.upload-texture')}
           </label>
           <input
             id='texture_input'
