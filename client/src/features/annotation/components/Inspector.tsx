@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Archetype, Entity } from '@/api/types';
 import useAnnotation from '../hooks/useAnnotation';
 import ArchetypeViewer from './ArchetypeViewer';
@@ -12,6 +13,8 @@ export default function Inspector() {
   } = useAnnotation();
   const [selectedArchetype, setSelectedArchetype] = useState<Archetype | null>(null);
   const [selectedEntity, setSelectedEntity] = useState<Entity | null>(null);
+  const { t } = useTranslation();
+
   useEffect(() => {
     setSelectedArchetype(annotations.find(archetype => archetype.id === selectedArchetypeId) || null);
   }, [selectedArchetypeId, annotations]);
@@ -29,9 +32,13 @@ export default function Inspector() {
   return (
     <div className='flex flex-col w-full h-full p-1 bg-gray-800'>
       <section className='flex flex-col overflow-y-auto mb-2 bg-gray-700'>
-        <h4>Archetype</h4>
+        <h4>
+          {t('annotation.archetype')}
+        </h4>
         {
-          !selectedArchetype ? <p className='center-text'>Select an Archetype</p> :
+          !selectedArchetype ? <p className='center-text'>
+            {t('annotation.select-archetype')}
+          </p> :
             <div className='flex flex-col items-center px-2'>
               <span className='flex justify-between w-full'>
                 <p>Added By</p>
@@ -70,21 +77,29 @@ export default function Inspector() {
         }
       </section>
       <section className='flex flex-col overflow-y-auto mb-2 bg-gray-700'>
-        <h4>Entity</h4>
+        <h4>
+          {t('annotation.entity')}
+        </h4>
         {
-          !selectedEntity ? <p className='center-text'>Select an Entity</p> :
+          !selectedEntity ? <p className='center-text'>
+            {t('annotation.select-entity')}
+          </p> :
             <div className='flex flex-col items-center px-2'>
               <span className='flex justify-between w-full'>
-                <p>Added By</p>
+                <p>
+                  {t('annotation.added-by')}
+                </p>
                 <p>{users.find(user => user._id === selectedEntity.addedBy)?.displayName}</p>
               </span>
               <span className='flex justify-between w-full'>
-                <p>Faces</p>
+                <p>
+                  {t('annotation.faces')}
+                </p>
                 <p>{selectedEntity.faces.length}</p>
               </span>
               { selectedArchetype?.archetype === null ? 
                 <button onClick={() => setEntityAsArchetype(selectedArchetype.id, selectedEntity.id)}>
-                  Set as Archetype
+                  {t('annotation.set-archetype')}
                 </button> :
                 <>
                   {selectedArchetype && 
@@ -95,12 +110,12 @@ export default function Inspector() {
                   {
                     selectedArchetype?.archetype === selectedEntity.id ?
                       <button onClick={() => setEntityAsArchetype(selectedArchetype.id, null)}>
-                        Unset as Archetype
+                        {t('annotation.unset-archetype')}
                       </button>
                       : <>
                         <span className='flex justify-evenly w-full'>
                           <div className='w-full text-right pr-4'>
-                            Scale
+                            {t('annotation.scale')}
                           </div>
                           <div className='w-full'>
                             <input 
@@ -125,7 +140,7 @@ export default function Inspector() {
                         </span>
                         <span className='flex justify-between w-full'>
                           <div className='w-full text-right pr-4'>
-                            Orientation
+                            {t('annotation.orientation')}
                           </div>
                           <div className='w-full'>
                             <input 
@@ -151,7 +166,7 @@ export default function Inspector() {
                         </span>
                         <span className='flex justify-evenly w-full'>
                           <div className='w-full text-right pr-4'>
-                            Reflected
+                            {t('annotation.reflected')}
                           </div>
                           <div className='w-full justify-center'>
                             <input 
@@ -174,7 +189,7 @@ export default function Inspector() {
                             if (selectedArchetypeId && selectedEntityId)
                               updateEntity(selectedArchetypeId, selectedEntityId, 1, 0, false);
                           }}>
-                            Reset
+                          {t('annotation.reset')}
                         </button>
                       </>
                   }

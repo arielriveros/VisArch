@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { API_BASE_URL } from '@/api/config';
 import ProjectForm from '@/components/forms/ProjectForm';
 import useSession from '@/hooks/useSession';
@@ -14,6 +15,7 @@ export default function EditProject() {
     description: '',
     collaborators: []
   });
+  const { t } = useTranslation();
 
   useEffect(() => {
     if (!projectId) return;
@@ -96,7 +98,7 @@ export default function EditProject() {
       <div className='flex flex-col w-full'>
         { usersList && user &&
           <ProjectForm
-            title={'Edit Project'}
+            title={t('projects.form.edit-project')}
             project={project}
             usersList={usersList.filter(u => u.id !== user.id)}
             setProject={setProject}

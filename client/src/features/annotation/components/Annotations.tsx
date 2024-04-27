@@ -1,13 +1,15 @@
+import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import { Archetype } from '@/api/types';
 import useAnnotation from '../hooks/useAnnotation';
 import Emitter from '../utils/emitter';
 import DeleteIcon from '@/assets/icons/delete.png';
 import '../styles/Annotations.css';
-import { Archetype } from '@/api/types';
-import { useEffect, useState } from 'react';
 
 export default function Annotations() {
   const { annotations, selectedArchetype: selectedArchetypeId, selectedEntity, addArchetype, removeArchetype, selectArchetype, removeEntity, selectEntity } = useAnnotation();
   const [selectedArchetype, setSelectedArchetype] = useState<Archetype | null>(null);
+  const { t } = useTranslation();
 
   useEffect(() => {
     if (selectedArchetypeId) {
@@ -19,7 +21,9 @@ export default function Annotations() {
   return (
     <div className='flex flex-col w-full h-full p-1 bg-gray-800'>
       <section className='flex flex-col overflow-y-auto mb-2 bg-gray-700'>
-        <h4>Archetypes</h4>
+        <h4>
+          {t('annotation.archetypes')}
+        </h4>
         {annotations?.map(archetype => (
           <div 
             key={archetype.id}
@@ -51,11 +55,17 @@ export default function Annotations() {
             </button>
           </div>
         ))}
-        <button onClick={addArchetype}>Add Archetype</button>
+        <button onClick={addArchetype}>
+          {t('annotation.add-archetype')}
+        </button>
       </section>
       <section className='flex flex-col overflow-y-auto mb-2 pl-1 bg-gray-700'>
-        <h4>Entities</h4>
-        { !selectedArchetype ? <p className='center-text'>Select an Archetype</p> :
+        <h4>
+          {t('annotation.entities')}
+        </h4>
+        { !selectedArchetype ? <p className='center-text'>
+          {t('annotation.select-archetype')}
+        </p> :
           selectedArchetype?.entities.map(entity => (
             <div
               key={entity.id}
@@ -65,7 +75,7 @@ export default function Annotations() {
               className={`annotation-item ${selectedEntity === entity.id ? 'selected' : ''}`} 
             >
               <span>
-                { selectedArchetype.archetype === entity.id ? 'Archetype' : 'Entity' }
+                { selectedArchetype.archetype === entity.id ? t('annotation.archetype') : t('annotation.entity') }
               </span>
               <button 
                 onClick={(e) => {
