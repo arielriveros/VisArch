@@ -27,6 +27,20 @@ api.use(cookieSession({
   maxAge: 24 * 60 * 60 * 1000
 }));
 
+api.use(function(request, response, next) {
+  if (request.session && !request.session.regenerate) {
+    request.session.regenerate = (cb) => {
+      cb();
+    }
+  }
+  if (request.session && !request.session.save) {
+    request.session.save = (cb) => {
+      cb();
+    }
+  }
+  next();
+})
+
 // Passport
 api.use(GooglePassport.initialize());
 api.use(GooglePassport.session());
