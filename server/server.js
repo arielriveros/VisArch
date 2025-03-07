@@ -4,6 +4,7 @@ const cors = require('cors');
 const { Server } = require('socket.io');
 const mongoose = require('mongoose');
 const { createServer } = require('http'); // Import HTTP server
+const path = require('path'); // Import path module
 const api = require('./api');
 
 const app = express();
@@ -11,7 +12,6 @@ const server = createServer(app); // Create HTTP server
 
 // CORS setup
 app.use(cors({
-  origin: process.env.APP_URL,
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
   credentials: true
 }));
@@ -25,10 +25,13 @@ mongoose.connect(mongo_uri)
 // Use API routes
 app.use('/api', api);
 
+// Serve static files
+const staticPath = path.join(__dirname, 'static');
+app.use(express.static(staticPath));
+
 // Create WebSocket server
 const io = new Server(server, {
-  path: '/websocket',
-  cors: { origin: process.env.APP_URL }
+  path: '/websocket'
 });
 
 // WebSocket handling
@@ -102,7 +105,7 @@ io.on('connection', (socket) => {
 });
 
 // Start the server
-const PORT = process.env.NODE_ENV === 'production' ? 80 : 5000;
+const PORT = 5000;
 server.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });

@@ -1,19 +1,9 @@
 version: "3.8"
 services:
-  client:
-    build: ./client
-    depends_on:
-      - api
-      - websocket
+  app:
+    build: .
     ports:
-      - 80:80
-    environment:
-      NODE_ENV: production
-
-  api:
-    build: ./server/api
-    ports:
-      - 5000:80
+      - 5000:5000
     environment:
       NODE_ENV: production
       APP_URL: ${APP_URL}
@@ -25,14 +15,6 @@ services:
       GITHUB_SECRET: ${GITHUB_SECRET}
     volumes:
       - app_files:/app/files
-
-  websocket:
-    build: ./server/websocket
-    ports:
-      - 5001:80
-    environment:
-      NODE_ENV: production
-      APP_URL: ${APP_URL}
 
   db:
     image: mongo:4.0-xenial
