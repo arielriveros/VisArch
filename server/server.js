@@ -1,29 +1,41 @@
+// Dependencies 
 const express = require('express');
 const cors = require('cors');
 const { Server } = require('socket.io');
+const mongoose = require('mongoose');
+const { createServer } = require('http'); // Import HTTP server
+const api = require('./api');
 
-const app = express();  
-app.use(cors());
+const app = express();
+const server = createServer(app); // Create HTTP server
 
-// Start the server
-const PORT = process.env.NODE_ENV === 'production' ? 80 : 5001;
-const server = app.listen(PORT, () => {
-    console.log(`Websocket server running on port ${PORT}`);
-}); 
+// CORS setup
+app.use(cors({
+  origin: process.env.APP_URL,
+  methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  credentials: true
+}));
 
-// Create a new socket.io server
+// MongoDB connection
+const mongo_uri = process.env.MONGO_URI;
+mongoose.connect(mongo_uri)
+  .then(() => console.log('MongoDB connected'))
+  .catch((err) => console.log(err));
+
+// Use API routes
+app.use('/api', api);
+
+// Create WebSocket server
 const io = new Server(server, {
   path: '/websocket',
-  cors: {
-    origin: process.env.APP_URL
-  }
+  cors: { origin: process.env.APP_URL }
 });
 
-// Listen for incoming connections
+// WebSocket handling
 io.on('connection', (socket) => {
   let socketRoom = null;
   let user = null;
-  console.log('A user connected')
+  console.log('A user connected');
 
   socket.on('setUser', (incUser) => {
     if (user) return;
@@ -87,4 +99,10 @@ io.on('connection', (socket) => {
     broadcastMessage('setEntityAsArchetype', entityAsArchetypePayload);
   });
 
+});
+
+// Start the server
+const PORT = process.env.NODE_ENV === 'production' ? 80 : 5000;
+server.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`);
 });

@@ -3,11 +3,11 @@
   "version": "1.0.0",
   "description": "",
   "scripts": {
-    "install-all": "npm install && cd client && npm install && cd ../server/api && npm install && cd ../websocket && npm install",
-    "api-dev": "cd server/api & npm run start",
-    "websocket-dev": "cd server/websocket & npm run start",
-    "client-dev": "cd client & npm run start",
-    "dev": "dotenv -e .env -v MONGO_URI=mongodb://localhost:27017/visarch -v APP_URL=http://localhost:3000 -- concurrently \"npm run api-dev\" \"npm run websocket-dev\" \"npm run client-dev\""
+    "install:all": "npm install && cd client && npm install && cd ../server && npm install",
+    "install:prod": "cd client && npm ci && cd ../server && npm ci",
+    "server:dev": "cd server & npm run start",
+    "client:dev": "cd client & npm run start",
+    "dev": "dotenv -e .env -v MONGO_URI=mongodb://localhost:27017/visarch -v APP_URL=http://localhost:3000 -- concurrently \"npm run server:dev\" \"npm run client:dev\""
   },
   "author": "",
   "license": "ISC",
