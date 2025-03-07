@@ -28,8 +28,10 @@ router.get('/login', requireAuth, function(req, res){
 
 // Logout
 router.post('/logout', function(req, res){
-  req.logout();
-  res.status(200).json({ message: 'Logout' });
+  req.logout((err) => {
+    if (err) { return next(err); }
+    res.redirect(process.env.NODE_ENV === 'production' ? successRedirect : '/');
+  });
 });
 
 module.exports = router;
