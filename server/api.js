@@ -6,8 +6,7 @@ const UserRoutes = require('./routes/users.routes');
 const ProjectRoutes = require('./routes/projects.routes');
 const TaskRoutes = require('./routes/tasks.routes');
 const FileRoutes = require('./routes/files.routes');
-const GooglePassport = require('./auth/passport.google');
-const GithubPassport = require('./auth/passport.github');
+const PassportConfig = require('./auth/passport.config');
 const requireAuth = require('./middleware/auth');
 
 // Create a router instead of an app
@@ -39,10 +38,7 @@ router.use((req, res, next) => {
 });
 
 // Passport
-router.use(GooglePassport.initialize());
-router.use(GooglePassport.session());
-router.use(GithubPassport.initialize());
-router.use(GithubPassport.session());
+router.use(PassportConfig.router);
 
 // API Routes
 router.use('/auth', LoginRoutes);  // Ensure login routes are correctly registered

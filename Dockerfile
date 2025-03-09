@@ -4,7 +4,6 @@ WORKDIR /app
 COPY client/package*.json /app
 RUN npm ci
 COPY ./client /app
-# ENV NODE_ENV production
 RUN npm run build
 
 # SERVER BUILD STAGE
@@ -13,7 +12,6 @@ WORKDIR /app
 COPY server/package*.json .
 RUN npm ci
 COPY ./server /app
-
 EXPOSE 5000
 
 RUN mkdir files

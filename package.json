@@ -7,7 +7,7 @@
     "install:prod": "cd client && npm ci && cd ../server && npm ci",
     "server:dev": "cd server & npm run start",
     "client:dev": "cd client & npm run start",
-    "dev": "dotenv -e .env -v MONGO_URI=mongodb://localhost:27017/visarch -v APP_URL=http://localhost:3000 -- concurrently \"npm run server:dev\" \"npm run client:dev\""
+    "dev": "dotenv -e .env -v APP_URL=http://localhost:3000 -- concurrently \"npm run server:dev\" \"npm run client:dev\""
   },
   "author": "",
   "license": "ISC",
