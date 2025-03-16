@@ -8,36 +8,31 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      -
-        name: Checkout
+      - name: Checkout
         uses: actions/checkout@v4
-      - 
-        name: Set up Docker Buildx
+
+      - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
-      - 
-        name: Build app image
+
+      - name: Build app image
         uses: docker/build-push-action@v5
         with:
           context: .
           file: Dockerfile
           load: true
           tags: visarch:latest
-      - 
-        name: Save client image as tar
+
+      - name: Save client image as tar
         run: docker save -o client.tar visarch:latest
-      - 
-        name: Copy docker-compose.prod.yml
-        run: cp docker-compose.prod.yml ./docker-compose.prod.yml
-      - 
-        name: Send images and compose file to server
+
+      - name: Send images and compose file to server
         run: |
           scp client.tar ${{ secrets.PRODUCTION_PATH }}
           scp docker-compose.prod.yml ${{ secrets.PRODUCTION_PATH }}
         env:
           SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
         shell: bash
-      -
-        name: Deploy to production
+      - name: Deploy to production
         run: |
           ssh -i ${{ secrets.SSH_PRIVATE_KEY }} ${{ secrets.PRODUCTION_USER }}@${{ secrets.PRODUCTION_PATH }} << 'ENDSSH'
             docker load -i client.tar
