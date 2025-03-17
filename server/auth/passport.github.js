@@ -2,7 +2,7 @@ const passport = require('passport');
 const GitHubStrategy = require('passport-github').Strategy;
 const UserModel = require('../models/User');
 
-const callbackURL = process.env.NODE_ENV === 'production' ? `${process.env.APP_URL}/api/auth/callback/github` : 'http://localhost:5000/api/auth/callback/github';
+const callbackURL = process.env.NODE_ENV === 'production' ? `http://${process.env.APP_URL}/api/auth/callback/github` : 'http://localhost:5000/api/auth/callback/github';
 
 passport.use(new GitHubStrategy({
     clientID: process.env.GITHUB_ID,
