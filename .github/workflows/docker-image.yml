@@ -50,14 +50,32 @@ jobs:
           echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
           ssh-keyscan -H ${{ secrets.PRODUCTION_HOST }} > ~/.ssh/known_hosts
 
-      - name: Send images and compose file to server
+      - name: Create .env file
+        run: |
+          echo "APP_URL=${{ secrets.PRODUCTION_HOST }} > .env
+          echo "GOOGLE_ID=${{ secrets.GOOGLE_ID }}" >> .env
+          echo "GOOGLE_SECRET=${{ secrets.GOOGLE_SECRET }}" >> .env
+          echo "GITHUB_ID=${{ secrets.CLIENT_ID_GITHUB }}" >> .env
+          echo "GITHUB_SECRET=${{ secrets.CLIENT_SECRET_GITHUB }}" >> .env
+          echo "JWT_SECRET=${{ secrets.JWT_SECRET }}" >> .env
+
+      - name: Send images, compose file, and .env to server
         run: |
           scp client.tar ${{ secrets.PRODUCTION_USER }}@${{ secrets.PRODUCTION_HOST }}:/home/${{ secrets.PRODUCTION_USER }}
           scp docker-compose.prod.yml ${{ secrets.PRODUCTION_USER }}@${{ secrets.PRODUCTION_HOST }}:/home/${{ secrets.PRODUCTION_USER }}
+          scp .env ${{ secrets.PRODUCTION_USER }}@${{ secrets.PRODUCTION_HOST }}:/home/${{ secrets.PRODUCTION_USER }}
 
       - name: Deploy to production
         run: |
           ssh -T ${{ secrets.PRODUCTION_USER }}@${{ secrets.PRODUCTION_HOST }} << 'ENDSSH'
             docker load -i client.tar
             docker compose -f docker-compose.prod.yml up -d
+          ENDSSH
+
+      - name: Clean up
+        run: |
+          ssh -T ${{ secrets.PRODUCTION_USER }}@${{ secrets.PRODUCTION_HOST }} << 'ENDSSH'
+            rm client.tar
+            rm docker-compose.prod.yml
+            rm .env
           ENDSSH
