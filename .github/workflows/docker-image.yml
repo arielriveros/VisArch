@@ -48,7 +48,7 @@ jobs:
         run: |
           install -m 600 -D /dev/null ~/.ssh/id_rsa
           echo "${{ secrets.PRODUCTION_SSH_KEY }}" > ~/.ssh/id_rsa
-          ssh-keyscan -t rsa ${{ secrets.PRODUCTION_HOST }} >> ~/.ssh/known_hosts
+          ssh-keyscan -H ${{ secrets.PRODUCTION_HOST }} > ~/.ssh/known_hosts
 
       - name: Send images and compose file to server
         run: |
