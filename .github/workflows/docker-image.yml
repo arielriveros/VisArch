@@ -57,7 +57,7 @@ jobs:
 
       - name: Deploy to production
         run: |
-          ssh ${{ secrets.PRODUCTION_USER }}@${{ secrets.PRODUCTION_HOST }} << 'ENDSSH'
+          ssh -T ${{ secrets.PRODUCTION_USER }}@${{ secrets.PRODUCTION_HOST }} << 'ENDSSH'
             docker load -i client.tar
             docker-compose -f docker-compose.prod.yml up -d
           ENDSSH
