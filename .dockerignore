@@ -1,0 +1,9 @@
+**/node_modules
+**/build
+**/static
+**/test
+**/coverage
+**/dist
+**/__tests__
+**/files
+**/.dockerignore

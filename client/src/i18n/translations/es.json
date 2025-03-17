@@ -1,0 +1,118 @@
+{
+  "home": {
+    "welcome": "VisArch es una herramienta de anotación 3D para la web diseñada para proporcionar al usuario la capacidad de anotar superficies 3D con facilidad.",
+    "description1": "Anota una superficie interactuando con el modelo 3D. La anotación se mostrará en el modelo 3D y en la imagen 2D.",
+    "description2": "Si tu proyecto es grande o simplemente quieres hacer el proceso más rápido, puedes invitar a tu equipo a trabajar juntos en el mismo proyecto y anotar el modelo 3D al mismo tiempo.",
+    "description3": "Administra tus proyectos y tareas en un solo lugar. Puedes crear, editar y eliminar proyectos y tareas. También puedes asignar tareas a los miembros de tu equipo.",
+    "get-started": "Comenzar"
+  },
+ 
+  "profile": {
+    "title": "Perfil",
+    "logout": "Cerrar sesión",
+    "delete-profile": "Eliminar perfil"
+  },
+ 
+  "login": {
+    "title": "Iniciar sesión",
+    "google": "Ingresar con Google",
+    "github": "Ingresar con GitHub"
+  },
+ 
+  "navbar": {
+    "home": "Inicio",
+    "projects": "Proyectos",
+    "profile": "Perfil",
+    "login": "Ingresar"
+  },
+
+  "projects": {
+    "title": "Proyectos",
+    "tasks": "Tareas",
+    "name": "Nombre",
+    "description": "Descripción",
+    "no-description": "Sin Descripción",
+    "owner": "Propietario",
+    "owner-you": "Tú",
+    "collaborators": "Colaboradores",
+    "details": "Detalle",
+    "edit": "Editar",
+    "form": {
+      "name-placeholder": "Nombre del proyecto",
+      "description-placeholder": "Descripción del proyecto",
+      "collaborators-placeholder": "Buscar colaboradores",
+      "submit": "Enviar",
+      "cancel": "Cancelar",
+      "new-project": "Crear Nuevo Proyecto",
+      "edit-project": "Editar Proyecto",
+      "delete-project": "Borrar Proyecto"
+    }
+  },
+
+  "tasks": {
+    "loading": "Cargando tareas...",
+    "no-tasks": "No se encontraron tareas",
+    "details": "Detalles",
+    "add-task": "Añadir tarea",
+    "uploading": "Subiendo datos...",
+    "create-task": "Crear Nueva Tarea",
+    "name": "Nombre",
+    "description": "Descripción",
+    "no-description": "Sin Descripción",
+    "mesh": "Malla",
+    "actions": "Acciones",
+    "annotate": "Anotar",
+    "delete": "Eliminar",
+    "download": "Descargar",
+    "form": {
+      "name-placeholder": "Nombre de la tarea",
+      "description-placeholder": "Descripción de la tarea",
+      "cancel": "Cancelar",
+      "submit": "Enviar"
+    }
+  },
+
+  "components": {
+    "confirm-button": {
+      "confirm": "Confirmar",
+      "cancel": "Cancelar"
+    },
+    "mesh-input": {
+      "mesh": "Malla",
+      "upload-mesh": "Subir Malla",
+      "texture": "Textura",
+      "upload-texture": "Subir Textura",
+      "no-texture": "Sin Textura"
+    }
+  },
+
+  "toolbar": {
+    "save": "Guardar",
+    "controls": "Controles",
+    "drag": "Arrastrar",
+    "rotate": "Rotar",
+    "zoom": "Acercar",
+    "reset": "Restablecer",
+    "tools": "Selección",
+    "lasso": "Lazo",
+    "unwrapping": "Desenvoltura"
+  },
+
+  "annotation": {
+    "archetypes": "Arquetipos",
+    "archetype": "Arquetipo",
+    "add-archetype": "Añadir Arquetipo",
+    "select-archetype": "Selecione Arquetipo",
+    "entities": "Entidades",
+    "entity": "Entidad",
+    "select-entity": "Seleccione Entidad",
+    "added-by": "Añadido por",
+    "faces": "Caras",
+    "set-archetype": "Usar como Arquetipo",
+    "unset-archetype": "Quitar como Arquetipo",
+    "scale": "Escala",
+    "orientation": "Orientación",
+    "reflected": "Reflejada",
+    "reset": "Restablecer"
+  }
+}

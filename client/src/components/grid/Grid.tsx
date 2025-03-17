@@ -1,29 +1,15 @@
-import { ReactNode } from 'react'
-import './Grid.css'
-
-interface GridItemProps {
-    children: ReactNode;
-    onClick?: () => void;
-}
-
-export function GridItem(props: GridItemProps) {
-    return (
-        <div className='GridItem' onClick={props.onClick}>
-            {props.children}
-        </div>
-    )
-}
-
-interface GridProps {
-    children: ReactNode;
-}
-
-export default function Grid(props: GridProps) {
+export function GridElement({ children }: { children: React.ReactNode }) {
   return (
-    <div className='GridContainer'>
-        <div className='Grid'>
-            {props.children}
-        </div>
+    <div className='h-full'>
+      {children}
     </div>
-  )
+  );
+}
+
+export default function Grid({ children }: { children: React.ReactNode }) {
+  return (
+    <div className='grid gap-3 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4'>
+      {children}
+    </div>
+  );
 }

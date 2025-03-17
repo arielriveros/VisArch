@@ -1,13 +1,21 @@
-import { createContext, useReducer, useEffect } from 'react';
-import { User } from '../api/ModelTypes';
+import { createContext, useReducer } from 'react';
+
+interface User {
+  id: string;
+  userName: string;
+  displayName: string;
+  email: string;
+  picture?: string;
+}
 
 interface AuthState {
   user: User | null;
+  signedIn: boolean;
 }
-  
+
 interface AuthAction {
   type: string;
-  payload?: User;
+  payload?: User | null;
 }
 
 interface AuthContextProps extends AuthState {
@@ -16,30 +24,31 @@ interface AuthContextProps extends AuthState {
 
 export const AuthContext = createContext<AuthContextProps>({
   user: null,
+  signedIn: false,
   dispatch: () => {}
 });
 
 export function authReducer(state: AuthState, action: AuthAction): AuthState {
   switch (action.type) {
-    case 'LOGIN':
-      return { ...state, user: action.payload || null };
-    case 'LOGOUT':
-      return { ...state, user: null };
-    default:
-      return state
+  case 'LOGIN':
+    return {
+      ...state, 
+      user: action.payload as User,
+      signedIn: true
+    };
+  case 'LOGOUT':
+    return {
+      ...state,
+      user: null,
+      signedIn: false
+    };
+  default:
+    return state;
   }
 }
 
 export function AuthContextProvider({ children }: { children: React.ReactNode }) {
-  const [state, dispatch] = useReducer(authReducer, { user: null });
-
-  useEffect(() => {
-    const user = localStorage.getItem('user');
-    if (user) {
-      dispatch({ type: 'LOGIN', payload: JSON.parse(user) });
-    }
-  }, []);
-
+  const [state, dispatch] = useReducer(authReducer, { user: null, signedIn: false });
   return (
     <AuthContext.Provider value={{ ...state, dispatch }}>
       {children}
