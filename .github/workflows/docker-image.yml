@@ -52,8 +52,8 @@ jobs:
 
       - name: Send images and compose file to server
         run: |
-          scp client.tar ${{ secrets.PRODUCTION_USER }}@${{ secrets.PRODUCTION_HOST }}
-          scp docker-compose.prod.yml ${{ secrets.PRODUCTION_USER }}@${{ secrets.PRODUCTION_HOST }}
+          scp client.tar ${{ secrets.PRODUCTION_USER }}@${{ secrets.PRODUCTION_HOST }}/home/${{ secrets.PRODUCTION_USER }}
+          scp docker-compose.prod.yml ${{ secrets.PRODUCTION_USER }}@${{ secrets.PRODUCTION_HOST }}/home/${{ secrets.PRODUCTION_USER }}
 
       - name: Deploy to production
         run: |
