@@ -49,15 +49,18 @@ jobs:
           install -m 600 -D /dev/null ~/.ssh/id_rsa
           echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
           ssh-keyscan -H ${{ secrets.PRODUCTION_HOST }} > ~/.ssh/known_hosts
+      
+      - name: Test SSH connection
+        run: ssh -T ${{ secrets.PRODUCTION_USER }}@${{ secrets.PRODUCTION_HOST }} 'echo "SSH connection successful"'
 
-      - name: Send images and compose file to server
-        run: |
-          scp client.tar ${{ secrets.PRODUCTION_USER }}@${{ secrets.PRODUCTION_HOST }}
-          scp docker-compose.prod.yml ${{ secrets.PRODUCTION_USER }}@${{ secrets.PRODUCTION_HOST }}
+      #- name: Send images and compose file to server
+      #  run: |
+      #    scp client.tar ${{ secrets.PRODUCTION_USER }}@${{ secrets.PRODUCTION_HOST }}
+      #    scp docker-compose.prod.yml ${{ secrets.PRODUCTION_USER }}@${{ secrets.PRODUCTION_HOST }}
 
-      - name: Deploy to production
-        run: |
-          ssh -T ${{ secrets.PRODUCTION_USER }}@${{ secrets.PRODUCTION_HOST }} << 'ENDSSH'
-            docker load -i client.tar
-            docker-compose -f docker-compose.prod.yml up -d
-          ENDSSH
+      #- name: Deploy to production
+      #  run: |
+      #    ssh -T ${{ secrets.PRODUCTION_USER }}@${{ secrets.PRODUCTION_HOST }} << 'ENDSSH'
+      #      docker load -i client.tar
+      #      docker-compose -f docker-compose.prod.yml up -d
+      #    ENDSSH
