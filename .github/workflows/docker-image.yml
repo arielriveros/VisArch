@@ -52,7 +52,7 @@ jobs:
 
       - name: Create .env file
         run: |
-          echo "APP_URL=${{ secrets.PRODUCTION_HOST }} > .env
+          echo "APP_URL=${{ secrets.PRODUCTION_HOST }}" > .env
           echo "GOOGLE_ID=${{ secrets.GOOGLE_ID }}" >> .env
           echo "GOOGLE_SECRET=${{ secrets.GOOGLE_SECRET }}" >> .env
           echo "GITHUB_ID=${{ secrets.CLIENT_ID_GITHUB }}" >> .env
