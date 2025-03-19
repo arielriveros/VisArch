@@ -3,7 +3,7 @@ services:
   app:
     image: visarch:latest
     ports:
-      - 80:5000
+      - 5000:5000
     environment:
       NODE_ENV: production
       APP_URL: ${APP_URL}
