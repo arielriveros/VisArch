@@ -13,13 +13,6 @@ const requireAuth = require('./middleware/auth');
 const router = express.Router();  
 router.use(express.json({ limit: '50mb', extended: true }));
 
-// CORS
-router.use(cors({
-  origin: process.env.APP_URL,
-  methods: ['GET', 'POST', 'PUT', 'DELETE'],
-  credentials: true
-}));
-
 router.use(cookieSession({
   name: 'session',
   keys: [process.env.JWT_SECRET],

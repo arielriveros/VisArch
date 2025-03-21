@@ -2,7 +2,7 @@ const passport = require('passport');
 const GoogleStrategy = require('passport-google-oauth20').Strategy;
 const UserModel = require('../models/User');
 
-const callbackURL = process.env.NODE_ENV === 'production' ? `http://${process.env.APP_URL}/api/auth/callback/google` : 'http://localhost:5000/api/auth/callback/google';
+const callbackURL = process.env.NODE_ENV === 'production' ? `https://${process.env.APP_URL}/api/auth/callback/google` : 'http://localhost:5000/api/auth/callback/google';
 
 passport.use(new GoogleStrategy({
     clientID: process.env.GOOGLE_ID,
