@@ -3,7 +3,7 @@ const passport = require('passport');
 const router = express.Router();
 const requireAuth = require('../middleware/auth');
 
-const successRedirect = `${process.env.APP_URL}/`;
+const successRedirect = process.env.NODE_ENV === 'production' ? `https://${process.env.APP_URL}` : 'http://localhost:3000';
 
 // Google
 router.get('/google', passport.authenticate('google', { scope: ['profile', 'email'] }));
