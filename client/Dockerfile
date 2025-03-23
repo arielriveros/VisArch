@@ -7,17 +7,15 @@ WORKDIR /app
 
 COPY package.json ./ 
 COPY package-lock.json ./ 
-# COPY nginx.conf ./
 RUN npm install
 
 COPY . ./ 
-RUN npm run build
+RUN if [ "$NODE_ENV" = "production" ]; then npm run build:production; else npm run build:development; fi
 
 # Stage 2: Serve the app with Nginx
 FROM nginx:alpine
 
 COPY --from=build /app/build /usr/share/nginx/html
-# COPY --from=build /app/nginx.conf /etc/nginx/conf.d/default.conf
 
 EXPOSE 80
 
