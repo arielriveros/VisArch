@@ -1,7 +1,7 @@
-name: Build and Deploy Docker Image
+name: Build and Deploy Docker Images
 on:
   push:
-    branches: [ "main" ]
+    branches: [ "main", "development" ]
 
 jobs:
   build:
@@ -13,22 +13,44 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
-      - name: Build app image
+      - name: Build client image
         uses: docker/build-push-action@v5
         with:
-          context: .
-          file: Dockerfile
+          context: ./client
+          file: ./client/Dockerfile
           load: true
-          tags: visarch:latest
+          tags: visarch-client:latest
 
-      - name: Save client image as tar
-        run: docker save -o client.tar visarch:latest
+      - name: Build API image
+        uses: docker/build-push-action@v5
+        with:
+          context: ./server/api
+          file: ./server/api/Dockerfile
+          load: true
+          tags: visarch-api:latest
 
-      - name: Upload Docker image artifact
+      - name: Build WebSocket image
+        uses: docker/build-push-action@v5
+        with:
+          context: ./server/websocket
+          file: ./server/websocket/Dockerfile
+          load: true
+          tags: visarch-websocket:latest
+
+      - name: Save images as tar files
+        run: |
+          docker save -o client.tar visarch-client:latest
+          docker save -o api.tar visarch-api:latest
+          docker save -o websocket.tar visarch-websocket:latest
+
+      - name: Upload Docker image artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: client-image
-          path: client.tar
+          name: docker-images
+          path: |
+            client.tar
+            api.tar
+            websocket.tar
 
   deploy:
     runs-on: ubuntu-latest
@@ -37,10 +59,10 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Download Docker image artifact
+      - name: Download Docker image artifacts
         uses: actions/download-artifact@v4
         with:
-          name: client-image
+          name: docker-images
           path: .
 
       - name: Set up SSH key
@@ -60,7 +82,7 @@ jobs:
 
       - name: Send images, compose file, and .env to server
         run: |
-          scp client.tar ${{ secrets.PRODUCTION_USER }}@${{ secrets.PRODUCTION_HOST }}:/home/${{ secrets.PRODUCTION_USER }}
+          scp client.tar api.tar websocket.tar ${{ secrets.PRODUCTION_USER }}@${{ secrets.PRODUCTION_HOST }}:/home/${{ secrets.PRODUCTION_USER }}
           scp docker-compose.prod.yml ${{ secrets.PRODUCTION_USER }}@${{ secrets.PRODUCTION_HOST }}:/home/${{ secrets.PRODUCTION_USER }}
           scp .env ${{ secrets.PRODUCTION_USER }}@${{ secrets.PRODUCTION_HOST }}:/home/${{ secrets.PRODUCTION_USER }}
 
@@ -68,13 +90,14 @@ jobs:
         run: |
           ssh -T ${{ secrets.PRODUCTION_USER }}@${{ secrets.PRODUCTION_HOST }} << 'ENDSSH'
             docker load -i client.tar
-            docker compose -f docker-compose.prod.yml up -d
+            docker load -i api.tar
+            docker load -i websocket.tar
+            docker compose -f docker-compose.prod.yml up -d --force-recreate
           ENDSSH
 
       - name: Clean up
         run: |
           ssh -T ${{ secrets.PRODUCTION_USER }}@${{ secrets.PRODUCTION_HOST }} << 'ENDSSH'
-            rm client.tar
-            rm docker-compose.prod.yml
-            rm .env
+            rm client.tar api.tar websocket.tar
+            rm docker-compose.prod.yml .env
           ENDSSH
