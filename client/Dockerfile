@@ -10,7 +10,7 @@ COPY package-lock.json ./
 RUN npm install
 
 COPY . ./ 
-RUN if [ "$NODE_ENV" = "production" ]; then npm run build:production; else npm run build:development; fi
+RUN npm run build
 
 # Stage 2: Serve the app with Nginx
 FROM nginx:alpine
