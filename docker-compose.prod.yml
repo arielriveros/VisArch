@@ -13,6 +13,7 @@ services:
       - 5000:5000
     environment:
       NODE_ENV: production
+      APP_URL: ${APP_URL}
       MONGO_URI: mongodb://db/visarch
       JWT_SECRET: ${JWT_SECRET}
       GOOGLE_ID: ${GOOGLE_ID}
@@ -28,6 +29,7 @@ services:
       - 5001:5001
     environment:
       NODE_ENV: production
+      APP_URL: ${APP_URL}
 
   db:
     image: mongo:4.0-xenial
