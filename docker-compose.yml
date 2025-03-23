@@ -13,7 +13,7 @@ services:
       - 5000:5000
     environment:
       NODE_ENV: development
-      MONGO_URI: mongodb://db/visarch-api
+      MONGO_URI: mongodb://db/visarch
       JWT_SECRET: ${JWT_SECRET}
       GOOGLE_ID: ${GOOGLE_ID}
       GOOGLE_SECRET: ${GOOGLE_SECRET}

@@ -14,7 +14,7 @@ app.use(cors({
 }));
 
 // MongoDB connection
-const mongo_uri = process.env.MONGO_URI;
+const mongo_uri = process.env.NODE_ENV === 'production' ? process.env.MONGO_URI : 'mongodb://localhost:27017/visarch';
 mongoose.connect(mongo_uri)
   .then(() => console.log('MongoDB connected'))
   .catch((err) => console.log(err));
