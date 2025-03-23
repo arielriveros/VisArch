@@ -1,14 +1,14 @@
 version: "3.8"
 services:
   client:
-    build: visarch-client:latest
+    image: visarch-client:latest
     ports:
       - 3000:80
     environment:
       NODE_ENV: production
 
   api:
-    build: visarch-api:latest
+    image: visarch-api:latest
     ports:
       - 5000:5000
     environment:
@@ -23,7 +23,7 @@ services:
       - app_files:/app/files
 
   websocket:
-    build: visarch-websocket:latest
+    image: visarch-websocket:latest
     ports:
       - 5001:5001
     environment:
