@@ -20,8 +20,8 @@ jobs:
           file: ./client/Dockerfile
           load: true
           tags: visarch-client:latest
-          #build-args: |
-            #NODE_ENV=production
+          build-args: |
+            NODE_ENV=production
 
       - name: Build API image
         uses: docker/build-push-action@v5

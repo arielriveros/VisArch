@@ -1,15 +1,13 @@
-FROM node:14 AS build
-
-ARG NODE_ENV=development
-ENV NODE_ENV $NODE_ENV
+FROM node:20 AS build
 
 WORKDIR /app
 
-COPY package.json ./ 
-COPY package-lock.json ./ 
+COPY package*.json ./
 RUN npm install
 
-COPY . ./ 
+COPY . ./
+ARG NODE_ENV=development
+ENV NODE_ENV=$NODE_ENV
 RUN npm run build
 
 # Stage 2: Serve the app with Nginx
