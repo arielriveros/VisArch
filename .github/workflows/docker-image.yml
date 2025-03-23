@@ -14,14 +14,14 @@ jobs:
         uses: docker/setup-buildx-action@v3
 
       - name: Build client image
-        env:
-          NODE_ENV: production
         uses: docker/build-push-action@v5
         with:
           context: ./client
           file: ./client/Dockerfile
           load: true
           tags: visarch-client:latest
+          build-args: |
+            NODE_ENV=production
 
       - name: Build API image
         uses: docker/build-push-action@v5
