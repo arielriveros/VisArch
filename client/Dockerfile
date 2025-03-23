@@ -1,6 +1,6 @@
 FROM node:14 AS build
 
-ARG NODE_ENV
+ARG NODE_ENV=development
 ENV NODE_ENV $NODE_ENV
 
 WORKDIR /app
