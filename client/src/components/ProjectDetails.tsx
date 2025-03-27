@@ -1,5 +1,4 @@
 import { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { ProjectApiResponse } from '@/api/types';
 import { API_BASE_URL } from '@/api/config';
@@ -22,13 +21,14 @@ import {
 
 interface ProjectDetailsProps {
   projectId: string;
+  onEditClick: (projectId: string) => void;
+  onClose: () => void;
 }
 export default function ProjectDetails(props: ProjectDetailsProps) {
   const { user } = useSession();
   const { loading, data } = useFetch<ProjectApiResponse>('api/projects/' + props.projectId, { credentials: 'include' });
   const [project, setProject] = useState<ProjectApiResponse>();
   const [openConfirmDialog, setOpenConfirmDialog] = useState(false);
-  const navigate = useNavigate();
   const { t } = useTranslation();
 
   useEffect(() => {
@@ -46,7 +46,7 @@ export default function ProjectDetails(props: ProjectDetailsProps) {
         credentials: 'include',
       });
       if (response.ok) {
-        navigate(-1);
+        props.onClose();
       } else {
         console.error('Failed to delete project');
       }
@@ -83,7 +83,7 @@ export default function ProjectDetails(props: ProjectDetailsProps) {
         </Typography>
         {user?.id === project.owner._id && (
           <Box display="flex" justifyContent="space-between" marginTop={2}>
-            <Button variant="contained" color="primary" onClick={() => navigate(`/projects/${props.projectId}/edit`)}>
+            <Button variant="contained" color="primary" onClick={() => props.onEditClick(project._id)}>
               {t('projects.form.edit-project')}
             </Button>
             <Button variant="contained" color="error" onClick={() => setOpenConfirmDialog(true)}>

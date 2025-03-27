@@ -71,7 +71,7 @@ export default function Projects() {
       )}
       {showDetails && selectedProject && (
         <Dialog open={showDetails} onClose={() => setShowDetails(false)}>
-          <ProjectDetails projectId={selectedProject} />
+          <ProjectDetails projectId={selectedProject} onClose={() => setShowDetails(false)} onEditClick={handleOnEditClick} />
         </Dialog>
       )}
       {showForm && (
