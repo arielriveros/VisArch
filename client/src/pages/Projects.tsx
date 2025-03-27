@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { ProjectsApiResponse } from '@/api/types';
-import { Button, Dialog, Snackbar, Alert } from '@mui/material';
+import { Button, Dialog, Snackbar, Alert, Typography, Box } from '@mui/material';
 import useSession from '@/hooks/useSession';
 import useFetch from '@/hooks/useFetch';
 import ProjectTable from '@/components/ProjectTable';
@@ -69,14 +69,20 @@ export default function Projects() {
   };
 
   return (
-    <div className='flex flex-col w-full h-full p-4 justify-center items-center'>
-      <p className='text-2xl font-bold mb-4'>{t('projects.title')}</p>
-      <div className='mb-4'>
-        <Button onClick={() => handleNewProject()}>{t('projects.form.new-project')}</Button>
-      </div>
+    <Box className='flex flex-col w-full h-full p-4 justify-center items-center'>
+      <Typography variant="h4" component="p" className='mb-4' fontWeight="bold">
+        {t('projects.title')}
+      </Typography>
+      <Box className='mb-4'>
+        <Button variant="contained" color="primary" onClick={handleNewProject}>
+          {t('projects.form.new-project')}
+        </Button>
+      </Box>
       {user?.id && projects && (
         projects.length < 1 ? 
-          <p className='text-lg'>{t('projects.no-projects-found')}</p> 
+          <Typography variant="h6" component="p">
+            {t('projects.no-projects-found')}
+          </Typography>
           :
           <ProjectTable
             userId={user.id}
@@ -115,6 +121,6 @@ export default function Projects() {
           {snackbarMessage}
         </Alert>
       </Snackbar>
-    </div>
+    </Box>
   );
 }

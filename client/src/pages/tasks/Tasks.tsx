@@ -4,10 +4,14 @@ import { useTranslation } from 'react-i18next';
 import { ProjectApiResponse, TaskApiResponse, TasksApiResponse } from '@/api/types';
 import { API_BASE_URL } from '@/api/config';
 import useFetch from '@/hooks/useFetch';
-import Button from '@/components/buttons/Button';
-import Grid, { GridElement } from '@/components/grid/Grid';
-import ConfirmButton from '@/components/buttons/ConfirmButton';
-import ProgressBar from '@/components/ProgressBar';
+import {
+  Button,
+  Grid,
+  Typography,
+  Box,
+  CircularProgress,
+  LinearProgress,
+} from '@mui/material';
 
 function TaskItem({ task }: { task: TaskApiResponse }) {
   const { t } = useTranslation();
@@ -44,17 +48,14 @@ function TaskItem({ task }: { task: TaskApiResponse }) {
         method: 'GET',
         credentials: 'include',
       });
-  
-      if (!response.ok)
-        throw new Error('Failed to download task');
 
-      // Get the total size of the file from the response headers
+      if (!response.ok) throw new Error('Failed to download task');
+
       const totalSize = Number(response.headers.get('Content-Length'));
       setTotal(totalSize);
       let loadedSize = 0;
       setCurrent(loadedSize);
-  
-      // Accumulate response data in chunks
+
       if (!response.body) {
         throw new Error('Response body is null');
       }
@@ -70,10 +71,7 @@ function TaskItem({ task }: { task: TaskApiResponse }) {
         setCurrent(loadedSize);
       }
 
-      // Once the entire response is read, create a blob from accumulated chunks
       const blob = new Blob(chunks);
-  
-      // Create a URL for the blob and trigger download
       const url = window.URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
@@ -88,41 +86,76 @@ function TaskItem({ task }: { task: TaskApiResponse }) {
   };
 
   return (
-    <GridElement key={task._id}>
-      <div className='flex flex-col w-full h-full p-4 bg-dark-blue border border-light-blue rounded'>
-        <p className='text-lg font-bold text-center'>{ task.name }</p>
-        <img src={`${API_BASE_URL}/api/files/images/${task.thumbnail}`}  alt='thumbnail' className='w-3/4 h-3/4 mx-auto' />
-        <p>{ task.description !== '' ? task.description : <i>{t('tasks.no-description')}</i> } </p>
+    <Grid>
+      <Box
+        sx={{
+          display: 'flex',
+          flexDirection: 'column',
+          p: 2,
+          border: '1px solid #90caf9',
+          borderRadius: 2,
+          backgroundColor: '#0d47a1',
+        }}
+      >
+        <Typography variant="h6" align="center" gutterBottom>
+          {task.name}
+        </Typography>
+        <img
+          src={`${API_BASE_URL}/api/files/images/${task.thumbnail}`}
+          alt="thumbnail"
+          style={{ width: '75%', height: '75%', margin: '0 auto' }}
+        />
+        <Typography>
+          {task.description !== '' ? task.description : <i>{t('tasks.no-description')}</i>}
+        </Typography>
         <ul>
           <li>
             {t('annotation.archetypes')}: {task.annotations.length}
           </li>
           <li>
-            {t('annotation.entities')}: {task.annotations.reduce((acc, curr) => acc + curr.entities.length, 0)}
+            {t('annotation.entities')}:{' '}
+            {task.annotations.reduce((acc, curr) => acc + curr.entities.length, 0)}
           </li>
         </ul>
-        <span className='flex'>
-          <Button onClick={handleGoToTask}>{t('tasks.annotate')}</Button>
-          <ConfirmButton label={t('tasks.delete')} onConfirm={() => handleDeleteTask()} />
-        </span>
-        <span className='flex justify-center'>
-          {
-            downloading ?
-              <ProgressBar current={current === 0 ? null : current} total={total} />
-              :
-              <Button onClick={handleDownload}>{t('tasks.download')}</Button>
-          }
-        </span>
-        
-      </div>
-    </GridElement>
+        <Box sx={{ display: 'flex', gap: 1, mt: 2 }}></Box>
+        <Box sx={{ display: 'flex', gap: 1, mt: 2 }}>
+          <Button variant="contained" color="primary" onClick={handleGoToTask}>
+            {t('tasks.annotate')}
+          </Button>
+          <Button
+            variant="contained"
+            color="secondary"
+            onClick={handleDeleteTask}
+          >
+            {t('tasks.delete')}
+          </Button>
+        </Box>
+        {downloading ? (
+          <LinearProgress
+            variant="determinate"
+            value={(current / total) * 100}
+            sx={{ width: '100%' }}
+          />
+        ) : (
+          <Button variant="contained" onClick={handleDownload}>
+            {t('tasks.download')}
+          </Button>
+        )}
+      </Box>
+    </Grid>
   );
 }
 
 export default function Tasks() {
   const { projectId } = useParams();
-  const { loading: loadingTasks, data: tasksData } = useFetch<TasksApiResponse>('api/projects/'+projectId+'/tasks', { credentials: 'include' });
-  const { loading: loadingProject, data: projectData } = useFetch<ProjectApiResponse>('api/projects/'+projectId, { credentials: 'include' });
+  const { loading: loadingTasks, data: tasksData } = useFetch<TasksApiResponse>(
+    'api/projects/' + projectId + '/tasks',
+    { credentials: 'include' }
+  );
+  const { loading: loadingProject, data: projectData } = useFetch<ProjectApiResponse>(
+    'api/projects/' + projectId,
+    { credentials: 'include' }
+  );
   const { t } = useTranslation();
 
   const [tasks, setTasks] = useState<TasksApiResponse>([]);
@@ -131,40 +164,40 @@ export default function Tasks() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (tasksData && !loadingTasks)
-      setTasks(tasksData);
-    if (projectData && !loadingProject)
-      setProject(projectData);
+    if (tasksData && !loadingTasks) setTasks(tasksData);
+    if (projectData && !loadingProject) setProject(projectData);
   }, [loadingTasks, tasksData, loadingProject, projectData]);
 
-  if (loadingTasks || loadingProject) { return <div>
-    {t('tasks.loading')}
-  </div>; }
+  if (loadingTasks || loadingProject) {
+    return <CircularProgress />;
+  }
 
   return (
     <div className='flex flex-col w-full h-full p-4 justify-center items-center'>
-      <h2 className='text-2xl font-bold'>{project?.name}</h2>
-      <section className='flex flex-row justify-evenly w-1/3 gap-10'>
-        <Button onClick={() => navigate(`/projects/${projectId}/details`)}>
-          {t('tasks.details')}
-        </Button>
-        <Button onClick={() => navigate(`/projects/${projectId}/new-task`)}>
+      <Typography variant="h4" gutterBottom>
+        {project?.name}
+      </Typography>
+      <Box sx={{ display: 'flex', gap: 2, mb: 4 }}>
+        <Button
+          variant="contained"
+          onClick={() => navigate(`/projects/${projectId}/new-task`)}
+        >
           {t('tasks.add-task')}
         </Button>
-      </section>
-      <div className='flex flex-col w-2/3 m-2 justify-center items-center overflow-auto'>
-        { !loadingTasks && tasks.length !== 0 ? 
-          <div className='flex flex-col w-full'>
-            <Grid>{tasks?.map((task) => 
-              <TaskItem task={task} key={task._id} />)}
-            </Grid>
-          </div>
-          :
-          <p className='text-md font-bold mt-4'>
+      </Box>
+      <Box sx={{ width: '100%', overflow: 'auto' }}>
+        {tasks.length !== 0 ? (
+          <Grid container spacing={2}>
+            {tasks.map((task) => (
+              <TaskItem task={task} key={task._id} />
+            ))}
+          </Grid>
+        ) : (
+          <Typography variant="body1" align="center">
             {t('tasks.no-tasks')}
-          </p>
-        }
-      </div>
+          </Typography>
+        )}
+      </Box>
     </div>
   );
 }
