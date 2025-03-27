@@ -3,8 +3,7 @@ import { API_BASE_URL } from '@/api/config';
 import { Archetype, Entity, TaskApiResponse, UserApiResponse } from '@/api/types';
 import { useMesh } from '../hooks/useMesh';
 import { useSocket } from '@/features/socket/hooks/useSocket';
-import Center from './Center';
-import Sidebar from './Sidebar';
+import { Box } from '@mui/material';
 import Viewport from './Viewport';
 import Annotations from './Annotations';
 import Inspector from './Inspector';
@@ -13,6 +12,7 @@ import Emitter from '../utils/emitter';
 import Progress from './Progress';
 import Overview from './Overview';
 import useConfig from '../hooks/useConfig';
+import Toolbar from './Toolbar';
 
 interface ManagerProps {
   taskId?: string;
@@ -135,18 +135,15 @@ export default function  Manager(props: ManagerProps) {
   }, [registerEvent, unregisterEvent, dispatch, emit, annotations, setLockedAnnotations, setAnnotations]);
 
   return (
-    <section className='flex h-svh w-full pt-8'>
-      <Sidebar width='20%'>
-        <Annotations />
-      </Sidebar>
-      <Center>
-        <Progress />
+    <section className='flex h-svh w-full'>
+      <Annotations />
+      <Progress />
+      <Box component='main' sx={{ display: 'flex',  flexGrow: 1, flexDirection: 'column', height: '100%' }}>
         <Viewport />
         { unwrapping !== 'none' && <Overview /> }
-      </Center>
-      <Sidebar width='30%'>
-        <Inspector />
-      </Sidebar>
+      </Box>
+      <Inspector />
+      <Toolbar />
     </section>
   );
 }

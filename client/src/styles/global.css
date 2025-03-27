@@ -5,6 +5,7 @@
 :root {
   overflow-x: hidden;
   overflow-y: hidden;
+
 }
 
 .title {
@@ -20,16 +21,4 @@
   background-clip: text;
   cursor: pointer;
   -webkit-text-fill-color: transparent;
-}
-
-::-webkit-scrollbar {
-  width: 5px;
-}
-
-::-webkit-scrollbar-track {
-  border-radius: 10px;
-}
-
-::-webkit-scrollbar-thumb {
-  border-radius: 10px;
 }

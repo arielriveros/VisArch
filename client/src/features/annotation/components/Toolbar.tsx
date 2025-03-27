@@ -1,111 +1,108 @@
 import { useEffect } from 'react';
-import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import useSession from '@/hooks/useSession';
 import useConfig from '../hooks/useConfig';
 import Emitter from '../utils/emitter';
 import DragIcon from '@/assets/icons/drag.png';
 import RotateIcon from '@/assets/icons/rotate.png';
 import ZoomIcon from '@/assets/icons/zoom.png';
 import LassoIcon from '@/assets/icons/lasso.png';
-import '../styles/Toolbar.css';
+import { Button, Card, Typography, Select, MenuItem } from '@mui/material';
 
 export default function Toolbar() {
-  const { signedIn } = useSession();
   const { tool, setTool, unwrapping, setUnwrapping } = useConfig();
   const { t } = useTranslation();
 
   useEffect(() => {
-    if (unwrapping !== 'none')
-      Emitter.emit('RESET');
+    if (unwrapping !== 'none') Emitter.emit('RESET');
   }, [unwrapping]);
 
   return (
-    <section className='toolbar-container'>
-      <div className='toolbar-config'>
-        <div className='toolbar-config-group'>
-          <button className='toolbar-button' onClick={() => Emitter.emit('SAVE')} title='Save'>
-            {t('toolbar.save')}
-          </button>
-        </div>
-      </div>
-      <div className='toolbar-config'>
-        <div className='toolbar-config-group'>
-          <p className='group-label'>
+    <Card
+      sx={{
+        position: 'absolute',
+        bottom: 0,
+        right: 25,
+        zIndex: 100,
+        padding: 1,
+        display: 'flex',
+        flexDirection: 'column',
+      }}
+    >
+      <Button
+        onClick={() => Emitter.emit('SAVE')}
+        variant="contained"
+        color="primary"
+      >
+        {t('toolbar.save')}
+      </Button>
+      <div className="flex flex-col">
+        <div className="flex">
+          <Typography variant="subtitle1" className="group-label">
             {t('toolbar.controls')}
-          </p>
-          <button
+          </Typography>
+          <Button
             className={`toolbar-button ${tool === 'drag' ? 'active' : ''}`}
             onClick={() => setTool('drag')}
             title={t('toolbar.drag')}
           >
-            <img className='toolbar-icon' src={DragIcon} alt='Drag' />
-          </button>
-          <button
+            <img className="toolbar-icon" src={DragIcon} alt="Drag" />
+          </Button>
+          <Button
             className={`toolbar-button ${tool === 'rotate' ? 'active' : ''}`}
             onClick={() => setTool('rotate')}
             title={t('toolbar.rotate')}
           >
-            <img className='toolbar-icon' src={RotateIcon} alt='Rotate' />
-          </button>
-          <button
+            <img className="toolbar-icon" src={RotateIcon} alt="Rotate" />
+          </Button>
+          <Button
             className={`toolbar-button ${tool === 'zoom' ? 'active' : ''}`}
             onClick={() => setTool('zoom')}
             title={t('toolbar.zoom')}
           >
-            <img className='toolbar-icon' src={ZoomIcon} alt='Zoom' />
-          </button>
-          <button
-            className={'toolbar-button'}
+            <img className="toolbar-icon" src={ZoomIcon} alt="Zoom" />
+          </Button>
+          <Button
+            className="toolbar-button"
             onClick={() => Emitter.emit('RESET')}
             title={t('toolbar.reset')}
           >
             {t('toolbar.reset')}
-          </button>
+          </Button>
         </div>
-        <div className='toolbar-config-group'>
-          <p className='group-label'>
-            {t('toolbar.tools')}
-          </p>
-          <button
-            className={`toolbar-button ${tool === 'lasso' ? 'active' : ''}`}
-            onClick={() => setTool('lasso')}
-            title={t('toolbar.lasso')}
-          >
-            <img className='toolbar-icon' src={LassoIcon} alt='Lasso' />
-          </button>
+        <div className="flex flex-col">
+          <div className="flex">
+            <Typography variant="subtitle1" className="group-label">
+              {t('toolbar.tools')}
+            </Typography>
+            <Button
+              className={`toolbar-button ${tool === 'lasso' ? 'active' : ''}`}
+              onClick={() => setTool('lasso')}
+              title={t('toolbar.lasso')}
+            >
+              <img className="toolbar-icon" src={LassoIcon} alt="Lasso" />
+            </Button>
+          </div>
         </div>
-        <div className='toolbar-config-group'>
-          <p className='group-label'>
-            {t('toolbar.unwrapping')}
-          </p>
-          <select className='toolbar-select' onChange={(e) => setUnwrapping(e.target.value as 'none' | 'x' | 'y' | 'z')} value={unwrapping}>
-            <option value='none'> - </option>
-            <option value='x'>X</option>
-            <option value='y'>Y</option>
-            <option value='z'>Z</option>
-          </select>
+        
+        <div className="flex flex-col">
+          <div className="flex">
+            <Typography variant="subtitle1" className="group-label">
+              {t('toolbar.unwrapping')}
+            </Typography>
+            <Select
+              className="toolbar-select"
+              value={unwrapping}
+              onChange={(e) => setUnwrapping(e.target.value as 'none' | 'x' | 'y' | 'z')}
+              displayEmpty
+            >
+              <MenuItem value="none">-</MenuItem>
+              <MenuItem value="x">X</MenuItem>
+              <MenuItem value="y">Y</MenuItem>
+              <MenuItem value="z">Z</MenuItem>
+            </Select>
+          </div>
         </div>
       </div>
-      <nav className='toolbar-navbar'>
-        {signedIn ?
-          <>
-            <Link className='toolbar-navbar-link' to='/'>
-              {t('navbar.home')}
-            </Link>
-            <Link className='toolbar-navbar-link' to='/projects'>
-              {t('navbar.projects')}
-            </Link>
-            <Link className='toolbar-navbar-link' to='/user'>
-              {t('navbar.profile')}
-            </Link>
-          </> 
-          :
-          <Link className='toolbar-navbar-link' to='/login'>
-            {t('navbar.login')}
-          </Link>
-        }
-      </nav>
-    </section>
+    </Card>
   );
 }

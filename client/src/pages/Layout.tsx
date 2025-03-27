@@ -25,7 +25,7 @@ export default function Layout() {
         }}
       >
         <Navbar />
-        <Box sx={{ display: 'flex', height: '100%' }}>
+        <Box sx={{ width: '100vw', display: 'flex', height: '100%', flexDirection: 'column' }}>
           <Outlet />
         </Box>
       </Box>

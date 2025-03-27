@@ -19,7 +19,7 @@ export default function Annotations() {
   }, [selectedArchetypeId, annotations]);
 
   return (
-    <div className='flex flex-col w-full h-full p-1 bg-gray-800'>
+    <div className='flex flex-col w-[300px] h-full bg-gray-300'>
       <section className='flex flex-col overflow-y-auto mb-2 bg-gray-700'>
         <h4>
           {t('annotation.archetypes')}

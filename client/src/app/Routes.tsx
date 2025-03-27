@@ -50,9 +50,9 @@ export default function AppRoutes() {
             <Route path='new-task' element={<NewTask />} />
           </Route>
         </Route>
+        <Route path="/task/:taskId" element={<AnnotationApp />} />
         <Route path="*" element={<NotFound />} />
       </Route>
-      <Route path="/task/:taskId" element={<AnnotationApp />} />
     </Routes>
   );
 }

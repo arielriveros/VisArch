@@ -30,8 +30,8 @@ export default function Inspector() {
     setSelectedEntity(null);
   }, [selectedArchetypeId, selectedEntityId, annotations]);
   return (
-    <div className='flex flex-col w-full h-full p-1 bg-gray-800'>
-      <section className='flex flex-col overflow-y-auto mb-2 bg-gray-700'>
+    <div className='flex flex-col w-[400px] h-full bg-gray-300'>
+      <section className='flex flex-col overflow-y-auto mb-2 '>
         <h4>
           {t('annotation.archetype')}
         </h4>
