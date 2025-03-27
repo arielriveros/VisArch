@@ -1,14 +1,18 @@
 import LoginBox from '@/components/LoginBox';
-
+import { Box } from '@mui/material';
 
 export default function Login() {
   return (
-    <section className='flex-auto text-wrap md:px-10 text-center'>
-      <div className='flex justify-center'>
-        <div className='w-full max-w-md'>
-          <LoginBox />
-        </div>
-      </div>
-    </section>
+    <Box
+      display="flex"
+      justifyContent="center"
+      alignItems="center"
+      minHeight="100vh"
+      width="100vw"
+    >
+      <Box width="100%" maxWidth="400px">
+        <LoginBox />
+      </Box>
+    </Box>
   );
 }
