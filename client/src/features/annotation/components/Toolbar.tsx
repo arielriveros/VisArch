@@ -6,7 +6,7 @@ import DragIcon from '@/assets/icons/drag.png';
 import RotateIcon from '@/assets/icons/rotate.png';
 import ZoomIcon from '@/assets/icons/zoom.png';
 import LassoIcon from '@/assets/icons/lasso.png';
-import { Button, Card, Typography, Select, MenuItem } from '@mui/material';
+import { Button, Card, Typography, Select, MenuItem, IconButton } from '@mui/material';
 
 export default function Toolbar() {
   const { tool, setTool, unwrapping, setUnwrapping } = useConfig();
@@ -20,8 +20,8 @@ export default function Toolbar() {
     <Card
       sx={{
         position: 'absolute',
-        bottom: 0,
-        right: 25,
+        right: '1.25rem',
+        bottom: '5rem',
         zIndex: 100,
         padding: 1,
         display: 'flex',
@@ -74,13 +74,13 @@ export default function Toolbar() {
             <Typography variant="subtitle1" className="group-label">
               {t('toolbar.tools')}
             </Typography>
-            <Button
-              className={`toolbar-button ${tool === 'lasso' ? 'active' : ''}`}
+            <IconButton
+              disabled={tool === 'lasso'}
               onClick={() => setTool('lasso')}
               title={t('toolbar.lasso')}
             >
               <img className="toolbar-icon" src={LassoIcon} alt="Lasso" />
-            </Button>
+            </IconButton>
           </div>
         </div>
         

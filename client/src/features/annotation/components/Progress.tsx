@@ -25,12 +25,13 @@ export default function Progress() {
   }, []);
 
   return (
-    visible &&
-    <section className='progress-container'>
-      <p>{text}</p>
-      <div className='progress-bar'>
-        <ProgressBar current={current === 0 ? null : current} total={total} />
-      </div>
-    </section>
+    visible ?
+      <section className='progress-container'>
+        <p>{text}</p>
+        <div className='progress-bar'>
+          <ProgressBar current={current === 0 ? null : current} total={total} />
+        </div>
+      </section>
+      : null
   );
 }
