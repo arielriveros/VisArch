@@ -5,7 +5,7 @@ import { ProjectsApiResponse } from '@/api/types';
 import useSession from '@/hooks/useSession';
 import Restricted from '@/components/Restricted';
 import useFetch from '@/hooks/useFetch';
-import ProjectTable from '@/components/project-table/ProjectTable';
+import ProjectTable from '@/components/ProjectTable';
 import Button from '@/components/buttons/Button';
 
 function ProjectsContainer({userId} : {userId: string}) {
