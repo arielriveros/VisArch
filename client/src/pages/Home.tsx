@@ -22,7 +22,17 @@ export default function Home() {
   ];
 
   return (
-    <Box sx={{ flex: '1', textAlign: 'center', px: { md: 10 }, py: 5 }}>
+    <Box
+      sx={{
+        height: '100vh', // Full viewport height
+        overflowY: 'auto', // Enable vertical scrolling
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        px: { md: 10 },
+        py: 5,
+      }}
+    >
       <Typography variant="h5" fontWeight="bold" mb={5}>
         {t('home.welcome')}
       </Typography>

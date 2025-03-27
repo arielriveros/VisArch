@@ -2,7 +2,6 @@ import { useEffect } from 'react';
 import { Routes, Route } from 'react-router-dom';
 import { useSocket } from '@/features/socket/hooks/useSocket';
 import Home from '@/pages/Home';
-import Profile from '@/pages/Profile';
 import Projects from '@/pages/projects/Projects';
 import Tasks from '@/pages/tasks/Tasks';
 import NewProject from '@/pages/projects/NewProject';
@@ -38,7 +37,6 @@ export default function AppRoutes() {
       <Route path='/' element={<Layout />}>
         <Route index element={<Home />} />
         <Route path='login' element={<Login />} />
-        <Route path='user' element={<Profile />} />
         <Route path='projects'>
           <Route index element={<Projects />} />
           <Route path='new' element={<NewProject />} />

@@ -18,7 +18,6 @@ export default function Layout() {
     <ThemeProvider theme={theme}>
       <CssBaseline />
       <Box
-        className="bg-primary-color"
         sx={{
           width: '100vw',
           display: 'flex',
