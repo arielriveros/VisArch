@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { ProjectsApiResponse } from '@/api/types';
-import { Button, Dialog, Snackbar, Alert, Typography, Box } from '@mui/material';
+import { Button, Dialog, Snackbar, Alert, Typography, Paper } from '@mui/material';
 import useSession from '@/hooks/useSession';
 import useFetch from '@/hooks/useFetch';
 import ProjectTable from '@/components/ProjectTable';
@@ -69,15 +69,15 @@ export default function Projects() {
   };
 
   return (
-    <Box className='flex flex-col w-full h-full p-4 justify-center items-center'>
-      <Typography variant="h4" component="p" className='mb-4' fontWeight="bold">
+    <Paper elevation={3} sx={{ width: '90%', maxHeight: '80vh', p: 4, mx: 'auto', mt: 4, overflow: 'auto' }}>
+      <Typography variant="h4" component="p"  fontWeight="bold">
         {t('projects.title')}
       </Typography>
-      <Box className='mb-4'>
+      <div >
         <Button variant="contained" color="primary" onClick={handleNewProject}>
           {t('projects.form.new-project')}
         </Button>
-      </Box>
+      </div>
       {user?.id && projects && (
         projects.length < 1 ? 
           <Typography variant="h6" component="p">
@@ -121,6 +121,6 @@ export default function Projects() {
           {snackbarMessage}
         </Alert>
       </Snackbar>
-    </Box>
+    </Paper>
   );
 }

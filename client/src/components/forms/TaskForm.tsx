@@ -49,7 +49,9 @@ export default function TaskForm(props: TaskFormProps) {
           value={task.name}
           onChange={(e) => setTask({ ...task, name: e.target.value })}
           required
-          inputProps={{ maxLength: 20 }}
+          slotProps={{
+            htmlInput: { maxLength: 20 },
+          }}
           margin='normal'
         />
         <TextField
@@ -58,7 +60,9 @@ export default function TaskForm(props: TaskFormProps) {
           value={task.description}
           onChange={(e) => setTask({ ...task, description: e.target.value })}
           required
-          inputProps={{ maxLength: 100 }}
+          slotProps={{
+            htmlInput: { maxLength: 100 },
+          }}
           multiline
           rows={3}
           margin='normal'

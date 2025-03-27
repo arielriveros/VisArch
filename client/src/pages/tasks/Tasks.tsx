@@ -6,18 +6,19 @@ import { API_BASE_URL } from '@/api/config';
 import useFetch from '@/hooks/useFetch';
 import {
   Button,
+  IconButton,
   Grid,
   Typography,
   Box,
   CircularProgress,
-  LinearProgress,
+  Paper,
+  Tooltip,
 } from '@mui/material';
+import DownloadIcon from '@mui/icons-material/Download';
 
 function TaskItem({ task }: { task: TaskApiResponse }) {
   const { t } = useTranslation();
   const [downloading, setDownloading] = useState(false);
-  const [current, setCurrent] = useState(0);
-  const [total, setTotal] = useState(0);
   const navigate = useNavigate();
 
   const handleGoToTask = () => {
@@ -50,15 +51,7 @@ function TaskItem({ task }: { task: TaskApiResponse }) {
       });
 
       if (!response.ok) throw new Error('Failed to download task');
-
-      const totalSize = Number(response.headers.get('Content-Length'));
-      setTotal(totalSize);
-      let loadedSize = 0;
-      setCurrent(loadedSize);
-
-      if (!response.body) {
-        throw new Error('Response body is null');
-      }
+      if (!response.body) throw new Error('Response body is null');
       const chunks: Uint8Array[] = [];
       const reader = response.body.getReader();
       for (;;) {
@@ -67,8 +60,6 @@ function TaskItem({ task }: { task: TaskApiResponse }) {
           break;
         }
         chunks.push(value);
-        loadedSize += value.length;
-        setCurrent(loadedSize);
       }
 
       const blob = new Blob(chunks);
@@ -77,72 +68,97 @@ function TaskItem({ task }: { task: TaskApiResponse }) {
       a.href = url;
       a.download = `${task.name}.zip`;
       a.click();
-    } catch (error) {
+    }
+    catch (error) {
       console.error('Error: ', error);
-    } finally {
+    }
+    finally {
       setDownloading(false);
-      setCurrent(0);
     }
   };
 
   return (
-    <Grid>
-      <Box
-        sx={{
-          display: 'flex',
-          flexDirection: 'column',
-          p: 2,
-          border: '1px solid #90caf9',
-          borderRadius: 2,
-          backgroundColor: '#0d47a1',
-        }}
-      >
-        <Typography variant="h6" align="center" gutterBottom>
+    <Box
+      sx={{
+        display: 'flex',
+        position: 'relative',
+        flexDirection: 'column',
+        p: 2,
+        border: '1px solid #e0e0e0',
+        borderRadius: 2,
+        width: 250,
+        height: 350,
+        backgroundColor: '#f5f5f5',
+        boxShadow: '0px 2px 4px rgba(0, 0, 0, 0.1)',
+      }}
+    >
+      <Box sx={{
+        display: 'flex',
+        justifyContent: 'space-between',
+        width: '100%',
+        alignItems: 'center',
+        paddingRight: 2,
+        position: 'absolute',
+        top: 0,
+        zIndex: 1 
+      }}>
+        <Typography variant='h6'>
           {task.name}
         </Typography>
-        <img
-          src={`${API_BASE_URL}/api/files/images/${task.thumbnail}`}
-          alt="thumbnail"
-          style={{ width: '75%', height: '75%', margin: '0 auto' }}
-        />
-        <Typography>
-          {task.description !== '' ? task.description : <i>{t('tasks.no-description')}</i>}
-        </Typography>
-        <ul>
-          <li>
-            {t('annotation.archetypes')}: {task.annotations.length}
-          </li>
-          <li>
-            {t('annotation.entities')}:{' '}
+        <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          {
+            downloading ? 
+              <CircularProgress 
+                variant='indeterminate'
+                thickness={5}
+              />
+              :
+              <Tooltip title={t('tasks.download')}>
+                <IconButton
+                  onClick={handleDownload}
+                  size='medium'
+                  color='primary'
+                  aria-label={t('tasks.download')}>
+                  <DownloadIcon />
+                </IconButton>
+                
+              </Tooltip>
+          }
+        </Box>
+      </Box>
+      <img
+        src={`${API_BASE_URL}/api/files/images/${task.thumbnail}`}
+        alt='thumbnail'
+        style={{ width: '100%', height: '100%', margin: '0 auto', maxHeight: '10rem' }}
+      />
+      <Typography
+        sx={{
+          height: '5rem',
+          overflowY: 'auto'
+        }}
+      >
+        {task.description !== '' ? task.description : <i>{t('tasks.no-description')}</i>}
+      </Typography>
+      <Box sx={{ display: 'flex', flexDirection: 'column' }}>
+        <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 2 }}>
+          <Typography>
+            <strong>{t('annotation.archetypes')}:</strong> {task.annotations.length}
+          </Typography>
+          <Typography>
+            <strong>{t('annotation.entities')}:</strong>{' '}
             {task.annotations.reduce((acc, curr) => acc + curr.entities.length, 0)}
-          </li>
-        </ul>
-        <Box sx={{ display: 'flex', gap: 1, mt: 2 }}></Box>
-        <Box sx={{ display: 'flex', gap: 1, mt: 2 }}>
-          <Button variant="contained" color="primary" onClick={handleGoToTask}>
+          </Typography>
+        </Box>
+        <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
+          <Button variant='outlined' color='primary' onClick={handleGoToTask}>
             {t('tasks.annotate')}
           </Button>
-          <Button
-            variant="contained"
-            color="secondary"
-            onClick={handleDeleteTask}
-          >
+          <Button variant='outlined' color='secondary' onClick={handleDeleteTask}>
             {t('tasks.delete')}
           </Button>
         </Box>
-        {downloading ? (
-          <LinearProgress
-            variant="determinate"
-            value={(current / total) * 100}
-            sx={{ width: '100%' }}
-          />
-        ) : (
-          <Button variant="contained" onClick={handleDownload}>
-            {t('tasks.download')}
-          </Button>
-        )}
       </Box>
-    </Grid>
+    </Box>
   );
 }
 
@@ -173,19 +189,35 @@ export default function Tasks() {
   }
 
   return (
-    <div className='flex flex-col w-full h-full p-4 justify-center items-center'>
-      <Typography variant="h4" gutterBottom>
+    <Paper
+      elevation={3}
+      sx={{ 
+        width: '90%',
+        maxHeight: '80vh',
+        p: 4,
+        mx: 'auto',
+        mt: 4,
+        overflow: 'auto'
+      }}
+    >
+      <Typography variant='h4' gutterBottom>
         {project?.name}
       </Typography>
       <Box sx={{ display: 'flex', gap: 2, mb: 4 }}>
         <Button
-          variant="contained"
+          variant='contained'
+          onClick={() => navigate(-1)}
+        >
+          {t('tasks.go-back')}
+        </Button>
+        <Button
+          variant='contained'
           onClick={() => navigate(`/projects/${projectId}/new-task`)}
         >
           {t('tasks.add-task')}
         </Button>
       </Box>
-      <Box sx={{ width: '100%', overflow: 'auto' }}>
+      <Box sx={{ width: '100%', overflow: 'auto', justifyContent: 'center', alignItems: 'center' }}>
         {tasks.length !== 0 ? (
           <Grid container spacing={2}>
             {tasks.map((task) => (
@@ -193,11 +225,11 @@ export default function Tasks() {
             ))}
           </Grid>
         ) : (
-          <Typography variant="body1" align="center">
+          <Typography variant='body1' align='center'>
             {t('tasks.no-tasks')}
           </Typography>
         )}
       </Box>
-    </div>
+    </Paper>
   );
 }
