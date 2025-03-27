@@ -29,11 +29,6 @@ export default function TaskForm(props: TaskFormProps) {
   const handleOpenDialog = () => setOpen(true);
   const handleCloseDialog = () => setOpen(false);
 
-  const handleSubmitConfirm = (e: FormEvent<HTMLFormElement>) => {
-    handleCloseDialog();
-    handleSubmit(e);
-  };
-
   const goBack = () => {
     navigate(-1);
   };
@@ -47,7 +42,7 @@ export default function TaskForm(props: TaskFormProps) {
       <Typography variant='h5' gutterBottom>
         {t('tasks.create-task')}
       </Typography>
-      <form onSubmit={(e) => e.preventDefault()}>
+      <form>
         <TextField
           fullWidth
           label={t('tasks.name')}
@@ -90,7 +85,13 @@ export default function TaskForm(props: TaskFormProps) {
         </DialogContent>
         <DialogActions>
           <Button onClick={handleCloseDialog}>{t('tasks.confirmation.cancel')}</Button>
-          <Button onClick={() => handleSubmitConfirm} variant='contained'>
+          <Button
+            onClick={(e) => {
+              handleCloseDialog();
+              handleSubmit(e as unknown as FormEvent<HTMLFormElement>);
+            }}
+            variant='contained'
+          >
             {t('tasks.confirmation.confirm')}
           </Button>
         </DialogActions>

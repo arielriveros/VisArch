@@ -47,7 +47,7 @@ export default function ProjectForm(props: ProjectFormProps) {
       <Typography variant='h5' gutterBottom>
         {title}
       </Typography>
-      <form onSubmit={handleSubmit}>
+      <form>
         <TextField
           fullWidth
           label={t('projects.name')}
