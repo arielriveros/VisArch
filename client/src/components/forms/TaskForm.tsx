@@ -1,7 +1,7 @@
-import { FormEvent } from 'react';
+import { FormEvent, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import ConfirmButton from '@/components/buttons/ConfirmButton';
+import { Button, TextField, Typography, Paper, Box, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle } from '@mui/material';
 import MeshInput from '@/components/mesh-input/MeshInput';
 
 interface TaskFormProps {
@@ -24,8 +24,13 @@ export default function TaskForm(props: TaskFormProps) {
   const { task, setTask, handleSubmit } = props;
   const navigate = useNavigate();
   const { t } = useTranslation();
+  const [open, setOpen] = useState(false);
+
+  const handleOpenDialog = () => setOpen(true);
+  const handleCloseDialog = () => setOpen(false);
 
   const handleSubmitConfirm = (e: FormEvent<HTMLFormElement>) => {
+    handleCloseDialog();
     handleSubmit(e);
   };
 
@@ -38,53 +43,58 @@ export default function TaskForm(props: TaskFormProps) {
   };
 
   return (
-    <section className='form-container'>
-      <div className='form-title'>
-        <h2>{t('tasks.create-task')}</h2>
-      </div>
-      <form className='form'>
-        <label htmlFor='name'>
-          {t('tasks.name')}
-        </label>
-        <input
-          className='text-input'
-          type='text'
-          id='name'
+    <Paper sx={{ p: 4, maxWidth: 500, mx: 'auto', mt: 4 }}>
+      <Typography variant='h5' gutterBottom>
+        {t('tasks.create-task')}
+      </Typography>
+      <form onSubmit={(e) => e.preventDefault()}>
+        <TextField
+          fullWidth
+          label={t('tasks.name')}
           value={task.name}
-          placeholder={t('tasks.form.name-placeholder')}
-          onChange={(e) =>
-            setTask({ ...task, name: e.target.value })
-          }
+          onChange={(e) => setTask({ ...task, name: e.target.value })}
           required
-          maxLength={20}
+          inputProps={{ maxLength: 20 }}
+          margin='normal'
         />
-        <label htmlFor='description'>
-          {t('tasks.description')}
-        </label>
-        <textarea
-          className='text-input'
-          id='description'
+        <TextField
+          fullWidth
+          label={t('tasks.description')}
           value={task.description}
-          placeholder={t('tasks.form.description-placeholder')}
-          onChange={(e) =>
-            setTask({ ...task, description: e.target.value })
-          }
+          onChange={(e) => setTask({ ...task, description: e.target.value })}
           required
-          maxLength={100}
+          inputProps={{ maxLength: 100 }}
+          multiline
+          rows={3}
+          margin='normal'
         />
-
-        <MeshInput handleMesh={handleMesh} />
-
+        <Box sx={{ mt: 3, mb: 3 }}>
+          <MeshInput handleMesh={handleMesh} />
+        </Box>
         <div className='flex justify-center items-center mt-5'>
-          <button onClick={goBack} className='m-2 flex justify-center'>
+          <Button onClick={goBack} variant='outlined' sx={{ mr: 2 }}>
             {t('tasks.form.cancel')}
-          </button>
-          <ConfirmButton label={t('tasks.form.submit')} onConfirm={
-            (e: FormEvent<HTMLFormElement>) => handleSubmitConfirm(e)
-          } />
+          </Button>
+          <Button onClick={handleOpenDialog} variant='contained'>
+            {t('tasks.form.submit')}
+          </Button>
         </div>
-        
       </form>
-    </section>
+
+      <Dialog open={open} onClose={handleCloseDialog}>
+        <DialogTitle>{t('tasks.confirmation.title')}</DialogTitle>
+        <DialogContent>
+          <DialogContentText>
+            {t('tasks.confirmation.message')}
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleCloseDialog}>{t('tasks.confirmation.cancel')}</Button>
+          <Button onClick={() => handleSubmitConfirm} variant='contained'>
+            {t('tasks.confirmation.confirm')}
+          </Button>
+        </DialogActions>
+      </Dialog>
+    </Paper>
   );
 }
