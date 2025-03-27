@@ -53,16 +53,18 @@ async function create(req, res) {
   try {
     const { name, description, owner, collaborators } = req.body;
 
-    if (!name || !owner)
-      return res.status(400).json({msg: 'Missing required fields'});
+    if (!name) 
+      throw new Error('name-required');
+    
+    if (!owner)
+      throw new Error('owner-required');
 
     if (!owner.match(/^[0-9a-fA-F]{24}$/)) 
-      return res.status(400).json({msg: 'Invalid owner ID'});
+      throw new Error('Invalid owner id');
 
     const _owner = await User.findById(owner);
     if (!_owner)
-      return res.status(404).json({msg: 'Owner not found'});
-
+      throw new Error('owner-not-found');
     const project = new Project({
       name: name,
       description: description,
@@ -72,11 +74,11 @@ async function create(req, res) {
     const savedProject = await project.save();
 
     if (!savedProject)
-      return res.status(500).json({msg: 'Error creating project'});
+      throw new Error('error-saving-project');
 
     res.status(201).json(savedProject);
   } catch (error) {
-    res.status(500).json({msg: error.message});
+    res.status(500).json({ message: error.message });
   }
 }
 

@@ -34,7 +34,10 @@ export default function ProjectFormContainer(props: ProjectFormContainerProps) {
         })));
       } catch (error) {
         console.error('Failed to fetch users:', error);
-        setSnackbar({ open: true, message: 'Failed to fetch users' });
+        if (error instanceof Error) {
+          console.log(error.message);
+          setSnackbar({ open: true, message: error.message });
+        }
       }
     };
 
@@ -88,12 +91,21 @@ export default function ProjectFormContainer(props: ProjectFormContainerProps) {
 
       if (res.ok) {
         props.onClose();
-      } else {
-        throw new Error('Failed to save project');
+      }
+      else {
+        const error = await res.json();
+        throw new Error(error.message);
       }
     } catch (error) {
-      console.error('Error:', error);
-      setSnackbar({ open: true, message: 'Failed to save project' });
+      if (error instanceof Error) {
+        const errorName = error.message.toString();
+        console.error('Error:', errorName);
+        // TODO: Add translations for error messages
+        setSnackbar({ open: true, message: t(errorName) });
+      } else {
+        console.error('Error:', error);
+        setSnackbar({ open: true, message: 'An unknown error occurred' });
+      }
     }
   };
 
