@@ -3,7 +3,6 @@ import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import ConfirmButton from '@/components/buttons/ConfirmButton';
 import MeshInput from '@/components/mesh-input/MeshInput';
-import '@/styles/components/Form.css';
 
 interface TaskFormProps {
   task: {

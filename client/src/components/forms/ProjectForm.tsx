@@ -3,7 +3,6 @@ import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import ConfirmButton from '@/components/buttons/ConfirmButton';
 import Button from '../buttons/Button';
-import '@/styles/components/Form.css';
 
 interface ProjectFormProps {
   title: string;

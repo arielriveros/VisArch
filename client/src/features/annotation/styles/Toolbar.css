@@ -20,7 +20,7 @@
   text-decoration: none;
   width: 4.5rem;
   text-align: center;
-  background-color: theme(colors.blue);
+  background-color: rgb(109, 109, 196);
   border: 1px solid rgb(0, 31, 168);
   border-radius: 2px;
   margin: 0 0.1rem;
@@ -28,7 +28,7 @@
 }
 
 .toolbar-navbar-link:hover {
-  background-color: theme(colors.dark-blue);
+  background-color: rgb(35, 35, 128);
 }
 
 .toolbar-config {
