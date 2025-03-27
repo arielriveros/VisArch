@@ -11,7 +11,6 @@ interface ProjectFormContainerProps {
 export default function ProjectFormContainer(props: ProjectFormContainerProps) {
   const { user } = useSession();
   const { t } = useTranslation();
-
   const [usersList, setUsersList] = useState<{ displayName: string; email: string; id: string }[]>([]);
   const [project, setProject] = useState<{ name: string; description: string; collaborators: { displayName: string; email: string; id: string }[] }>({
     name: '',

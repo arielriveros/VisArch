@@ -41,16 +41,13 @@ export default function ProjectForm(props: ProjectFormProps) {
     setProject({ ...project, collaborators });
   };
 
-  const handleSubmitConfirm = (e: FormEvent<HTMLFormElement>) => {
-    handleSubmit(e);
-  };
 
   return (
     <Paper sx={{ p: 4, maxWidth: 500, mx: 'auto', mt: 4 }}>
       <Typography variant='h5' gutterBottom>
         {title}
       </Typography>
-      <form onSubmit={handleSubmitConfirm}>
+      <form onSubmit={handleSubmit}>
         <TextField
           fullWidth
           label={t('projects.name')}
@@ -133,7 +130,13 @@ export default function ProjectForm(props: ProjectFormProps) {
           </DialogContent>
           <DialogActions>
             <Button onClick={handleCloseDialog}>{t('tasks.confirmation.cancel')}</Button>
-            <Button onClick={() => handleSubmitConfirm} variant='contained'>
+            <Button
+              onClick={(e) => {
+                handleCloseDialog();
+                handleSubmit(e as unknown as FormEvent<HTMLFormElement>);
+              }}
+              variant='contained'
+            >
               {t('tasks.confirmation.confirm')}
             </Button>
           </DialogActions>
