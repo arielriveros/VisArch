@@ -3,6 +3,8 @@ import { useTranslation } from 'react-i18next';
 import { API_BASE_URL } from '@/api/config';
 import ProjectForm from '@/components/forms/ProjectForm';
 import useSession from '@/hooks/useSession';
+import Snackbar from '@mui/material/Snackbar';
+import Alert from '@mui/material/Alert';
 
 interface ProjectFormContainerProps {
   projectId: string | null;
@@ -17,6 +19,8 @@ export default function ProjectFormContainer(props: ProjectFormContainerProps) {
     description: '',
     collaborators: []
   });
+  const [snackbar, setSnackbar] = useState<{ open: boolean; message: string }>({ open: false, message: '' });
+  const handleCloseSnackbar = () => setSnackbar({ open: false, message: '' });
 
   useEffect(() => {
     const fetchUsers = async () => {
@@ -30,6 +34,7 @@ export default function ProjectFormContainer(props: ProjectFormContainerProps) {
         })));
       } catch (error) {
         console.error('Failed to fetch users:', error);
+        setSnackbar({ open: true, message: 'Failed to fetch users' });
       }
     };
 
@@ -53,6 +58,7 @@ export default function ProjectFormContainer(props: ProjectFormContainerProps) {
         }
       } catch (error) {
         console.error('Error fetching project:', error);
+        setSnackbar({ open: true, message: 'Failed to fetch project' });
       }
     };
 
@@ -87,6 +93,7 @@ export default function ProjectFormContainer(props: ProjectFormContainerProps) {
       }
     } catch (error) {
       console.error('Error:', error);
+      setSnackbar({ open: true, message: 'Failed to save project' });
     }
   };
 
@@ -103,6 +110,11 @@ export default function ProjectFormContainer(props: ProjectFormContainerProps) {
             onCancel={props.onClose}
           />
         )}
+        <Snackbar open={snackbar.open} autoHideDuration={6000} onClose={handleCloseSnackbar}>
+          <Alert onClose={handleCloseSnackbar} severity="error" sx={{ width: '100%' }}>
+            {snackbar.message}
+          </Alert>
+        </Snackbar>
       </div>
     </div>
   );
