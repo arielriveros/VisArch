@@ -11,7 +11,6 @@ import Login from '@/pages/Login';
 import NewTask from '@/pages/tasks/NewTask';
 import useSession from '@/hooks/useSession';
 import AnnotationApp from '@/features/annotation/AnnotationApp';
-import ProjectDetails from '@/pages/projects/ProjectDetails';
 
 export default function AppRoutes() {
   const { login, signedIn } = useSession();
@@ -40,7 +39,6 @@ export default function AppRoutes() {
           <Route index element={<Projects />} />
           <Route path='new' element={<ProjectForm />} />
           <Route path=':projectId'>
-            <Route path='details' element={<ProjectDetails />} />
             <Route path='tasks' element={<Tasks />} />
             <Route path='new-task' element={<NewTask />} />
             <Route path='edit' element={<ProjectForm />} />

@@ -6,7 +6,8 @@ import useSession from '@/hooks/useSession';
 import Restricted from '@/components/Restricted';
 import useFetch from '@/hooks/useFetch';
 import ProjectTable from '@/components/ProjectTable';
-import Button from '@/components/buttons/Button';
+import ProjectDetails from './ProjectDetails';
+import { Button, Dialog } from '@mui/material';
 
 function ProjectsContainer({userId} : {userId: string}) {
   const { data, loading, status } = useFetch<ProjectsApiResponse>('api/users/' + userId + '/projects', { credentials: 'include'});
@@ -21,8 +22,39 @@ function ProjectsContainer({userId} : {userId: string}) {
     setProjects(data);
   }, [data, loading, status, userId]);
 
+  const navigate = useNavigate();
+  const [selectedProject, setSelectedProject] = useState<string | null>(null);
+
+  const handleOnRowClick = (projectId: string) => {
+    navigate(`/projects/${projectId}/tasks`);
+  };
+  
+  const [showDetails, setShowDetails] = useState(false);
+  const handleOnDetailsClick = (projectId: string) => {
+    setSelectedProject(projectId);
+    setShowDetails(true);
+  };
+
+
+
   return (
-    userId && projects && <ProjectTable userId={userId} projects={projects} />
+    userId && projects && 
+    <>
+      <ProjectTable
+        userId={userId}
+        projects={projects}
+        onRowClick={handleOnRowClick}
+        onDetailsClick={(projectId) => handleOnDetailsClick(projectId)}
+        onEditClick={(projectId) => navigate(`/projects/${projectId}/edit`)}
+      />
+      {
+        showDetails && selectedProject && (
+          <Dialog open={showDetails} onClose={() => setShowDetails(false)}>
+            <ProjectDetails projectId={selectedProject} />
+          </Dialog> 
+        )
+      }
+    </>
   );
 }
 

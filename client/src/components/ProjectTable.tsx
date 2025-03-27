@@ -1,6 +1,5 @@
 import { useTranslation } from 'react-i18next';
 import { ProjectsApiResponse } from '@/api/types';
-import { useNavigate } from 'react-router-dom';
 import {
   Table,
   TableBody,
@@ -15,12 +14,14 @@ import {
 interface ProjectTableProps {
   userId: string;
   projects: ProjectsApiResponse;
+  onRowClick: (projectId: string) => void;
+  onDetailsClick: (projectId: string) => void;
+  onEditClick: (projectId: string) => void;
 }
 
 export default function ProjectTable(props: ProjectTableProps) {
   const { projects, userId } = props;
   const { t } = useTranslation();
-  const navigate = useNavigate();
 
   return (
     <TableContainer component={Paper}>
@@ -40,7 +41,7 @@ export default function ProjectTable(props: ProjectTableProps) {
             <TableRow
               key={project._id}
               hover
-              onClick={() => navigate(`/projects/${project._id}/tasks`)}
+              onClick={() => props.onRowClick(project._id)}
               style={{ cursor: 'pointer' }}
             >
               <TableCell align="center">{project.name}</TableCell>
@@ -71,7 +72,7 @@ export default function ProjectTable(props: ProjectTableProps) {
                   <Button
                     variant="contained"
                     color="primary"
-                    onClick={() => navigate(`/projects/${project._id}/details`)}
+                    onClick={() => props.onDetailsClick(project._id)}
                   >
                     {t('projects.details')}
                   </Button>
@@ -79,7 +80,7 @@ export default function ProjectTable(props: ProjectTableProps) {
                     <Button
                       variant="contained"
                       color="secondary"
-                      onClick={() => navigate(`/projects/${project._id}/edit`)}
+                      onClick={() => props.onEditClick(project._id)}
                     >
                       {t('projects.edit')}
                     </Button>
