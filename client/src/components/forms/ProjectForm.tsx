@@ -1,6 +1,5 @@
 import { FormEvent, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useNavigate } from 'react-router-dom';
 import { Button, TextField, Typography, Paper, List, ListItem, ListItemText, IconButton, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
 
@@ -18,13 +17,13 @@ interface ProjectFormProps {
   }) => void;
   handleSubmit: (e: React.FormEvent<HTMLFormElement>) => void;
   usersList: { displayName: string; email: string; id: string }[];
+  onCancel: () => void;
 }
 
 export default function ProjectForm(props: ProjectFormProps) {
   const { title, project, usersList, setProject, handleSubmit } = props;
   const [search, setSearch] = useState<string>('');
   const [filteredUsersList, setFilteredUsersList] = useState(usersList);
-  const navigate = useNavigate();
   const { t } = useTranslation();
   const [open, setOpen] = useState(false);
   const handleCloseDialog = () => setOpen(false);
@@ -117,7 +116,7 @@ export default function ProjectForm(props: ProjectFormProps) {
         </List>
 
         <div className='flex justify-center items-center mt-5'>
-          <Button onClick={() => navigate(-1)} variant='outlined' sx={{ mr: 2 }}>
+          <Button onClick={() => props.onCancel} variant='outlined' sx={{ mr: 2 }}>
             {t('projects.form.cancel')}
           </Button>
           <Button onClick={handleOpenDialog} variant='contained'>

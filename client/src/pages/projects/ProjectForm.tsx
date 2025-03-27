@@ -1,13 +1,14 @@
 import { useEffect, useState } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { API_BASE_URL } from '@/api/config';
 import ProjectForm from '@/components/forms/ProjectForm';
 import useSession from '@/hooks/useSession';
 
-export default function ProjectFormPage() {
-  const { projectId } = useParams();
-  const navigate = useNavigate();
+interface ProjectFormContainerProps {
+  projectId: string | null;
+  onClose: () => void;
+}
+export default function ProjectFormContainer(props: ProjectFormContainerProps) {
   const { user } = useSession();
   const { t } = useTranslation();
 
@@ -34,9 +35,9 @@ export default function ProjectFormPage() {
     };
 
     const fetchProject = async () => {
-      if (!projectId) return;
+      if (!props.projectId) return;
       try {
-        const res = await fetch(`${API_BASE_URL}/api/projects/${projectId}`, { credentials: 'include' });
+        const res = await fetch(`${API_BASE_URL}/api/projects/${props.projectId}`, { credentials: 'include' });
         if (res.ok) {
           const projectData = await res.json();
           setProject({
@@ -57,15 +58,15 @@ export default function ProjectFormPage() {
     };
 
     fetchUsers();
-    if (projectId) fetchProject();
-  }, [projectId]);
+    if (props.projectId) fetchProject();
+  }, [props.projectId]);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!user) return;
 
-    const method = projectId ? 'PUT' : 'POST';
-    const url = projectId ? `${API_BASE_URL}/api/projects/${projectId}` : `${API_BASE_URL}/api/projects/`;
+    const method = props.projectId ? 'PUT' : 'POST';
+    const url = props.projectId ? `${API_BASE_URL}/api/projects/${props.projectId}` : `${API_BASE_URL}/api/projects/`;
 
     try {
       const res = await fetch(url, {
@@ -81,8 +82,7 @@ export default function ProjectFormPage() {
       });
 
       if (res.ok) {
-        const projectData = await res.json();
-        navigate(`/projects/${projectData._id}/${projectId ? 'details' : 'tasks'}`, { replace: true });
+        props.onClose();
       } else {
         throw new Error('Failed to save project');
       }
@@ -96,11 +96,12 @@ export default function ProjectFormPage() {
       <div className='flex flex-col w-full'>
         {usersList && user && (
           <ProjectForm
-            title={t(projectId ? 'projects.form.edit-project' : 'projects.form.new-project')}
+            title={t(props.projectId ? 'projects.form.edit-project' : 'projects.form.new-project')}
             project={project}
             usersList={usersList.filter(u => u.id !== user.id)}
             setProject={setProject}
             handleSubmit={handleSubmit}
+            onCancel={props.onClose}
           />
         )}
       </div>

@@ -4,7 +4,6 @@ import { useSocket } from '@/features/socket/hooks/useSocket';
 import Home from '@/pages/Home';
 import Projects from '@/pages/projects/Projects';
 import Tasks from '@/pages/tasks/Tasks';
-import ProjectForm from '@/pages/projects/ProjectForm';
 import NotFound from '@/pages/NotFound';
 import Layout from '@/pages/Layout';
 import Login from '@/pages/Login';
@@ -37,11 +36,9 @@ export default function AppRoutes() {
         <Route path='login' element={<Login />} />
         <Route path='projects'>
           <Route index element={<Projects />} />
-          <Route path='new' element={<ProjectForm />} />
           <Route path=':projectId'>
             <Route path='tasks' element={<Tasks />} />
             <Route path='new-task' element={<NewTask />} />
-            <Route path='edit' element={<ProjectForm />} />
           </Route>
         </Route>
         <Route path='*' element={<NotFound />} />
