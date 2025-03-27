@@ -2,7 +2,7 @@ import { useEffect } from 'react';
 import { Routes, Route } from 'react-router-dom';
 import { useSocket } from '@/features/socket/hooks/useSocket';
 import Home from '@/pages/Home';
-import Projects from '@/pages/projects/Projects';
+import Projects from '@/pages/Projects';
 import Tasks from '@/pages/tasks/Tasks';
 import NotFound from '@/pages/NotFound';
 import Layout from '@/pages/Layout';

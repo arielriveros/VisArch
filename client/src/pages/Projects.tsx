@@ -8,7 +8,7 @@ import Restricted from '@/components/Restricted';
 import useFetch from '@/hooks/useFetch';
 import ProjectTable from '@/components/ProjectTable';
 import ProjectDetails from '@/components/ProjectDetails';
-import ProjectFormContainer from './ProjectForm';
+import ProjectFormContainer from '../components/ProjectForm';
 
 export default function Projects() {
   const { user, signedIn } = useSession();
