@@ -16,14 +16,14 @@ import Avatar from '@mui/material/Avatar';
 import useSession from '@/hooks/useSession';
 import LanguageSelector from './LanguageSelector';
 import { useTranslation } from 'react-i18next';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { API_BASE_URL } from '@/api/config';
 
 export default function Navbar() {
   const navigate = useNavigate();
   const location = useLocation();
   const { signedIn, logout, user } = useSession();
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
 
   const [anchorEl, setAnchorEl] = useState(null);
   const [openDialog, setOpenDialog] = useState(false);
@@ -47,6 +47,14 @@ export default function Navbar() {
     });
     if (res.ok) logout();
   };
+
+  useEffect(() => {
+    const browserLanguage = navigator.language || 'en-US';
+    const supportedLanguages = ['en', 'es'];
+    const isSupported = supportedLanguages.includes(browserLanguage.split('-')[0]);
+    // TODO: Add language to user local settings
+    i18n.changeLanguage(isSupported ? browserLanguage.split('-')[0] : 'en');
+  }, [i18n]);
 
   return (
     <AppBar position='sticky' sx={{ zIndex: (theme) => theme.zIndex.drawer + 1 }}>
