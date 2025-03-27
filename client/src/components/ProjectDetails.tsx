@@ -23,6 +23,7 @@ interface ProjectDetailsProps {
   projectId: string;
   onEditClick: (projectId: string) => void;
   onClose: () => void;
+  onDeleteSuccess: () => void;
 }
 export default function ProjectDetails(props: ProjectDetailsProps) {
   const { user } = useSession();
@@ -46,6 +47,7 @@ export default function ProjectDetails(props: ProjectDetailsProps) {
         credentials: 'include',
       });
       if (response.ok) {
+        props.onDeleteSuccess();
         props.onClose();
       } else {
         console.error('Failed to delete project');

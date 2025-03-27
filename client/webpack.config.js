@@ -7,6 +7,7 @@ const isDevelopment = process.env.NODE_ENV !== "production";
 module.exports = {
   entry: './src/index.tsx',
   mode: isDevelopment ? "development" : "production",
+  devtool: isDevelopment ? 'eval-source-map' : 'source-map', // Enable sourcemaps
   output: {
     filename: "bundle.[fullhash].js",
     path: path.resolve(__dirname, 'build')

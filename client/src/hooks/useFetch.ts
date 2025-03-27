@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { API_BASE_URL } from '@/api/config';
 
 interface FetchResponse<T> {
@@ -6,6 +6,7 @@ interface FetchResponse<T> {
   status: number;
   error: string | null;
   loading: boolean;
+  execute: () => void;
 }
 
 export default function useFetch<T>(url: string, options?: RequestInit ): FetchResponse<T> {
@@ -19,7 +20,7 @@ export default function useFetch<T>(url: string, options?: RequestInit ): FetchR
     optionsRef.current = options;
   }, [options]);
 
-  useEffect(() => {
+  const execute = useCallback(() => {
     setLoading(true);
     fetch(`${API_BASE_URL}/${url}`, optionsRef.current)
       .then(res => {
@@ -37,5 +38,9 @@ export default function useFetch<T>(url: string, options?: RequestInit ): FetchR
       
   }, [url]);
 
-  return { data, error, loading, status };
+  useEffect(() => {
+    execute();
+  }, [execute]);
+
+  return { data, error, loading, status, execute };
 }

@@ -9,6 +9,7 @@ import Alert from '@mui/material/Alert';
 interface ProjectFormContainerProps {
   projectId: string | null;
   onClose: () => void;
+  onSaveSuccess: () => void;
 }
 export default function ProjectFormContainer(props: ProjectFormContainerProps) {
   const { user } = useSession();
@@ -90,6 +91,7 @@ export default function ProjectFormContainer(props: ProjectFormContainerProps) {
       });
 
       if (res.ok) {
+        props.onSaveSuccess();
         props.onClose();
       }
       else {

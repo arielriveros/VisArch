@@ -103,7 +103,10 @@ async function update(req, res) {
       return res.status(404).json({msg: 'Project not found'});
     }
     const { name, description, owner, collaborators } = req.body;
-    if (name) project.name = name;
+    if (name)
+      project.name = name;
+    else
+      throw new Error('name-required');
     if (description) project.description = description;
     if (owner) project.owner = owner;
     if (collaborators) project.collaborators = collaborators;
@@ -111,7 +114,8 @@ async function update(req, res) {
     res.status(200).json(project);
   }
   catch (error) {
-    res.status(500).json({ msg: error.message });
+    const msg = error.message;
+    return res.status(400).json({message: msg});
   }
 }
 
