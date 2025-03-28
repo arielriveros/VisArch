@@ -31,17 +31,17 @@ export default function Inspector() {
   }, [selectedArchetypeId, selectedEntityId, annotations]);
 
   return (
-    <Box display="flex" flexDirection="column" width={400} height="100%" bgcolor="grey.300" p={2}>
+    <Box display='flex' flexDirection='column' width={400} height='100%' bgcolor='grey.300' p={2}>
       <Box mb={2}>
-        <Typography variant="h6">{t('annotation.archetype')}</Typography>
+        <Typography variant='h6'>{t('annotation.archetype')}</Typography>
         <Divider />
         {!selectedArchetype ? (
-          <Typography align="center" mt={2}>
+          <Typography align='center' mt={2}>
             {t('annotation.select-archetype')}
           </Typography>
         ) : (
           <Box mt={2}>
-            <Box display="flex" justifyContent="space-between" mb={2}>
+            <Box display='flex' justifyContent='space-between' mb={2}>
               <Typography>{t('annotation.added-by')}</Typography>
               <Typography>{users.find(user => user._id === selectedArchetype.addedBy)?.displayName}</Typography>
             </Box>
@@ -51,42 +51,42 @@ export default function Inspector() {
               value={selectedArchetype.label}
               onChange={e => setSelectedArchetype({ ...selectedArchetype, label: e.target.value })}
               onBlur={() => updateArchetype(selectedArchetype.id, selectedArchetype.label, selectedArchetype.color)}
-              margin="normal"
+              margin='normal'
             />
             <TextField
               label={t('annotation.color')}
-              type="color"
+              type='color'
               fullWidth
               value={selectedArchetype.color}
               onChange={e => setSelectedArchetype({ ...selectedArchetype, color: e.target.value })}
               onBlur={() => updateArchetype(selectedArchetype.id, selectedArchetype.label, selectedArchetype.color)}
-              margin="normal"
+              margin='normal'
             />
           </Box>
         )}
       </Box>
 
-      <Box bgcolor="grey.700" p={2} borderRadius={1}>
-        <Typography variant="h6" color="white">{t('annotation.entity')}</Typography>
+      <Box bgcolor='grey.700' p={2} borderRadius={1}>
+        <Typography variant='h6' color='white'>{t('annotation.entity')}</Typography>
         <Divider sx={{ borderColor: 'white', my: 1 }} />
         {!selectedEntity ? (
-          <Typography align="center" color="white" mt={2}>
+          <Typography align='center' color='white' mt={2}>
             {t('annotation.select-entity')}
           </Typography>
         ) : (
           <Box mt={2}>
-            <Box display="flex" justifyContent="space-between" mb={2}>
-              <Typography color="white">{t('annotation.added-by')}</Typography>
-              <Typography color="white">{users.find(user => user._id === selectedEntity.addedBy)?.displayName}</Typography>
+            <Box display='flex' justifyContent='space-between' mb={2}>
+              <Typography color='white'>{t('annotation.added-by')}</Typography>
+              <Typography color='white'>{users.find(user => user._id === selectedEntity.addedBy)?.displayName}</Typography>
             </Box>
-            <Box display="flex" justifyContent="space-between" mb={2}>
-              <Typography color="white">{t('annotation.faces')}</Typography>
-              <Typography color="white">{selectedEntity.faces.length}</Typography>
+            <Box display='flex' justifyContent='space-between' mb={2}>
+              <Typography color='white'>{t('annotation.faces')}</Typography>
+              <Typography color='white'>{selectedEntity.faces.length}</Typography>
             </Box>
             {selectedArchetype?.archetype === null ? (
               <Button
-                variant="contained"
-                color="primary"
+                variant='contained'
+                color='primary'
                 onClick={() => setEntityAsArchetype(selectedArchetype.id, selectedEntity.id)}
               >
                 {t('annotation.set-archetype')}
@@ -101,16 +101,16 @@ export default function Inspector() {
                 )}
                 {selectedArchetype?.archetype === selectedEntity.id ? (
                   <Button
-                    variant="contained"
-                    color="secondary"
+                    variant='contained'
+                    color='secondary'
                     onClick={() => setEntityAsArchetype(selectedArchetype.id, null)}
                   >
                     {t('annotation.unset-archetype')}
                   </Button>
                 ) : (
                   <>
-                    <Box display="flex" alignItems="center" mb={2}>
-                      <Typography color="white" flex={1} textAlign="right" pr={2}>
+                    <Box display='flex' alignItems='center' mb={2}>
+                      <Typography color='white' flex={1} textAlign='right' pr={2}>
                         {t('annotation.scale')}
                       </Typography>
                       <Slider
@@ -125,12 +125,12 @@ export default function Inspector() {
                         }}
                         sx={{ flex: 2 }}
                       />
-                      <Typography color="white" flex={1} textAlign="center">
+                      <Typography color='white' flex={1} textAlign='center'>
                         {selectedEntity.scale.toFixed(2)}
                       </Typography>
                     </Box>
-                    <Box display="flex" alignItems="center" mb={2}>
-                      <Typography color="white" flex={1} textAlign="right" pr={2}>
+                    <Box display='flex' alignItems='center' mb={2}>
+                      <Typography color='white' flex={1} textAlign='right' pr={2}>
                         {t('annotation.orientation')}
                       </Typography>
                       <Slider
@@ -145,7 +145,7 @@ export default function Inspector() {
                         }}
                         sx={{ flex: 2 }}
                       />
-                      <Typography color="white" flex={1} textAlign="center">
+                      <Typography color='white' flex={1} textAlign='center'>
                         {selectedEntity.orientation.toFixed(2)}
                       </Typography>
                     </Box>
@@ -162,11 +162,11 @@ export default function Inspector() {
                           sx={{ color: 'white' }}
                         />
                       }
-                      label={<Typography color="white">{t('annotation.reflected')}</Typography>}
+                      label={<Typography color='white'>{t('annotation.reflected')}</Typography>}
                     />
                     <Button
-                      variant="outlined"
-                      color="inherit"
+                      variant='outlined'
+                      color='inherit'
                       onClick={() => {
                         setSelectedEntity({ ...selectedEntity, scale: 1, orientation: 0, reflection: false });
                         if (selectedArchetypeId && selectedEntityId)

@@ -113,7 +113,7 @@ export default function ProjectForm(props: ProjectFormProps) {
         </List>
 
         <div className='flex justify-center items-center mt-5'>
-          <Button onClick={() => props.onCancel()} variant='outlined' sx={{ mr: 2 }}>
+          <Button onClick={() => props.onCancel()} variant='outlined' color='warning' sx={{ mr: 2 }}>
             {t('projects.form.cancel')}
           </Button>
           <Button onClick={handleOpenDialog} variant='contained'>
@@ -129,7 +129,7 @@ export default function ProjectForm(props: ProjectFormProps) {
             </DialogContentText>
           </DialogContent>
           <DialogActions>
-            <Button onClick={handleCloseDialog}>{t('tasks.confirmation.cancel')}</Button>
+            <Button onClick={handleCloseDialog} color='warning'>{t('tasks.confirmation.cancel')}</Button>
             <Button
               onClick={(e) => {
                 handleCloseDialog();

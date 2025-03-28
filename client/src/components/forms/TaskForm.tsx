@@ -70,7 +70,7 @@ export default function TaskForm(props: TaskFormProps) {
           <MeshInput handleMesh={handleMesh} />
         </Box>
         <div className='flex justify-center items-center mt-5'>
-          <Button onClick={goBack} variant='outlined' sx={{ mr: 2 }}>
+          <Button onClick={goBack} variant='outlined' color='warning' sx={{ mr: 2 }}>
             {t('tasks.form.cancel')}
           </Button>
           <Button onClick={handleOpenDialog} variant='contained'>

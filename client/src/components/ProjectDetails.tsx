@@ -37,7 +37,7 @@ export default function ProjectDetails(props: ProjectDetailsProps) {
   }, [loading, data]);
 
   if (loading) {
-    return <Typography variant="h6" align="center">Loading...</Typography>;
+    return <Typography variant='h6' align='center'>Loading...</Typography>;
   }
 
   const handleDeleteProject = async () => {
@@ -59,15 +59,15 @@ export default function ProjectDetails(props: ProjectDetailsProps) {
 
   return (
     project && (
-      <Paper elevation={3} sx={{ padding: 4 }} component={Box} maxWidth={600} margin="auto">
-        <Typography variant="h4" gutterBottom>
+      <Paper elevation={3} sx={{ padding: 2 }} component={Box} width={350} margin='auto' maxHeight='80vh' overflow='auto'>
+        <Typography variant='h4' gutterBottom>
           {project.name}
         </Typography>
-        <Typography variant="body1" gutterBottom>
+        <Typography variant='body1' gutterBottom>
           <strong>{t('projects.owner')}:</strong> {project.owner.displayName} (
           {user?.id === project.owner._id ? t('projects.owner-you') : project.owner.email})
         </Typography>
-        <Typography variant="body1" gutterBottom>
+        <Typography variant='body1' gutterBottom>
           <strong>{t('projects.collaborators')}:</strong>
         </Typography>
         <List>
@@ -79,16 +79,16 @@ export default function ProjectDetails(props: ProjectDetailsProps) {
             </ListItem>
           ))}
         </List>
-        <Typography variant="body1" gutterBottom>
+        <Typography variant='body1' gutterBottom>
           <strong>{t('projects.description')}:</strong>{' '}
           {project.description !== '' ? project.description : <i>{t('projects.no-description')}</i>}
         </Typography>
         {user?.id === project.owner._id && (
-          <Box display="flex" justifyContent="space-between" marginTop={2}>
-            <Button variant="contained" color="primary" onClick={() => props.onEditClick(project._id)}>
+          <Box display='flex' justifyContent='space-between' marginTop={2}>
+            <Button variant='contained' color='secondary' onClick={() => props.onEditClick(project._id)}>
               {t('projects.form.edit-project')}
             </Button>
-            <Button variant="contained" color="error" onClick={() => setOpenConfirmDialog(true)}>
+            <Button variant='contained' color='error' onClick={() => setOpenConfirmDialog(true)}>
               {t('projects.form.delete-project')}
             </Button>
           </Box>
@@ -105,7 +105,7 @@ export default function ProjectDetails(props: ProjectDetailsProps) {
                 setOpenConfirmDialog(false);
                 handleDeleteProject();
               }}
-              color="error"
+              color='error'
             >
               {t('projects.form.confirm')}
             </Button>

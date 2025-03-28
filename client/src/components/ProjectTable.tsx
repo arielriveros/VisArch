@@ -28,12 +28,12 @@ export default function ProjectTable(props: ProjectTableProps) {
       <Table>
         <TableHead style={{ backgroundColor: '#f0f0f0' }}>
           <TableRow>
-            <TableCell align="center">{t('projects.name')}</TableCell>
-            <TableCell align="center">{t('projects.description')}</TableCell>
-            <TableCell align="center">{t('projects.tasks')}</TableCell>
-            <TableCell align="center">{t('projects.owner')}</TableCell>
-            <TableCell align="center">{t('projects.collaborators')}</TableCell>
-            <TableCell align="center">{t('tasks.actions')}</TableCell>
+            <TableCell align='center'>{t('projects.name')}</TableCell>
+            <TableCell align='center'>{t('projects.description')}</TableCell>
+            <TableCell align='center'>{t('projects.tasks')}</TableCell>
+            <TableCell align='center'>{t('projects.owner')}</TableCell>
+            <TableCell align='center'>{t('projects.collaborators')}</TableCell>
+            <TableCell align='center'>{t('tasks.actions')}</TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
@@ -44,23 +44,23 @@ export default function ProjectTable(props: ProjectTableProps) {
               onClick={() => props.onRowClick(project._id)}
               style={{ cursor: 'pointer' }}
             >
-              <TableCell align="center">{project.name}</TableCell>
-              <TableCell align="center">
+              <TableCell align='center'>{project.name}</TableCell>
+              <TableCell align='center'>
                 {project.description && project.description !== '' ? (
                   project.description
                 ) : (
                   <i>{t('projects.no-description')}</i>
                 )}
               </TableCell>
-              <TableCell align="center">{project.tasks.length}</TableCell>
-              <TableCell align="center">
+              <TableCell align='center'>{project.tasks.length}</TableCell>
+              <TableCell align='center'>
                 {project.owner.displayName}{' '}
                 {project.owner._id === userId
                   ? `(${t('projects.owner-you')})`
                   : `(${project.owner.email})`}
               </TableCell>
-              <TableCell align="center">{project.collaborators.length}</TableCell>
-              <TableCell align="center">
+              <TableCell align='center'>{project.collaborators.length}</TableCell>
+              <TableCell align='center'>
                 <div
                   style={{
                     display: 'flex',
@@ -70,16 +70,16 @@ export default function ProjectTable(props: ProjectTableProps) {
                   onClick={(e) => e.stopPropagation()} // Prevent row click when interacting with buttons
                 >
                   <Button
-                    variant="contained"
-                    color="primary"
+                    variant='contained'
+                    color='primary'
                     onClick={() => props.onDetailsClick(project._id)}
                   >
                     {t('projects.details')}
                   </Button>
                   {project.owner._id === userId && (
                     <Button
-                      variant="contained"
-                      color="secondary"
+                      variant='contained'
+                      color='secondary'
                       onClick={() => props.onEditClick(project._id)}
                     >
                       {t('projects.edit')}

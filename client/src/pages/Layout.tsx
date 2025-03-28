@@ -5,11 +5,18 @@ import { ThemeProvider, CssBaseline, createTheme, Box } from '@mui/material';
 const theme = createTheme({
   palette: {
     primary: {
-      main: '#1976d2', // Customize your primary color
+      main: '#004e89'
     },
     secondary: {
-      main: '#dc004e', // Customize your secondary color
+      main: '#fca311'
     },
+    warning: {
+      main: '#c9184a'
+    },
+    background: {
+      paper: '#f5f5f5',
+      default: '#eff7f6'
+    }
   },
 });
 

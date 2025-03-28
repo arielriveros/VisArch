@@ -155,7 +155,7 @@ function TaskItem({ task }: { task: TaskApiResponse }) {
           <Button variant='outlined' color='primary' onClick={handleGoToTask}>
             {t('tasks.annotate')}
           </Button>
-          <Button variant='outlined' color='secondary' onClick={handleDeleteTask}>
+          <Button variant='outlined' color='warning' onClick={handleDeleteTask}>
             {t('tasks.delete')}
           </Button>
         </Box>
@@ -215,7 +215,8 @@ export default function Tasks() {
       </Typography>
       <Box sx={{ display: 'flex', gap: 2, mb: 4 }}>
         <Button
-          variant='contained'
+          variant='outlined'
+          color='primary'
           onClick={() => navigate(-1)}
         >
           {t('tasks.go-back')}
