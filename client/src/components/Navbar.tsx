@@ -57,8 +57,8 @@ export default function Navbar() {
   }, [i18n]);
 
   return (
-    <AppBar position='sticky' sx={{ zIndex: (theme) => theme.zIndex.drawer + 1 }}>
-      <Toolbar>
+    <AppBar position='static' sx={{ zIndex: (theme) => theme.zIndex.drawer + 1 }}>
+      <Toolbar sx={{ display: 'flex', justifyContent: 'space-between' }}>
         <Typography
           variant='h5'
           className='title'

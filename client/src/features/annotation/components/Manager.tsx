@@ -138,7 +138,7 @@ export default function  Manager(props: ManagerProps) {
     <section className='flex h-svh w-full'>
       <Annotations />
       <Progress />
-      <Box component='main' sx={{ display: 'flex', position: 'relative', flexGrow: 1, flexDirection: 'column', height: '100%' }}>
+      <Box sx={{ display: 'flex', position: 'relative', flexGrow: 1, flexDirection: 'column', height: '100%' }}>
         <Viewport />
         { unwrapping !== 'none' && <Overview /> }
         <Toolbar />
