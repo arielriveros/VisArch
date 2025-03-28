@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { ProjectApiResponse, TaskApiResponse, TasksApiResponse } from '@/api/types';
@@ -13,8 +13,10 @@ import {
   CircularProgress,
   Paper,
   Tooltip,
+  Dialog,
 } from '@mui/material';
 import DownloadIcon from '@mui/icons-material/Download';
+import TaskFormContainer from '@/components/TaskForm';
 
 function TaskItem({ task }: { task: TaskApiResponse }) {
   const { t } = useTranslation();
@@ -164,7 +166,7 @@ function TaskItem({ task }: { task: TaskApiResponse }) {
 
 export default function Tasks() {
   const { projectId } = useParams();
-  const { loading: loadingTasks, data: tasksData } = useFetch<TasksApiResponse>(
+  const { loading: loadingTasks, data: tasksData, execute } = useFetch<TasksApiResponse>(
     'api/projects/' + projectId + '/tasks',
     { credentials: 'include' }
   );
@@ -178,6 +180,14 @@ export default function Tasks() {
   const [project, setProject] = useState<ProjectApiResponse>();
 
   const navigate = useNavigate();
+
+  const [showForm, setShowForm] = useState(false);
+  const handleOpenForm = () => setShowForm(true);
+  const handleCloseForm = () => setShowForm(false);
+  const handleSaveSuccess = useCallback(() => {
+    execute();
+    handleCloseForm();
+  }, [execute]);
 
   useEffect(() => {
     if (tasksData && !loadingTasks) setTasks(tasksData);
@@ -212,7 +222,8 @@ export default function Tasks() {
         </Button>
         <Button
           variant='contained'
-          onClick={() => navigate(`/projects/${projectId}/new-task`)}
+          color='primary'
+          onClick={handleOpenForm}
         >
           {t('tasks.add-task')}
         </Button>
@@ -230,6 +241,15 @@ export default function Tasks() {
           </Typography>
         )}
       </Box>
+      {showForm && project && (
+        <Dialog open={showForm} onClose={handleCloseForm}>
+          <TaskFormContainer
+            projectId={project._id}
+            onClose={handleCloseForm}
+            onSaveSuccess={handleSaveSuccess}
+          />
+        </Dialog>
+      )}
     </Paper>
   );
 }

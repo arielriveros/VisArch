@@ -1,5 +1,4 @@
 import { FormEvent, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Button, TextField, Typography, Paper, Box, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle } from '@mui/material';
 import MeshInput from '@/components/mesh-input/MeshInput';
@@ -18,11 +17,11 @@ interface TaskFormProps {
     thumbnail: File | null;
   }) => void;
   handleSubmit: (e: React.FormEvent<HTMLFormElement>) => void;
+  handleCancel: () => void;
 }
 
 export default function TaskForm(props: TaskFormProps) {
   const { task, setTask, handleSubmit } = props;
-  const navigate = useNavigate();
   const { t } = useTranslation();
   const [open, setOpen] = useState(false);
 
@@ -30,7 +29,7 @@ export default function TaskForm(props: TaskFormProps) {
   const handleCloseDialog = () => setOpen(false);
 
   const goBack = () => {
-    navigate(-1);
+    props.handleCancel();
   };
 
   const handleMesh = (glbFile: File, screenshot: File) => {
