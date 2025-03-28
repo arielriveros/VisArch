@@ -113,6 +113,8 @@
     "scale": "Escala",
     "orientation": "Orientación",
     "reflected": "Reflejada",
-    "reset": "Restablecer"
+    "reset": "Restablecer",
+    "label": "Etiqueta",
+    "color": "Color"
   }
 }

@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Paper, Typography, ToggleButton, ToggleButtonGroup, Button, Box } from '@mui/material';
+import { Paper, ToggleButton, ToggleButtonGroup, Button, Box } from '@mui/material';
 import useConfig from '../hooks/useConfig';
 import Emitter from '../utils/emitter';
 import DragIcon from '@/assets/icons/drag.png';
@@ -34,9 +34,9 @@ export default function Toolbar() {
         justifyContent: 'center',
       }}
     >
-      <Typography variant='subtitle1' sx={{ marginRight: '10px' }}>
+      {/* <Typography variant='subtitle1' sx={{ marginRight: '10px' }}>
         {t('toolbar.controls')}
-      </Typography>
+      </Typography> */}
       <ToggleButtonGroup
         value={tool}
         exclusive
@@ -59,19 +59,20 @@ export default function Toolbar() {
         <ToggleButton value='zoom' title={t('toolbar.zoom')} aria-label='zoom'>
           <img src={ZoomIcon} alt='Zoom' className='w-[40px] h-[40px] p-2' />
         </ToggleButton>
-        <Button
-          onClick={() => Emitter.emit('RESET')}
-          title={t('toolbar.reset')}
-        >
-          {t('toolbar.reset')}
-        </Button>
-        <Typography variant='subtitle1' sx={{ marginRight: '10px' }}>
+
+        {/* <Typography variant='subtitle1' sx={{ marginRight: '10px' }}>
           {t('toolbar.tools')}
-        </Typography>
+        </Typography> */}
         <ToggleButton value='lasso' title={t('toolbar.lasso')} aria-label='lasso'>
           <img src={LassoIcon} alt='Lasso' className='w-[40px] h-[40px] p-2' />
         </ToggleButton>
       </ToggleButtonGroup>
+      <Button
+        onClick={() => Emitter.emit('RESET')}
+        title={t('toolbar.reset')}
+      >
+        {t('toolbar.reset')}
+      </Button>
       <Box sx={{ width: '100px', marginLeft: '10px' }}>
         <label htmlFor='unwrapping-select'>{t('toolbar.unwrapping')}</label>
         <select
@@ -90,6 +91,7 @@ export default function Toolbar() {
         onClick={() => Emitter.emit('SAVE')}
         variant="contained"
         color="primary"
+        sx={{ marginLeft: '10px' }}
       >
         {t('toolbar.save')}
       </Button>

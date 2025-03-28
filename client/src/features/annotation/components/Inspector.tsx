@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Box, Typography, TextField, Button, Slider, Checkbox, FormControlLabel, Divider } from '@mui/material';
+import { Box, Typography, TextField, Button, Slider, Divider, Paper, Switch } from '@mui/material';
 import { Archetype, Entity } from '@/api/types';
 import useAnnotation from '../hooks/useAnnotation';
 import ArchetypeViewer from './ArchetypeViewer';
@@ -32,16 +32,16 @@ export default function Inspector() {
 
   return (
     <Box display='flex' flexDirection='column' width={400} height='100%' bgcolor='grey.300' p={2}>
-      <Box mb={2}>
+      <Paper sx={{ padding: 2, marginBottom: 2 }}>
         <Typography variant='h6'>{t('annotation.archetype')}</Typography>
         <Divider />
         {!selectedArchetype ? (
-          <Typography align='center' mt={2}>
+          <Typography align='center' mt={1}>
             {t('annotation.select-archetype')}
           </Typography>
         ) : (
-          <Box mt={2}>
-            <Box display='flex' justifyContent='space-between' mb={2}>
+          <Box mt={1}>
+            <Box display='flex' justifyContent='space-between' mb={1}>
               <Typography>{t('annotation.added-by')}</Typography>
               <Typography>{users.find(user => user._id === selectedArchetype.addedBy)?.displayName}</Typography>
             </Box>
@@ -64,24 +64,23 @@ export default function Inspector() {
             />
           </Box>
         )}
-      </Box>
-
-      <Box bgcolor='grey.700' p={2} borderRadius={1}>
-        <Typography variant='h6' color='white'>{t('annotation.entity')}</Typography>
-        <Divider sx={{ borderColor: 'white', my: 1 }} />
+      </Paper>
+      <Paper sx={{ overflow: 'auto', maxHeight: '90%', padding: 2, marginBottom: 2 }}>
+        <Typography variant='h6'>{t('annotation.entity')}</Typography>
+        <Divider />
         {!selectedEntity ? (
-          <Typography align='center' color='white' mt={2}>
+          <Typography align='center' mt={1}>
             {t('annotation.select-entity')}
           </Typography>
         ) : (
-          <Box mt={2}>
-            <Box display='flex' justifyContent='space-between' mb={2}>
-              <Typography color='white'>{t('annotation.added-by')}</Typography>
-              <Typography color='white'>{users.find(user => user._id === selectedEntity.addedBy)?.displayName}</Typography>
+          <Box mt={1}>
+            <Box display='flex' justifyContent='space-between' mb={1}>
+              <Typography>{t('annotation.added-by')}</Typography>
+              <Typography>{users.find(user => user._id === selectedEntity.addedBy)?.displayName}</Typography>
             </Box>
-            <Box display='flex' justifyContent='space-between' mb={2}>
-              <Typography color='white'>{t('annotation.faces')}</Typography>
-              <Typography color='white'>{selectedEntity.faces.length}</Typography>
+            <Box display='flex' justifyContent='space-between' mb={1}>
+              <Typography>{t('annotation.faces')}</Typography>
+              <Typography>{selectedEntity.faces.length}</Typography>
             </Box>
             {selectedArchetype?.archetype === null ? (
               <Button
@@ -109,8 +108,8 @@ export default function Inspector() {
                   </Button>
                 ) : (
                   <>
-                    <Box display='flex' alignItems='center' mb={2}>
-                      <Typography color='white' flex={1} textAlign='right' pr={2}>
+                    <Box display='flex' alignItems='center' mb={1}>
+                      <Typography flex={1} textAlign='right' pr={2}>
                         {t('annotation.scale')}
                       </Typography>
                       <Slider
@@ -125,12 +124,12 @@ export default function Inspector() {
                         }}
                         sx={{ flex: 2 }}
                       />
-                      <Typography color='white' flex={1} textAlign='center'>
+                      <Typography flex={1} textAlign='center'>
                         {selectedEntity.scale.toFixed(2)}
                       </Typography>
                     </Box>
-                    <Box display='flex' alignItems='center' mb={2}>
-                      <Typography color='white' flex={1} textAlign='right' pr={2}>
+                    <Box display='flex' alignItems='center' mb={1}>
+                      <Typography flex={1} textAlign='right' pr={2}>
                         {t('annotation.orientation')}
                       </Typography>
                       <Slider
@@ -145,25 +144,23 @@ export default function Inspector() {
                         }}
                         sx={{ flex: 2 }}
                       />
-                      <Typography color='white' flex={1} textAlign='center'>
+                      <Typography flex={1} textAlign='center'>
                         {selectedEntity.orientation.toFixed(2)}
                       </Typography>
                     </Box>
-                    <FormControlLabel
-                      control={
-                        <Checkbox
-                          checked={selectedEntity.reflection}
-                          onChange={e => {
-                            const value = e.target.checked;
-                            setSelectedEntity({ ...selectedEntity, reflection: value });
-                            if (selectedArchetypeId && selectedEntityId)
-                              updateEntity(selectedArchetypeId, selectedEntityId, selectedEntity.scale, selectedEntity.orientation, value);
-                          }}
-                          sx={{ color: 'white' }}
-                        />
-                      }
-                      label={<Typography color='white'>{t('annotation.reflected')}</Typography>}
-                    />
+                    <Box display='flex' alignItems='center' mb={1}>
+                      <Typography>{t('annotation.reflected')}</Typography>
+                      <Switch
+                        checked={selectedEntity.reflection}
+                        onChange={e => {
+                          const value = e.target.checked;
+                          setSelectedEntity({ ...selectedEntity, reflection: value });
+                          if (selectedArchetypeId && selectedEntityId)
+                            updateEntity(selectedArchetypeId, selectedEntityId, selectedEntity.scale, selectedEntity.orientation, value);
+                        }}
+                        sx={{ color: 'white' }}
+                      />
+                    </Box>
                     <Button
                       variant='outlined'
                       color='inherit'
@@ -181,7 +178,7 @@ export default function Inspector() {
             )}
           </Box>
         )}
-      </Box>
+      </Paper>
     </Box>
   );
 }
