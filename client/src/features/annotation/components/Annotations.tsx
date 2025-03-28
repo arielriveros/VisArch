@@ -3,93 +3,130 @@ import { useTranslation } from 'react-i18next';
 import { Archetype } from '@/api/types';
 import useAnnotation from '../hooks/useAnnotation';
 import Emitter from '../utils/emitter';
-import DeleteIcon from '@/assets/icons/delete.png';
-import '../styles/Annotations.css';
+import DeleteIcon from '@mui/icons-material/Delete';
+import {
+  Button,
+  IconButton,
+  List,
+  ListItem,
+  ListItemText,
+  ListItemButton,
+  Accordion,
+  AccordionSummary,
+  AccordionDetails,
+  Typography,
+  Box,
+} from '@mui/material';
 
 export default function Annotations() {
-  const { annotations, selectedArchetype: selectedArchetypeId, selectedEntity, addArchetype, removeArchetype, selectArchetype, removeEntity, selectEntity } = useAnnotation();
+  const {
+    annotations,
+    selectedArchetype: selectedArchetypeId,
+    selectedEntity,
+    addArchetype,
+    removeArchetype,
+    selectArchetype,
+    removeEntity,
+    selectEntity,
+  } = useAnnotation();
   const [selectedArchetype, setSelectedArchetype] = useState<Archetype | null>(null);
   const { t } = useTranslation();
 
   useEffect(() => {
     if (selectedArchetypeId) {
-      const archetype = annotations.find(archetype => archetype.id === selectedArchetypeId);
+      const archetype = annotations.find((archetype) => archetype.id === selectedArchetypeId);
       setSelectedArchetype(archetype || null);
     }
   }, [selectedArchetypeId, annotations]);
 
   return (
-    <div className='flex flex-col w-full h-full p-1 bg-gray-800'>
-      <section className='flex flex-col overflow-y-auto mb-2 bg-gray-700'>
-        <h4>
-          {t('annotation.archetypes')}
-        </h4>
-        {annotations?.map(archetype => (
-          <div 
+    <Box display='flex' flexDirection='column' width={400} height='100%' bgcolor='grey.300' p={2}>
+      <Button variant='contained' color='primary' onClick={addArchetype} fullWidth>
+        {t('annotation.add-archetype')}
+      </Button>
+      <Box sx={{ overflowY: 'auto', maxHeight: 'calc(100vh - 150px)' }}>
+        {annotations?.map((archetype) => (
+          <Accordion
+            slotProps={{ transition: { unmountOnExit: true } }}
             key={archetype.id}
-            onClick={() => selectArchetype(archetype.id)}
-            onMouseEnter={() => 
-              Emitter.emit('HIGHLIGHT_FACES', archetype.entities.map(entity => entity.faces).flat())
-            }
+            // TODO: Highlight faces on mouse enter performance issue
+            /* onMouseEnter={() => 
+              Emitter.emit('HIGHLIGHT_FACES', archetype.entities.map((entity) => entity.faces).flat())
+            } 
             onMouseLeave={() => Emitter.emit('HIGHLIGHT_FACES', [])}
-            className={`annotation-item ${selectedArchetypeId === archetype.id ? 'selected' : ''}`}
+            */
+            expanded={selectedArchetypeId === archetype.id}
+            
           >
-            <span>{archetype.label}</span>
-            <button 
-              onClick={(e) => {
-                e.stopPropagation(); // Stop event propagation
-                if (archetype.entities.length > 0) {
-                  const res = confirm('Archetype contains entities. Remove?');
-                  if (!res) return;
-                  else {
+            <AccordionSummary 
+              onClick={() => selectArchetype(archetype.id)}
+            >
+              <ListItemText primary={archetype.label} />
+              { selectedArchetypeId === archetype.id && (
+                <IconButton
+                  edge='end'
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    if (archetype.entities.length > 0) {
+                      const res = confirm('Archetype contains entities. Remove?');
+                      if (!res) return;
+                    }
                     Emitter.emit('HIGHLIGHT_FACES', []);
                     removeArchetype(archetype.id);
-                  }
+                  }}
+                >
+                  <DeleteIcon />
+                </IconButton>
+              )}
+            </AccordionSummary>
+            { selectedArchetype?.entities.length === 0 ? 
+              <Typography align='center' mt={2}>
+                {t('annotation.select-entity')}
+              </Typography>
+              :
+              <AccordionDetails>
+                {selectedArchetype &&
+                <List dense>
+                  {selectedArchetype.entities.map((entity) => (
+                    <ListItem
+                      key={entity.id}
+                      disablePadding
+                      onMouseEnter={() => Emitter.emit('HIGHLIGHT_FACES', entity.faces)}
+                      onMouseLeave={() => Emitter.emit('HIGHLIGHT_FACES', [])}
+                    >
+                      <ListItemButton
+                        selected={selectedEntity === entity.id}
+                        onClick={() => selectEntity(selectedArchetype.id, entity.id)}
+                      >
+                        <ListItemText
+                          primary={
+                            selectedArchetype.archetype === entity.id
+                              ? t('annotation.archetype')
+                              : t('annotation.entity')
+                          }
+                        />
+                        {selectedEntity === entity.id && (
+                          <IconButton
+                            edge='end'
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              Emitter.emit('HIGHLIGHT_FACES', []);
+                              removeEntity(selectedArchetype.id, entity.id);
+                            }}
+                          >
+                            <DeleteIcon />
+                          </IconButton> 
+                        )}
+                      </ListItemButton>
+                    </ListItem>
+                  ))}
+                </List>
                 }
-                else {
-                  Emitter.emit('HIGHLIGHT_FACES', []);
-                  removeArchetype(archetype.id);
-                }
-              }}>
-              <img src={DeleteIcon} style={{ width: '15px', height: '15px' }} alt='delete' />
-            </button>
-          </div>
+              </AccordionDetails>
+            }
+          </Accordion>
         ))}
-        <button onClick={addArchetype}>
-          {t('annotation.add-archetype')}
-        </button>
-      </section>
-      <section className='flex flex-col overflow-y-auto mb-2 pl-1 bg-gray-700'>
-        <h4>
-          {t('annotation.entities')}
-        </h4>
-        { !selectedArchetype ? <p className='center-text'>
-          {t('annotation.select-archetype')}
-        </p> :
-          selectedArchetype?.entities.map(entity => (
-            <div
-              key={entity.id}
-              onClick={() => selectEntity(selectedArchetype.id, entity.id)}
-              onMouseEnter={() => Emitter.emit('HIGHLIGHT_FACES', entity.faces) }
-              onMouseLeave={() => Emitter.emit('HIGHLIGHT_FACES', [])}
-              className={`annotation-item ${selectedEntity === entity.id ? 'selected' : ''}`} 
-            >
-              <span>
-                { selectedArchetype.archetype === entity.id ? t('annotation.archetype') : t('annotation.entity') }
-              </span>
-              <button 
-                onClick={(e) => {
-                  e.stopPropagation(); // Stop event propagation
-                  Emitter.emit('HIGHLIGHT_FACES', []);
-                  removeEntity(selectedArchetype.id, entity.id);
-                }}>
-                <img src={DeleteIcon} style={{ width: '15px', height: '15px' }} alt='delete' />
-              </button>
-            </div>
-          ))
-        }
-        
-      </section>
-    </div>
+      </Box>
+    </Box>
   );
 }

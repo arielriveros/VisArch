@@ -1,143 +1,143 @@
 import { FormEvent, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useNavigate } from 'react-router-dom';
-import ConfirmButton from '@/components/buttons/ConfirmButton';
-import Button from '../buttons/Button';
-import '@/styles/components/Form.css';
+import { Button, TextField, Typography, Paper, List, ListItem, ListItemText, IconButton, Dialog, DialogActions, DialogTitle } from '@mui/material';
+import DeleteIcon from '@mui/icons-material/Delete';
 
 interface ProjectFormProps {
   title: string;
   project: {
     name: string;
     description: string;
-    collaborators: {displayName: string, email: string, id: string}[];
+    collaborators: { displayName: string; email: string; id: string }[];
   };
   setProject: (project: {
     name: string;
     description: string;
-    collaborators: {displayName: string, email: string, id: string}[];
+    collaborators: { displayName: string; email: string; id: string }[];
   }) => void;
   handleSubmit: (e: React.FormEvent<HTMLFormElement>) => void;
-  usersList: {displayName: string, email: string, id: string}[];
+  usersList: { displayName: string; email: string; id: string }[];
+  onCancel: () => void;
 }
 
 export default function ProjectForm(props: ProjectFormProps) {
   const { title, project, usersList, setProject, handleSubmit } = props;
   const [search, setSearch] = useState<string>('');
-  const [filteredUsersList, setFilteredUsersList] = useState<{displayName: string, email: string, id: string}[]>(usersList);
-  const navigate = useNavigate();
+  const [filteredUsersList, setFilteredUsersList] = useState(usersList);
   const { t } = useTranslation();
+  const [open, setOpen] = useState(false);
+  const handleCloseDialog = () => setOpen(false);
+  const handleOpenDialog = () => setOpen(true);
 
   useEffect(() => {
-    const handleSearch = async (search: string) => {
-      if (!usersList) return;
-      
-      // filter by search
-      const filteredList = usersList.filter( user => {
-        return (
-          // search by name
-          user.displayName.toLowerCase().includes(search.toLowerCase()) ||
-          // search by email
-          user.email.toLowerCase().includes(search.toLowerCase())
-        );
-      });
-      
-      setFilteredUsersList(filteredList);
-    };
-
-    handleSearch(search);
+    const filteredList = usersList.filter((user) =>
+      user.displayName.toLowerCase().includes(search.toLowerCase()) ||
+      user.email.toLowerCase().includes(search.toLowerCase())
+    );
+    setFilteredUsersList(filteredList);
   }, [usersList, search]);
 
-  const handleSetCollaborators = (collaborators: {id: string, displayName: string, email: string}[]) => {
-    setProject({
-      ...project,
-      collaborators
-    });
+  const handleSetCollaborators = (collaborators: { id: string; displayName: string; email: string }[]) => {
+    setProject({ ...project, collaborators });
   };
 
-  const handleSubmitConfirm = (e: FormEvent<HTMLFormElement>) => {
-    handleSubmit(e);
-  };
 
   return (
-    <section className='form-container'>
-      <div className='form-title'> {title} </div>
-      <form className='form'>
-        <label htmlFor='name'>
-          {t('projects.name')}
-        </label>
-        <input
-          className='text-input'
-          type='text'
-          id='name'
+    <Paper sx={{ p: 4, maxWidth: 500, mx: 'auto', mt: 4 }}>
+      <Typography variant='h5' gutterBottom>
+        {title}
+      </Typography>
+      <form>
+        <TextField
+          fullWidth
+          label={t('projects.name')}
           value={project.name}
-          placeholder={t('projects.form.name-placeholder')}
-          onChange={(e) =>
-            setProject({ ...project, name: e.target.value })
-          }
+          onChange={(e) => setProject({ ...project, name: e.target.value })}
           required
-          maxLength={20}
+          slotProps={{
+            htmlInput: { maxLength: 20 },
+          }}
+          margin='normal'
         />
 
-        <label htmlFor='description'>
-          {t('projects.description')}
-        </label>
-        <textarea
-          className='text-input'
-          id='description'
+        <TextField
+          fullWidth
+          label={t('projects.description')}
           value={project.description}
-          placeholder={t('projects.form.description-placeholder')}
-          onChange={(e) =>
-            setProject({ ...project, description: e.target.value })
-          }
-          maxLength={100}
+          onChange={(e) => setProject({ ...project, description: e.target.value })}
+          slotProps={{
+            htmlInput: { maxLength: 100 },
+          }}
+          multiline
+          rows={3}
+          margin='normal'
         />
 
-        <label htmlFor='collaborators'>
-          {t('projects.collaborators')}
-        </label>
-        <input
-          className='text-input'
-          type='text'
-          id='collaborators'
+        <TextField
+          fullWidth
+          label={t('projects.collaborators')}
           value={search}
-          placeholder={t('projects.form.collaborators-placeholder')}
           onChange={(e) => setSearch(e.target.value)}
+          margin='normal'
         />
-        { filteredUsersList && search &&
-        <div className='flex flex-col w-full max-h-40 overflow-y-auto border-2'>
-          {filteredUsersList.map(user => (
-            // return if collaborator is already added
-            project.collaborators.find(c => c.id === user.id) ? null :
-              <div key={user.id} className='flex  justify-between text-black bg-gray-100 hover:bg-gray-400 p-1 cursor-pointer' onClick={() => {
-                handleSetCollaborators([...project.collaborators, { id: user.id, displayName: user.displayName, email: user.email }]);
-                setSearch(''); }}
-              >
-                <p className='w-1/2 truncate'>{user.displayName}</p>
-                <p className='w-1/2 truncate text-sm'>{user.email}</p>
-              </div>
-          ))}
-        </div>}
-        <div>
+
+        {filteredUsersList.length > 0 && search && (
+          <List sx={{ maxHeight: 150, overflowY: 'auto', border: '1px solid #ccc', borderRadius: 1 }}>
+            {filteredUsersList.map((user) => (
+              project.collaborators.find((c) => c.id === user.id) ? null : (
+                <ListItem
+                  component="button"
+                  key={user.id}
+                  onClick={() => {
+                    handleSetCollaborators([...project.collaborators, user]);
+                    setSearch('');
+                  }}
+                >
+                  <ListItemText primary={user.displayName} secondary={user.email} />
+                </ListItem>
+              )
+            ))}
+          </List>
+        )}
+
+        <List>
           {project.collaborators.map((collaborator) => (
-            <div key={collaborator.id} className='flex w-full justify-between py-2 px-5'>
-              <p className='wrap-text text-sm'>{collaborator.displayName}</p>
-              <button className='bg-red-500 text-white text-xs p-1 rounded-full w-5 max-h-5 border-none' onClick={() => {
-                handleSetCollaborators(project.collaborators.filter((c) => c.id !== collaborator.id));
-              }}>X</button>
-            </div>
+            <ListItem key={collaborator.id} secondaryAction={
+              <IconButton edge='end' onClick={() => handleSetCollaborators(project.collaborators.filter((c) => c.id !== collaborator.id))}>
+                <DeleteIcon color='error' />
+              </IconButton>
+            }>
+              <ListItemText primary={collaborator.displayName} secondary={collaborator.email} />
+            </ListItem>
           ))}
-        </div>
+        </List>
+
         <div className='flex justify-center items-center mt-5'>
-          <Button onClick={() => navigate(-1)}>
+          <Button onClick={() => props.onCancel()} variant='outlined' color='warning' sx={{ mr: 2 }}>
             {t('projects.form.cancel')}
           </Button>
-          <ConfirmButton label={t('projects.form.submit')} onConfirm={
-            (e: FormEvent<HTMLFormElement>) => handleSubmitConfirm(e)
-          } />
+          <Button onClick={handleOpenDialog} variant='contained'>
+            {t('projects.form.submit')}
+          </Button>
         </div>
-        
+
+        <Dialog open={open} onClose={handleCloseDialog}>
+          <DialogTitle>{t(props.title)}</DialogTitle>
+          <DialogActions>
+            <Button onClick={handleCloseDialog} color='warning'>{t('projects.form.cancel')}</Button>
+            <Button
+              onClick={(e) => {
+                handleCloseDialog();
+                handleSubmit(e as unknown as FormEvent<HTMLFormElement>);
+              }}
+              variant='contained'
+            >
+              {t('projects.form.confirm')}
+            </Button>
+          </DialogActions>
+        </Dialog>
       </form>
-    </section>
+
+    </Paper>
   );
 }

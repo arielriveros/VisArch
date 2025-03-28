@@ -43,6 +43,7 @@
       "collaborators-placeholder": "Buscar colaboradores",
       "submit": "Enviar",
       "cancel": "Cancelar",
+      "confirm": "Confirmar",
       "new-project": "Crear Nuevo Proyecto",
       "edit-project": "Editar Proyecto",
       "delete-project": "Borrar Proyecto"
@@ -64,19 +65,18 @@
     "annotate": "Anotar",
     "delete": "Eliminar",
     "download": "Descargar",
+    "go-back": "Volver",
     "form": {
       "name-placeholder": "Nombre de la tarea",
       "description-placeholder": "Descripción de la tarea",
       "cancel": "Cancelar",
-      "submit": "Enviar"
+      "submit": "Enviar",
+      "confirm": "Confirmar",
+      "description": "Esta tarea no puede ser editada después de ser creada."
     }
   },
 
   "components": {
-    "confirm-button": {
-      "confirm": "Confirmar",
-      "cancel": "Cancelar"
-    },
     "mesh-input": {
       "mesh": "Malla",
       "upload-mesh": "Subir Malla",
@@ -113,6 +113,8 @@
     "scale": "Escala",
     "orientation": "Orientación",
     "reflected": "Reflejada",
-    "reset": "Restablecer"
+    "reset": "Restablecer",
+    "label": "Etiqueta",
+    "color": "Color"
   }
 }

@@ -1,13 +1,17 @@
-import { useState } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { API_BASE_URL } from '@/api/config';
 import useSession from '@/hooks/useSession';
 import TaskForm from '@/components/forms/TaskForm';
+import { CircularProgress } from '@mui/material';
 
-export default function NewTask() {
-  const { projectId } = useParams();
-  const navigate = useNavigate();
+interface TaskFormContainerProps {
+  projectId: string;
+  onClose: () => void;
+  onSaveSuccess: () => void;
+}
+
+export default function TaskFormContainer(props: TaskFormContainerProps) {
   const { user } = useSession();
   const [task, setTask] = useState<{
     name: string;
@@ -19,7 +23,7 @@ export default function NewTask() {
   const [loading, setLoading] = useState(false);
   const { t } = useTranslation();
 
-  const createTask = async (e: React.FormEvent<HTMLFormElement>) => {
+  const createTask = useCallback(async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!user) return;
   
@@ -32,29 +36,35 @@ export default function NewTask() {
       formData.append('mesh', task.mesh);
       formData.append('thumbnail', task.thumbnail);
 
-      const response = await fetch(API_BASE_URL + '/api/projects/' + projectId + '/tasks', {
+      await fetch(API_BASE_URL + '/api/projects/' + props.projectId + '/tasks', {
         credentials: 'include',
         method: 'POST',
         body: formData,
       });
       setLoading(false);
+      props.onSaveSuccess();
+      props.onClose();
   
-      if (response.ok) navigate(-1);
-      else throw new Error('Failed to create task');
     } catch (error) {
       console.error('Error: ', error);
     }
-  };
+  }, [task, user, props]);
 
   return (
     <div className='flex justify-center align-middle w-full'>
       <div className='flex flex-col w-full'>
         { loading ?
           <div className='text-center'>
+            <CircularProgress />
             {t('tasks.uploading')}
           </div>
           :
-          <TaskForm task={task} setTask={setTask} handleSubmit={createTask} />
+          <TaskForm
+            task={task}
+            setTask={setTask}
+            handleSubmit={createTask}
+            handleCancel={props.onClose}
+          />
         }
       </div>
     </div>

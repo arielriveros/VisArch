@@ -1,7 +1,6 @@
 import { useParams } from 'react-router-dom';
 import { ColorManagement, BufferGeometry, Mesh } from 'three';
 import { computeBoundsTree, disposeBoundsTree, acceleratedRaycast } from 'three-mesh-bvh';
-import Toolbar from './components/Toolbar';
 import Manager from './components/Manager';
 import MeshContextProvider from './contexts/MeshContext';
 import ConfigContextProvider from './contexts/ConfigContext';
@@ -18,7 +17,6 @@ export default function AnnotationApp() {
     <main>
       <ConfigContextProvider>
         <MeshContextProvider>
-          <Toolbar />
           <AnnotationContextProvider>
             <Manager taskId={taskId} key={taskId}/>
           </AnnotationContextProvider>

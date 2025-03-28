@@ -2,28 +2,32 @@ import { useEffect } from 'react';
 import { Routes, Route } from 'react-router-dom';
 import { useSocket } from '@/features/socket/hooks/useSocket';
 import Home from '@/pages/Home';
-import Profile from '@/pages/Profile';
-import Projects from '@/pages/projects/Projects';
-import Tasks from '@/pages/tasks/Tasks';
-import NewProject from '@/pages/projects/NewProject';
+import Projects from '@/pages/Projects';
+import Tasks from '@/pages/Tasks';
 import NotFound from '@/pages/NotFound';
 import Layout from '@/pages/Layout';
 import Login from '@/pages/Login';
-import NewTask from '@/pages/tasks/NewTask';
 import useSession from '@/hooks/useSession';
 import AnnotationApp from '@/features/annotation/AnnotationApp';
-import EditProject from '@/pages/projects/EditProject';
-import ProjectDetails from '@/pages/projects/ProjectDetails';
+import Restricted from '@/components/Restricted';
+
+function ProtectedRoute({ children }: { children: JSX.Element }) {
+  const { signedIn, user } = useSession();
+
+  if (!signedIn || !user) {
+    return <Restricted />;
+  }
+
+  return children;
+}
 
 export default function AppRoutes() {
   const { login, signedIn } = useSession();
 
   useEffect(() => {
-    if (!signedIn)
-      login();
+    if (!signedIn) login();
   }, [signedIn, login]);
 
-  
   const { connect, disconnect } = useSocket();
 
   useEffect(() => {
@@ -35,23 +39,18 @@ export default function AppRoutes() {
 
   return (
     <Routes>
-      <Route path='/' element={<Layout />}>
+      <Route path="/" element={<Layout />}>
         <Route index element={<Home />} />
         <Route path='login' element={<Login />} />
-        <Route path='user' element={<Profile />} />
         <Route path='projects'>
-          <Route index element={<Projects />} />
-          <Route path='new' element={<NewProject />} />
+          <Route index element={<ProtectedRoute><Projects /></ProtectedRoute>} />
           <Route path=':projectId'>
-            <Route path='details' element={<ProjectDetails />} />
-            <Route path='tasks' element={<Tasks />} />
-            <Route path='new-task' element={<NewTask />} />
-            <Route path='edit' element={<EditProject />} />
+            <Route path='tasks' element={<ProtectedRoute><Tasks /></ProtectedRoute>} />
           </Route>
         </Route>
-        <Route path='*' element={<NotFound />} />
+        <Route path="/task/:taskId" element={<AnnotationApp />} />
+        <Route path="*" element={<NotFound />} />
       </Route>
-      <Route path='/task/:taskId' element={<AnnotationApp />} />
     </Routes>
   );
 }

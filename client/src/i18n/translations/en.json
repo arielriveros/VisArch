@@ -43,6 +43,7 @@
       "collaborators-placeholder": "Search for collaborators",
       "submit": "Submit",
       "cancel": "Cancel",
+      "confirm": "Confirm",
       "new-project": "Create New Project",
       "edit-project": "Edit Project",
       "delete-project": "Delete Project"
@@ -64,19 +65,18 @@
     "annotate": "Annotate",
     "delete": "Delete",
     "download": "Download",
+    "go-back": "Go Back",
     "form": {
       "name-placeholder": "Task's name",
       "description-placeholder": "Task's description",
       "cancel": "Cancel",
-      "submit": "Submit"
+      "submit": "Submit",
+      "confirm": "Confirm",
+      "description": "This task may not be edited after created."
     }
   },
 
   "components": {
-    "confirm-button": {
-      "confirm": "Confirm",
-      "cancel": "Cancel"
-    },
     "mesh-input": {
       "mesh": "Mesh",
       "upload-mesh": "Upload Mesh",
@@ -113,6 +113,8 @@
     "scale": "Scale",
     "orientation": "Orientation",
     "reflected": "Reflected",
-    "reset": "Reset"
+    "reset": "Reset",
+    "label": "Label",
+    "color": "Color"
   }
 }
