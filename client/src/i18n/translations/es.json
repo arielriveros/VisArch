@@ -37,6 +37,7 @@
     "collaborators": "Colaboradores",
     "details": "Detalle",
     "edit": "Editar",
+    "no-projects-found": "No se encontraron proyectos, crea uno para comenzar.",
     "form": {
       "name-placeholder": "Nombre del proyecto",
       "description-placeholder": "Descripción del proyecto",

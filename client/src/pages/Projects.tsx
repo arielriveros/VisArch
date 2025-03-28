@@ -80,9 +80,11 @@ export default function Projects() {
       </div>
       {user?.id && projects && (
         projects.length < 1 ? 
-          <Typography variant="h6" component="p">
-            {t('projects.no-projects-found')}
-          </Typography>
+          <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
+            <Typography variant="h6" component="p">
+              {t('projects.no-projects-found')}
+            </Typography>
+          </div>
           :
           <ProjectTable
             userId={user.id}

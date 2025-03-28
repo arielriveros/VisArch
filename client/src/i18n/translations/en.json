@@ -37,6 +37,7 @@
     "collaborators": "Collaborators",
     "details": "Details",
     "edit": "Edit",
+    "no-projects-found": "There are no projects, create one to get started.",
     "form": {
       "name-placeholder": "Project's name",
       "description-placeholder": "Project's description",
