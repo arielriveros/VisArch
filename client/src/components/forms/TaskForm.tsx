@@ -80,14 +80,14 @@ export default function TaskForm(props: TaskFormProps) {
       </form>
 
       <Dialog open={open} onClose={handleCloseDialog}>
-        <DialogTitle>{t('tasks.confirmation.title')}</DialogTitle>
+        <DialogTitle>{t('tasks.create-task')}</DialogTitle>
         <DialogContent>
           <DialogContentText>
-            {t('tasks.confirmation.message')}
+            {t('tasks.form.description')}
           </DialogContentText>
         </DialogContent>
         <DialogActions>
-          <Button onClick={handleCloseDialog}>{t('tasks.confirmation.cancel')}</Button>
+          <Button onClick={handleCloseDialog}>{t('tasks.form.cancel')}</Button>
           <Button
             onClick={(e) => {
               handleCloseDialog();
@@ -95,7 +95,7 @@ export default function TaskForm(props: TaskFormProps) {
             }}
             variant='contained'
           >
-            {t('tasks.confirmation.confirm')}
+            {t('tasks.form.confirm')}
           </Button>
         </DialogActions>
       </Dialog>

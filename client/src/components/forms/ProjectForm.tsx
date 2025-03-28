@@ -1,6 +1,6 @@
 import { FormEvent, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Button, TextField, Typography, Paper, List, ListItem, ListItemText, IconButton, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle } from '@mui/material';
+import { Button, TextField, Typography, Paper, List, ListItem, ListItemText, IconButton, Dialog, DialogActions, DialogTitle } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
 
 interface ProjectFormProps {
@@ -122,14 +122,9 @@ export default function ProjectForm(props: ProjectFormProps) {
         </div>
 
         <Dialog open={open} onClose={handleCloseDialog}>
-          <DialogTitle>{t('tasks.confirmation.title')}</DialogTitle>
-          <DialogContent>
-            <DialogContentText>
-              {t('tasks.confirmation.message')}
-            </DialogContentText>
-          </DialogContent>
+          <DialogTitle>{t(props.title)}</DialogTitle>
           <DialogActions>
-            <Button onClick={handleCloseDialog} color='warning'>{t('tasks.confirmation.cancel')}</Button>
+            <Button onClick={handleCloseDialog} color='warning'>{t('projects.form.cancel')}</Button>
             <Button
               onClick={(e) => {
                 handleCloseDialog();
@@ -137,7 +132,7 @@ export default function ProjectForm(props: ProjectFormProps) {
               }}
               variant='contained'
             >
-              {t('tasks.confirmation.confirm')}
+              {t('projects.form.confirm')}
             </Button>
           </DialogActions>
         </Dialog>
