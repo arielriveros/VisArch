@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react';
-import ProgressBar from '@/components/ProgressBar';
 import Emitter from '../utils/emitter';
-import '../styles/Progress.css';
+import { Backdrop, Box, CircularProgress, Typography } from '@mui/material';
 
 export default function Progress() {
   const [current, setCurrent] = useState(0);
@@ -25,13 +24,13 @@ export default function Progress() {
   }, []);
 
   return (
-    visible ?
-      <section className='progress-container'>
-        <p>{text}</p>
-        <div className='progress-bar'>
-          <ProgressBar current={current === 0 ? null : current} total={total} />
-        </div>
-      </section>
-      : null
+    <Backdrop open={visible} sx={(theme) => ({ color: '#fff', zIndex: theme.zIndex.drawer + 1 })}>
+      <Box display='flex' flexDirection='column' alignItems='center'>
+        <Typography color='white' variant='h6' gutterBottom>
+          {text}
+        </Typography>
+        <CircularProgress variant='determinate' value={(current / total)} color='primary' />
+      </Box>
+    </Backdrop>
   );
 }
