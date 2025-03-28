@@ -73,7 +73,7 @@ export default function Projects() {
       <Typography variant="h4" component="p"  fontWeight="bold">
         {t('projects.title')}
       </Typography>
-      <div >
+      <div className="flex justify-end mb-2">
         <Button variant="contained" color="primary" onClick={handleNewProject}>
           {t('projects.form.new-project')}
         </Button>

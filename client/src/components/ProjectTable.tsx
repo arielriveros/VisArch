@@ -26,7 +26,7 @@ export default function ProjectTable(props: ProjectTableProps) {
   return (
     <TableContainer component={Paper}>
       <Table>
-        <TableHead>
+        <TableHead style={{ backgroundColor: '#f0f0f0' }}>
           <TableRow>
             <TableCell align="center">{t('projects.name')}</TableCell>
             <TableCell align="center">{t('projects.description')}</TableCell>
