@@ -174,7 +174,6 @@ export default function Tasks() {
       method: 'GET',
       credentials: 'include',
     },
-    immediate: true,
     onSuccess: (data) => {
       setTasks(data);
     }
@@ -186,7 +185,6 @@ export default function Tasks() {
       method: 'GET',
       credentials: 'include',
     },
-    immediate: true,
     onSuccess: (data) => {
       setProject(data);
     }
@@ -206,7 +204,9 @@ export default function Tasks() {
   }, [execute]);
 
   if (loadingTasks || loadingProject) {
-    return <CircularProgress />;
+    return <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
+      <CircularProgress size={100} color='primary' />
+    </Box>;
   }
 
   return (

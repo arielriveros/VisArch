@@ -53,6 +53,10 @@ export default function useFetch<T>(props: useFetchProps<T>): FetchResponse<T> {
         setData(data);
         onSuccessRef.current && onSuccessRef.current(data);
       } catch (err) {
+        if (err instanceof DOMException && err.name === 'AbortError') {
+          // Fetch was aborted, do nothing
+          return;
+        }
         onErrorRef.current && onErrorRef.current((err as Error).message);
         setError((err as Error).message);
       } finally {

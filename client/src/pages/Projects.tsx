@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { ProjectsApiResponse } from '@/api/types';
@@ -20,7 +20,6 @@ export default function Projects() {
       method: 'GET',
       credentials: 'include',
     },
-    immediate: false,
     onSuccess: (data) => {
       setProjects(data);
     },
@@ -28,13 +27,6 @@ export default function Projects() {
       console.error('Failed to fetch projects', error);
     },
   });
-
-  useEffect(() => {
-    if (user?.id) {
-      execute();
-    }
-  }, [user, execute]);
-
 
   const [projects, setProjects] = useState<ProjectsApiResponse>([]);
   const [selectedProject, setSelectedProject] = useState<string | null>(null);
