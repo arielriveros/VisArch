@@ -13,6 +13,7 @@ import Progress from './Progress';
 import Overview from './Overview';
 import useConfig from '../hooks/useConfig';
 import Toolbar from './Toolbar';
+import useFetch from '@/hooks/useFetch';
 
 interface ManagerProps {
   taskId?: string;
@@ -27,22 +28,21 @@ export default function  Manager(props: ManagerProps) {
   const { loadMesh } = useMesh();
   const { unwrapping } = useConfig();
 
-  useEffect(() => {
-    fetch(`${API_BASE_URL}/api/tasks/${taskId}`, { credentials: 'include' })
-      .then(response => response.json())
-      .then(data => setTask(data))
-      .finally(() => {
-        if (taskId) setRoomId(taskId);
-      });
-  }, [taskId]);
+  useFetch<TaskApiResponse>({
+    url: `api/tasks/${taskId}`,
+    options: { method: 'GET' },
+    immediate: true,
+    onSuccess: (data) => {
+      setTask(data);
+      setRoomId(data._id);
+    },
+  });
 
   useEffect(() => {
-    if (roomId)
-      join(roomId);
-    return () => {
-      if (roomId)
-        leave(roomId);
-    };
+    if (!roomId) return;
+
+    join(roomId);
+    return () => leave(roomId);
   }, [roomId, join, leave]);
   
 

@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { ProjectApiResponse, TaskApiResponse, TasksApiResponse } from '@/api/types';
@@ -18,7 +18,7 @@ import {
 import DownloadIcon from '@mui/icons-material/Download';
 import TaskFormContainer from '@/components/TaskForm';
 
-function TaskItem({ task }: { task: TaskApiResponse }) {
+function TaskItem({ task, onDelete }: { task: TaskApiResponse; onDelete?: () => void }) {
   const { t } = useTranslation();
   const [downloading, setDownloading] = useState(false);
   const navigate = useNavigate();
@@ -27,21 +27,22 @@ function TaskItem({ task }: { task: TaskApiResponse }) {
     navigate(`/task/${task._id}`);
   };
 
+  const { execute } = useFetch({
+    url: `api/tasks/${task._id}`,
+    options: {
+      method: 'DELETE'
+    },
+    immediate: false,
+    onSuccess: () => {
+      if (onDelete) onDelete();
+    },
+    onError: () => {
+      console.error('Error: ', 'Failed to delete task');
+    },
+  });
+
   const handleDeleteTask = () => {
-    fetch(`${API_BASE_URL}/api/tasks/${task._id}`, {
-      method: 'DELETE',
-      credentials: 'include',
-    })
-      .then((response) => {
-        if (response.ok) {
-          navigate(0);
-        } else {
-          throw new Error('Failed to delete task');
-        }
-      })
-      .catch((error) => {
-        console.error('Error: ', error);
-      });
+    execute();
   };
 
   const handleDownload = async () => {
@@ -166,15 +167,30 @@ function TaskItem({ task }: { task: TaskApiResponse }) {
 
 export default function Tasks() {
   const { projectId } = useParams();
-  const { loading: loadingTasks, data: tasksData, execute } = useFetch<TasksApiResponse>(
-    'api/projects/' + projectId + '/tasks',
-    { credentials: 'include' }
-  );
-  const { loading: loadingProject, data: projectData } = useFetch<ProjectApiResponse>(
-    'api/projects/' + projectId,
-    { credentials: 'include' }
-  );
   const { t } = useTranslation();
+  const { loading: loadingTasks, execute } = useFetch<TasksApiResponse>({
+    url: 'api/projects/' + projectId + '/tasks',
+    options: {
+      method: 'GET',
+      credentials: 'include',
+    },
+    immediate: true,
+    onSuccess: (data) => {
+      setTasks(data);
+    }
+  });
+
+  const { loading: loadingProject } = useFetch<ProjectApiResponse>({
+    url: 'api/projects/' + projectId,
+    options: {
+      method: 'GET',
+      credentials: 'include',
+    },
+    immediate: true,
+    onSuccess: (data) => {
+      setProject(data);
+    }
+  });
 
   const [tasks, setTasks] = useState<TasksApiResponse>([]);
   const [project, setProject] = useState<ProjectApiResponse>();
@@ -188,11 +204,6 @@ export default function Tasks() {
     execute();
     handleCloseForm();
   }, [execute]);
-
-  useEffect(() => {
-    if (tasksData && !loadingTasks) setTasks(tasksData);
-    if (projectData && !loadingProject) setProject(projectData);
-  }, [loadingTasks, tasksData, loadingProject, projectData]);
 
   if (loadingTasks || loadingProject) {
     return <CircularProgress />;
@@ -233,7 +244,7 @@ export default function Tasks() {
         {tasks.length !== 0 ? (
           <Grid container spacing={2}>
             {tasks.map((task) => (
-              <TaskItem task={task} key={task._id} />
+              <TaskItem task={task} key={task._id} onDelete={execute} />
             ))}
           </Grid>
         ) : (

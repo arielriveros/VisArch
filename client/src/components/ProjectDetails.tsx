@@ -1,7 +1,6 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ProjectApiResponse } from '@/api/types';
-import { API_BASE_URL } from '@/api/config';
 import useSession from '@/hooks/useSession';
 import useFetch from '@/hooks/useFetch';
 import {
@@ -27,35 +26,41 @@ interface ProjectDetailsProps {
 }
 export default function ProjectDetails(props: ProjectDetailsProps) {
   const { user } = useSession();
-  const { loading, data } = useFetch<ProjectApiResponse>('api/projects/' + props.projectId, { credentials: 'include' });
   const [project, setProject] = useState<ProjectApiResponse>();
   const [openConfirmDialog, setOpenConfirmDialog] = useState(false);
   const { t } = useTranslation();
 
-  useEffect(() => {
-    if (data && !loading) setProject(data);
-  }, [loading, data]);
+  const { loading } = useFetch<ProjectApiResponse>({
+    url: 'api/projects/' + props.projectId,
+    options: {
+      method: 'GET',
+      credentials: 'include',
+    },
+    immediate: true,
+    onSuccess: (data) => {
+      setProject(data);
+    },
+  });
 
   if (loading) {
     return <Typography variant='h6' align='center'>Loading...</Typography>;
   }
 
-  const handleDeleteProject = async () => {
-    try {
-      const response = await fetch(API_BASE_URL + '/api/projects/' + props.projectId, {
-        method: 'DELETE',
-        credentials: 'include',
-      });
-      if (response.ok) {
-        props.onDeleteSuccess();
-        props.onClose();
-      } else {
-        console.error('Failed to delete project');
-      }
-    } catch (error) {
-      console.error('Error: ', error);
-    }
-  };
+  const { execute } = useFetch({
+    url: `api/projects/${props.projectId}`,
+    options: {
+      method: 'DELETE',
+      credentials: 'include',
+    },
+    immediate: false,
+    onSuccess: () => {
+      props.onDeleteSuccess();
+      props.onClose();
+    },
+    onError: () => {
+      console.error('Error: ', 'Failed to delete project');
+    },
+  });
 
   return (
     project && (
@@ -103,7 +108,7 @@ export default function ProjectDetails(props: ProjectDetailsProps) {
             <Button
               onClick={() => {
                 setOpenConfirmDialog(false);
-                handleDeleteProject();
+                execute();
               }}
               color='error'
             >

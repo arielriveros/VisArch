@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { ProjectsApiResponse } from '@/api/types';
@@ -14,21 +14,29 @@ export default function Projects() {
   const { t } = useTranslation();
   const navigate = useNavigate();
   
-  const { data, loading, status, error, execute } = useFetch<ProjectsApiResponse>(
-    `api/users/${user?.id}/projects`,
-    { credentials: 'include' }
-  );
-  const [projects, setProjects] = useState<ProjectsApiResponse>([]);
+  const { execute } = useFetch<ProjectsApiResponse>({
+    url: `api/users/${user?.id}/projects`,
+    options: {
+      method: 'GET',
+      credentials: 'include',
+    },
+    immediate: false,
+    onSuccess: (data) => {
+      setProjects(data);
+    },
+    onError: (error) => {
+      console.error('Failed to fetch projects', error);
+    },
+  });
 
   useEffect(() => {
-    if (!data || loading) return;
-    if (status !== 200) {
-      console.error('Failed to fetch projects', error);
-      return;
+    if (user?.id) {
+      execute();
     }
-    setProjects(data);
-  }, [data, loading, status, error]);
+  }, [user, execute]);
 
+
+  const [projects, setProjects] = useState<ProjectsApiResponse>([]);
   const [selectedProject, setSelectedProject] = useState<string | null>(null);
   const [showDetails, setShowDetails] = useState(false);
   const [showForm, setShowForm] = useState(false);
@@ -78,7 +86,7 @@ export default function Projects() {
           {t('projects.form.new-project')}
         </Button>
       </div>
-      {user?.id && projects && (
+      {user?.id && (
         projects.length < 1 ? 
           <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
             <Typography variant="h6" component="p">

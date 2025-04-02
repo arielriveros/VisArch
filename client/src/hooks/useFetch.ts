@@ -4,43 +4,73 @@ import { API_BASE_URL } from '@/api/config';
 interface FetchResponse<T> {
   data: T | null;
   status: number;
-  error: string | null;
+  error: unknown | null;
   loading: boolean;
   execute: () => void;
 }
 
-export default function useFetch<T>(url: string, options?: RequestInit ): FetchResponse<T> {
+interface useFetchProps<T> {
+  url: string;
+  options?: RequestInit;
+  immediate?: boolean;
+  onSuccess?: (data: T) => void;
+  onError?: (error: string) => void;
+}
+
+export default function useFetch<T>(props: useFetchProps<T>): FetchResponse<T> {
+  const { url, options = {}, immediate = true, onSuccess, onError } = props;
   const [data, setData] = useState<T | null>(null);
   const [status, setStatus] = useState(0);
-  const [error, setError] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<unknown>(null);
+  const [loading, setLoading] = useState(false);
   const optionsRef = useRef(options);
+  const onSuccessRef = useRef(onSuccess);
+  const onErrorRef = useRef(onError);
 
-  useEffect(() => {
-    optionsRef.current = options;
-  }, [options]);
+  const execute = useCallback(
+    async ({ abortSignal }: { abortSignal?: AbortSignal } = {}) => {
+      try {
+        setError(null);
+        setLoading(true);
 
-  const execute = useCallback(() => {
-    setLoading(true);
-    fetch(`${API_BASE_URL}/${url}`, optionsRef.current)
-      .then(res => {
+        const requestOptions = {
+          ...optionsRef.current,
+          credentials: 'include', // Ensure credentials are included
+          signal: abortSignal,
+        } as RequestInit;
+
+        const res = await fetch(`${API_BASE_URL}/${url}`, requestOptions);
         setStatus(res.status);
-        return res.json();
-      })
-      .then(data => {
+
+        if (!res.ok) {
+          const errorText = await res.text();
+          setError(errorText);
+          onErrorRef.current && onErrorRef.current(errorText);
+          throw new Error(errorText);
+        }
+
+        const data = await res.json();
         setData(data);
-      })
-      .catch(err => {
-        console.error(err.msg);
-        setError(err.msg);
-      })
-      .finally(() => setLoading(false));
-      
-  }, [url]);
+        onSuccessRef.current && onSuccessRef.current(data);
+      } catch (err) {
+        onErrorRef.current && onErrorRef.current((err as Error).message);
+        setError((err as Error).message);
+      } finally {
+        setLoading(false);
+      }
+    },
+    [url]
+  );
 
   useEffect(() => {
-    execute();
-  }, [execute]);
+    const abortController = new AbortController();
+    if (immediate) {
+      execute({ abortSignal: abortController.signal });
+    }
+    return () => {
+      abortController.abort();
+    };
+  }, [execute, immediate]);
 
   return { data, error, loading, status, execute };
 }

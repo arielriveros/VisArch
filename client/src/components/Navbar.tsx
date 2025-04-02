@@ -1,3 +1,5 @@
+import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Link as RouterLink, useNavigate, useLocation } from 'react-router-dom';
 import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
@@ -15,9 +17,7 @@ import DialogTitle from '@mui/material/DialogTitle';
 import Avatar from '@mui/material/Avatar';
 import useSession from '@/hooks/useSession';
 import LanguageSelector from './LanguageSelector';
-import { useTranslation } from 'react-i18next';
-import { useEffect, useState } from 'react';
-import { API_BASE_URL } from '@/api/config';
+import useFetch from '@/hooks/useFetch';
 
 export default function Navbar() {
   const navigate = useNavigate();
@@ -39,14 +39,16 @@ export default function Navbar() {
 
   const handleOpenDialog = () => setOpenDialog(true);
   const handleCloseDialog = () => setOpenDialog(false);
-
-  const handleDelete = async () => {
-    const res = await fetch(`${API_BASE_URL}/api/users/${user?.id}`, {
-      credentials: 'include',
-      method: 'DELETE',
-    });
-    if (res.ok) logout();
-  };
+  const { execute } = useFetch({
+    url: `api/users/${user?.id}`,
+    options: {
+      method: 'DELETE'
+    },
+    immediate: false,
+    onSuccess: () => {
+      logout();
+    },
+  });
 
   useEffect(() => {
     const browserLanguage = navigator.language || 'en-US';
@@ -149,7 +151,7 @@ export default function Navbar() {
           </Button>
           <Button
             onClick={() => {
-              handleDelete();
+              execute();
               handleCloseDialog();
             }}
             color='error'
