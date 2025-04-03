@@ -23,7 +23,10 @@ module.exports = {
       {
         test: /\.(ts|tsx)$/,
         exclude: /node_modules/,
-        use: 'babel-loader'
+        loader: 'esbuild-loader',
+        options: {
+          target: 'es2015'
+        }
       },
       {
         test: /\.css$/i,
