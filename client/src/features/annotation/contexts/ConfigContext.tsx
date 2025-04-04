@@ -35,14 +35,14 @@ function ConfigReducer(state: ConfigState, action: ConfigAction): ConfigState {
   case 'SET_TOOL':
     return { ...state, tool: action.payload || 'drag' };
   case 'SET_UNWRAPPING':
-    return { ...state, unwrapping: action.payload || 'none' };
+    return { ...state, unwrapping: action.payload || 'y' };
   default:
     return state;
   }
 }
 
 export default function ConfigContextProvider({ children }: { children: React.ReactNode}) {
-  const [state, dispatch] = useReducer(ConfigReducer, { tool: 'drag', unwrapping: 'none' });
+  const [state, dispatch] = useReducer(ConfigReducer, { tool: 'drag', unwrapping: 'y' });
   return (
     <ConfigContext.Provider value={{ ...state, dispatch }}>
       {children}
