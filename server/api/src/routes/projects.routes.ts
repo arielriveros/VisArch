@@ -1,8 +1,9 @@
-const express = require('express');
-const router = express.Router();
-const ProjectController = require('../controllers/projects.controller');
-const validateID = require('../middleware/validateID');
-const uploadMesh = require('../middleware/upload');
+import express, { Router } from 'express';
+import ProjectController from '../controllers/projects.controller';
+import validateID from '../middleware/validateID';
+import uploadMesh from '../middleware/upload';
+
+const router: Router = express.Router();
 
 router.get('/', ProjectController.index);
 router.get('/:id', validateID, ProjectController.get);
@@ -17,4 +18,4 @@ router.post(
   uploadMesh.fields([{ name: 'mesh', maxCount: 1 }, { name: 'thumbnail', maxCount: 1 }]),
   ProjectController.createTask);
 
-module.exports = router;
+export default router;

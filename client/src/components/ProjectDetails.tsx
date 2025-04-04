@@ -38,6 +38,7 @@ export default function ProjectDetails(props: ProjectDetailsProps) {
     },
     immediate: true,
     onSuccess: (data) => {
+      console.log('Project details: ', data);
       setProject(data);
     },
   });
