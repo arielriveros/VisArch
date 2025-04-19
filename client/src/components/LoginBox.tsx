@@ -1,5 +1,4 @@
 import { useTranslation } from 'react-i18next';
-import { API_BASE_URL } from '@/api/config';
 import { Typography, Box, Paper } from '@mui/material';
 import GitHubLogo from '@/assets/images/github-mark.png';
 import GoogleButton from 'react-google-button';
@@ -8,12 +7,12 @@ export default function LoginBox() {
   const { t } = useTranslation();
 
   const handleGoogleSSO = async () => {
-    const apiUrl = `${API_BASE_URL}/api/auth/google`;
+    const apiUrl = '/api/auth/google';
     window.location.href = apiUrl;
   };
 
   const handleGithubSSO = async () => {
-    const apiUrl = `${API_BASE_URL}/api/auth/github`;
+    const apiUrl = '/api/auth/github';
     window.location.href = apiUrl;
   };
 

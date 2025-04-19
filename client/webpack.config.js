@@ -44,7 +44,17 @@ module.exports = {
     open: false,
     port: 3000,
     static: ['./public'],
-    historyApiFallback: true
+    historyApiFallback: true,
+    proxy: [
+      {
+        context: ['/api'],
+        target: 'http://localhost:5000',
+      },
+      {
+        context: ['/websocket'],
+        target: 'http://localhost:5001',
+      }
+    ]
   },
   plugins: [
     new HtmlWebpackPlugin({

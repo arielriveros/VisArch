@@ -1,6 +1,5 @@
 import { useCallback, useContext, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { API_BASE_URL } from '@/api/config';
 import { UserApiResponse } from '@/api/types';
 import { AuthContext } from '@/contexts/AuthContext';
 
@@ -12,7 +11,7 @@ export default function useSession() {
   const login = useCallback(() => {
     setLoading(true);
 
-    fetch(API_BASE_URL + '/api/auth/login', { credentials: 'include' })
+    fetch('/api/auth/login', { credentials: 'include' })
       .then(res => {
         if (res.ok) {
           return res.json();
@@ -40,7 +39,7 @@ export default function useSession() {
   }, [dispatch]);
 
   const logout = () => {
-    fetch(API_BASE_URL + '/api/auth/logout', { credentials: 'include', method: 'POST'})
+    fetch('/api/auth/logout', { credentials: 'include', method: 'POST'})
       .then(() => {
         dispatch({ type: 'LOGOUT' });
         navigate('/');

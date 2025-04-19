@@ -31,7 +31,7 @@ export default function ProjectDetails(props: ProjectDetailsProps) {
   const { t } = useTranslation();
 
   const { loading } = useFetch<ProjectApiResponse>({
-    url: 'api/projects/' + props.projectId,
+    url: '/api/projects/' + props.projectId,
     options: {
       method: 'GET',
       credentials: 'include',
@@ -48,7 +48,7 @@ export default function ProjectDetails(props: ProjectDetailsProps) {
   }
 
   const { execute } = useFetch({
-    url: `api/projects/${props.projectId}`,
+    url: `/api/projects/${props.projectId}`,
     options: {
       method: 'DELETE',
       credentials: 'include',

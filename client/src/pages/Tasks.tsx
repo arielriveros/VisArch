@@ -2,7 +2,6 @@ import { useCallback, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { ProjectApiResponse, TaskApiResponse, TasksApiResponse } from '@/api/types';
-import { API_BASE_URL } from '@/api/config';
 import useFetch from '@/hooks/useFetch';
 import {
   Button,
@@ -28,7 +27,7 @@ function TaskItem({ task, onDelete }: { task: TaskApiResponse; onDelete?: () => 
   };
 
   const { execute } = useFetch({
-    url: `api/tasks/${task._id}`,
+    url: `/api/tasks/${task._id}`,
     options: {
       method: 'DELETE'
     },
@@ -48,7 +47,7 @@ function TaskItem({ task, onDelete }: { task: TaskApiResponse; onDelete?: () => 
   const handleDownload = async () => {
     try {
       setDownloading(true);
-      const response = await fetch(`${API_BASE_URL}/api/files/tasks/${task._id}`, {
+      const response = await fetch(`/api/files/tasks/${task._id}`, {
         method: 'GET',
         credentials: 'include',
       });
@@ -130,7 +129,7 @@ function TaskItem({ task, onDelete }: { task: TaskApiResponse; onDelete?: () => 
         </Box>
       </Box>
       <img
-        src={`${API_BASE_URL}/api/files/images/${task.thumbnail}`}
+        src={`api/files/images/${task.thumbnail}`}
         alt='thumbnail'
         style={{ width: '100%', height: '100%', margin: '0 auto', maxHeight: '10rem' }}
       />

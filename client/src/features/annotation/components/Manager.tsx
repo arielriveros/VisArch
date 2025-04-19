@@ -1,5 +1,4 @@
 import { useCallback, useEffect, useState } from 'react';
-import { API_BASE_URL } from '@/api/config';
 import { Archetype, Entity, TaskApiResponse, UserApiResponse } from '@/api/types';
 import { useMesh } from '../hooks/useMesh';
 import { useSocket } from '@/features/socket/hooks/useSocket';
@@ -29,7 +28,7 @@ export default function  Manager(props: ManagerProps) {
   const { unwrapping } = useConfig();
 
   useFetch<TaskApiResponse>({
-    url: `api/tasks/${taskId}`,
+    url: `/api/tasks/${taskId}`,
     options: { method: 'GET' },
     immediate: true,
     onSuccess: (data) => {
@@ -48,7 +47,7 @@ export default function  Manager(props: ManagerProps) {
 
   useEffect(() => {
     if (task) {
-      loadMesh(`${API_BASE_URL}/api/files/meshes/${task.mesh}`);
+      loadMesh(`/api/files/meshes/${task.mesh}`);
       const annotations = task.annotations || [];
       if (!lockedAnnotations)
         setAnnotations(annotations);
@@ -58,7 +57,7 @@ export default function  Manager(props: ManagerProps) {
 
   const onSave = useCallback(() => {
     const updatedTask = { ...task, annotations };
-    fetch(`${API_BASE_URL}/api/tasks/${taskId}`, { 
+    fetch(`api/tasks/${taskId}`, { 
       credentials: 'include',
       method: 'PUT',
       headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },

@@ -40,7 +40,7 @@ export default function Navbar() {
   const handleOpenDialog = () => setOpenDialog(true);
   const handleCloseDialog = () => setOpenDialog(false);
   const { execute } = useFetch({
-    url: `api/users/${user?.id}`,
+    url: `/api/users/${user?.id}`,
     options: {
       method: 'DELETE'
     },

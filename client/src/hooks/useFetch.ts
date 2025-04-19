@@ -1,5 +1,4 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { API_BASE_URL } from '@/api/config';
 
 interface FetchResponse<T> {
   data: T | null;
@@ -39,7 +38,7 @@ export default function useFetch<T>(props: useFetchProps<T>): FetchResponse<T> {
           signal: abortSignal,
         } as RequestInit;
 
-        const res = await fetch(`${API_BASE_URL}/${url}`, requestOptions);
+        const res = await fetch(url, requestOptions);
         setStatus(res.status);
 
         if (!res.ok) {

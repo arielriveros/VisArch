@@ -15,7 +15,7 @@ export default function Projects() {
   const navigate = useNavigate();
   
   const { execute } = useFetch<ProjectsApiResponse>({
-    url: `api/users/${user?.id}/projects`,
+    url: `/api/users/${user?.id}/projects`,
     options: {
       method: 'GET',
       credentials: 'include',

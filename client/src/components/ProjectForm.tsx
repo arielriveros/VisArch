@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { API_BASE_URL } from '@/api/config';
 import ProjectForm from '@/components/forms/ProjectForm';
 import useSession from '@/hooks/useSession';
 import Snackbar from '@mui/material/Snackbar';
@@ -26,7 +25,7 @@ export default function ProjectFormContainer(props: ProjectFormContainerProps) {
   useEffect(() => {
     const fetchUsers = async () => {
       try {
-        const res = await fetch(`${API_BASE_URL}/api/users/`, { credentials: 'include' });
+        const res = await fetch('/api/users/', { credentials: 'include' });
         const data = await res.json();
         setUsersList(data.map((user: { displayName: string; email: string; _id: string }) => ({
           id: user._id,
@@ -45,7 +44,7 @@ export default function ProjectFormContainer(props: ProjectFormContainerProps) {
     const fetchProject = async () => {
       if (!props.projectId) return;
       try {
-        const res = await fetch(`${API_BASE_URL}/api/projects/${props.projectId}`, { credentials: 'include' });
+        const res = await fetch(`/api/projects/${props.projectId}`, { credentials: 'include' });
         if (res.ok) {
           const projectData = await res.json();
           setProject({
@@ -75,7 +74,7 @@ export default function ProjectFormContainer(props: ProjectFormContainerProps) {
     if (!user) return;
 
     const method = props.projectId ? 'PUT' : 'POST';
-    const url = props.projectId ? `${API_BASE_URL}/api/projects/${props.projectId}` : `${API_BASE_URL}/api/projects/`;
+    const url = props.projectId ? `/api/projects/${props.projectId}` : '/api/projects/';
 
     try {
       const res = await fetch(url, {

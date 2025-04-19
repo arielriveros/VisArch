@@ -1,6 +1,5 @@
 import { useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { API_BASE_URL } from '@/api/config';
 import useSession from '@/hooks/useSession';
 import TaskForm from '@/components/forms/TaskForm';
 import { CircularProgress } from '@mui/material';
@@ -36,7 +35,7 @@ export default function TaskFormContainer(props: TaskFormContainerProps) {
       formData.append('mesh', task.mesh);
       formData.append('thumbnail', task.thumbnail);
 
-      await fetch(API_BASE_URL + '/api/projects/' + props.projectId + '/tasks', {
+      await fetch('/api/projects/' + props.projectId + '/tasks', {
         credentials: 'include',
         method: 'POST',
         body: formData,
