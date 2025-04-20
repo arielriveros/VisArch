@@ -1,13 +1,14 @@
 import fs from 'fs';
-import mongoose, { Schema, Document, Model } from 'mongoose';
 import Project from './Project';
+import mongoose, { Schema, Document, Model } from 'mongoose';
+import { AnnotationSchema, IAnnotation } from './Annotation';
 
 export interface ITask extends Document {
   name: string;
   description?: string;
   mesh: string;
   thumbnail: string;
-  annotations: object[];
+  annotations: IAnnotation[];
 }
 
 const TaskSchema = new Schema<ITask>({
@@ -26,11 +27,10 @@ const TaskSchema = new Schema<ITask>({
     type: String,
     required: true,
   },
-  annotations: [
-    {
-      type: Object,
-    },
-  ],
+  annotations: [AnnotationSchema],
+}, {
+  timestamps: true,
+  _id: true
 });
 
 TaskSchema.pre('deleteOne', { document: false, query: true }, async function (next) {
