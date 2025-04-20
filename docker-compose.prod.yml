@@ -1,13 +1,9 @@
 services:
   client:
     image: visarch-client:latest
-    ports:
-      - 3000:80
 
   api:
     image: visarch-api:latest
-    ports:
-      - 5000:5000
     environment:
       NODE_ENV: production
       APP_URL: ${APP_URL}
@@ -22,8 +18,6 @@ services:
 
   websocket:
     image: visarch-websocket:latest
-    ports:
-      - 5001:5001
     environment:
       NODE_ENV: production
       APP_URL: ${APP_URL}
