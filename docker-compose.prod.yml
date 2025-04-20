@@ -1,7 +1,8 @@
 services:
   client:
     image: visarch-client:latest
-
+    ports:
+      - 3000:80
   api:
     image: visarch-api:latest
     environment:
@@ -24,8 +25,6 @@ services:
 
   db:
     image: mongo:4.0-xenial
-    ports:
-      - 27018:27017
     volumes:
       - visarch:/data/db
 
