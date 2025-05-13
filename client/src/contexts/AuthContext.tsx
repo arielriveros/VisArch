@@ -1,6 +1,6 @@
 import { createContext, useReducer } from 'react';
 
-interface User {
+export interface User {
   id: string;
   userName: string;
   displayName: string;
